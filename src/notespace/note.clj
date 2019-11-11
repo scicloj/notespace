@@ -13,8 +13,8 @@
   (:import java.io.File
            clojure.lang.IDeref))
 
-;; A note has a kind, a collection of forms, a return value, a rendered result, and a status.
-(defrecord Note [kind forms value rendered status])
+;; A note has a collection of forms, a return value, a rendered result, and a status.
+(defrecord Note [forms value rendered status])
 
 ;; We have a catalogue of notes -- a sequence of notes per namespace.
 (def ns->notes (atom {}))
@@ -53,11 +53,8 @@
   ([expr]
    (when (and (sequential? expr)
               (-> expr first (= 'note)))
-     (let [[kind & forms] (rest expr)]
-       (->Note (-> kind
-                   name
-                   keyword)
-               (vec forms)
+     (let [[forms] (rest expr)]
+       (->Note (vec forms)
                nil
                nil
                {})))))
@@ -108,7 +105,7 @@
 
 ;; When a note is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
-(defmacro note [kind & forms]
+(defmacro note [forms]
   (update-notes! *ns*)
   (let [value (eval (cons 'do forms))
         idx (location *ns* forms)]
