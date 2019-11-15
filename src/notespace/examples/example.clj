@@ -8,27 +8,35 @@
             #_[clojuress :as r :refer [r]]))
 
 
+(comment
+ (note/update-notes! *ns*)
 
-(note :kind1
+ @note/ns->forms->note-idx
+
+ @note/ns->notes
+
+ (note/ns-expressions *ns*)
+
+ (note/ns-notes *ns*)
+
+ (note/updated-notes *ns*)
+)
+
+
+
+(note
  (defn f [x]
    (do
-     (println [:f x])
-     (+ x 2233222222311)))
- :ok1)
+     (+ x 11))))
 
-
-(note :kind1
+(note
  (delay
-   (html [:h3 (-> 22211 f)])))
+   [:hiccup
+    [:h5 (-> 109 f)]]))
 
+(note  (def n 11)
+       (for [i (range n)] {:a i}))
 
 (note/render-ns! *ns*)
+(note/render-ns! *ns*)
 
-
-(comment
-
-
-
-  @note/ns->notes
-
-    )

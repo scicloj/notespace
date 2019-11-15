@@ -8,19 +8,20 @@
             [rewrite-clj.node]
             [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
-            [zprint.core :as zprint]
+            [zprint.core :as zp]
             [clojure.java.shell :refer [sh]])
   (:import java.io.File
            clojure.lang.IDeref))
 
+
 ;; A note has a collection of forms, a return value, a rendered result, and a status.
 (defrecord Note [forms value rendered status])
 
-;; We have a catalogue of notes -- a sequence of notes per namespace.
+;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
 
 ;; We can also find a note's location in the sequence by its forms.
-;; Here we assume that no two notes have the same forms.
+;; To do that, we assume and make sure that no two notes have the same forms.
 (def ns->forms->note-idx (atom {}))
 
 ;; We also keep track of changes in source files corresponding to namespaces.
@@ -33,10 +34,10 @@
       (->> (format "src/%s.clj"))))
 
 (defn src-file-modified? [namespace]
-  (let [previously-last-modified  (@ns->last-modification namespace)
-        last-modified (-> *ns* ns->src-filename io/file (.lastModified))]
-    (swap! ns->last-modification assoc namespace last-modified)
-    (not= previously-last-modified last-modified)))
+  (let [previous-modifiction-time (@ns->last-modification namespace)
+        modification-time (-> *ns* ns->src-filename io/file (.lastModified))]
+    (swap! ns->last-modification assoc namespace modification-time)
+    (not= previous-modifiction-time modification-time)))
 
 ;; We can collect all expressions in a namespace.
 (defn ns-expressions [namespace]
@@ -53,7 +54,7 @@
   ([expr]
    (when (and (sequential? expr)
               (-> expr first (= 'note)))
-     (let [[forms] (rest expr)]
+     (let [forms (rest expr)]
        (->Note (vec forms)
                nil
                nil
@@ -67,7 +68,7 @@
        (filter some?)))
 
 ;; We can get the updated notes of a namespace.
-;; We try not to update things that has not changed.
+;; We try not to update things that have not changed.
 (defn updated-notes [namespace]
   (let [old-notes (@ns->notes namespace)
         modified (src-file-modified? namespace)]
@@ -100,29 +101,50 @@
 
 ;; Given the forms of a note in a namespace,
 ;; we can check its location in the sequence of notes.
-(defn location [namespace forms]
+(defn forms->location [namespace forms]
   (get-in @ns->forms->note-idx [namespace forms]))
 
 ;; When a note is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
-(defmacro note [forms]
+(defmacro note [& forms]
   (update-notes! *ns*)
   (let [value (eval (cons 'do forms))
-        idx (location *ns* forms)]
+        idx (forms->location *ns* forms)]
     (swap! ns->notes assoc-in [*ns* idx :value]
            value)
     `(get-in @ns->notes [~*ns* ~idx])))
 
 ;; A note is rendered in the following way:
-;; If its value is an IDeref, then the it is dereffed.
+;; If its value is an IDeref, then the it is dereferenced.
 ;; Otherwise, its value is taken as-is.
 ;; The rendered value is saved.
+
+(defn deref-if-ideref [v]
+  (if (instance? IDeref v)
+    @v
+    v))
+
+(defn form->html [form print-fn]
+  [:code {:class "prettyprint"}
+   (-> form
+       print-fn
+        with-out-str
+        (string/replace #"\n" "</br>")
+        (string/replace #" " "&nbsp;"))])
+
+(defn value->html [v]
+  (cond (fn? v) ""
+        (sequential? v) (case (first v)
+                          :hiccup (hiccup/html v)
+                          (form->html v pp/pprint))
+        :else   (form->html v pp/pprint)))
+
 (defn render! [anote]
-  (let [v (:value anote)
-        rendered (if (instance? IDeref v)
-                   @v
-                   v)
-        idx (->> anote :forms (location *ns*))]
+  (let [rendered (-> anote
+                     :value
+                     deref-if-ideref
+                     value->html)
+        idx      (->> anote :forms (forms->location *ns*))]
     (swap! ns->notes update-in [*ns* idx]
            #(merge %
                    {:rendered rendered
@@ -143,36 +165,60 @@
     filename))
 
 ;; We can render the notes of a namespace to the file.
+
+(defn note->hiccup [anote]
+  [:p
+   (->> anote
+        :forms
+        (map (fn [form]
+               [:div
+                (-> form
+                    (form->html zp/zprint)
+ )]))
+        (into [:div
+               {:style "background-color:#eeeeee;"}])
+        (vector :p))
+   (:rendered anote)])
+
+(defn js-deps []
+  ["https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"])
+
+(defn footer []
+  [:div
+   [:hr]
+   "Created by "
+   [:a {:href "https://github.com/scicloj/notespace"}
+    "notespace"]
+   ", "
+   (java.util.Date.)
+   "."])
+
+(defn render-notes!
+  [notes & {:keys [file]
+            :or   {file (str (File/createTempFile "rendered" ".html"))}}]
+  (doseq [anote notes]
+    (render! anote))
+  (->> notes
+       (map note->hiccup)
+       (#(concat
+          %
+          [(footer)]))
+       (into [:div])
+       (vector :body
+               {:style "background-color:#dddddd;"}
+               (->> (js-deps)
+                    (map page/include-js)
+                    (into [:head])))
+       hiccup/html
+       page/html5
+       (spit file))
+  file)
+
 (defn render-ns! [namespace]
-  (let [notes (@ns->notes namespace)]
-    (doseq [anote notes]
-      (render! anote))
-    (->> notes
-         (map (fn [anote]
-                (->> anote
-                     :forms
-                     (map (fn [form]
-                            [:div
-                             [:p
-                              [:code {:class "prettyprint"}
-                               #_(->> form
-                                    zprint/zprint-str)
-                               (->> form
-                                    pp/pprint
-                                    with-out-str
-                                    cljfmt.core/reformat-string)]]]))
-                     (#(concat % [(:rendered anote)]))
-                     (into [:div
-                            {:style "background-color:#eeeeee;"}]))))
-         (into [:div])
-         (vector :body
-                 {:style "background-color:#cccccc;"})
-         (vector :head
-                 (page/include-js
-                  "https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"))
-         hiccup/html
-         page/html5
-         (spit (ns->out-filename namespace)))))
+  (-> namespace
+      (@ns->notes)
+      (render-notes!
+       :file (ns->out-filename namespace))))
 
 ;; ;; We watch the catalogue of notes, and render them when it changes.
 ;; (add-watch
@@ -185,10 +231,7 @@
 ;; Printing a note results in rendering it,
 ;; and showing the rendered value in the browser.
 (defmethod print-method Note [anote _]
-  (let [file (str (File/createTempFile "rendered" ".html"))]
-    (->> anote
-         render!
-         (spit file))
+  (let [file (render-notes! [anote])]
     (future (sh "firefox" file))
     #_(browse-url file)))
 
