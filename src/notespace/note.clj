@@ -161,9 +161,6 @@
                           (form->html v pp/pprint))
         :else   (form->html v pp/pprint)))
 
-(defn md->html [v]
-  )
-
 (defn render! [anote]
   (let [renderer (-> anote :kind kind->behaviour :value-renderer)
         rendered (-> anote
@@ -224,17 +221,15 @@
      [:hr]
      [:i
       [:small
-       (when repo
-         [:p
-          "gh: "
-          [:a {:href repo-url} repo]
-          "&nbsp;ns:  "
-          (if ns-url
-            [:a {:href ns-url} *ns*]
-            *ns*)])
-       [:p
-        "Created by " [:a {:href "https://github.com/scicloj/notespace"}
-                       "notespace"] ", " (java.util.Date.) "."]]]]))
+       ;; "gh: "
+       ;; [:a {:href repo-url} repo]
+       ;; [:br]
+       ;; "ns:  "
+       (if ns-url
+         [:a {:href ns-url} *ns*]
+         *ns*)
+       " - created by " [:a {:href "https://github.com/scicloj/notespace"}
+                       "notespace"] ", " (java.util.Date.) "."]]]))
 
 (defn render-notes!
   [notes & {:keys [file]
