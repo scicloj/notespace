@@ -1,8 +1,11 @@
 # notespace
 
-Notebook experience in your Clojure namespace.
+Notebook experience in your Clojure namespace
 
-## Goals
+# Status
+Experimental
+
+# Goals
 
 * Use any Clojure namespace, in any Clojure editor, as a notebook
   * editing is done in your beloved editor
@@ -10,20 +13,17 @@ Notebook experience in your Clojure namespace.
   * no latency in namespace evaluation
 * Live reload experience
   * re-rendering of relevant notebook part(s)
-* Everything can be notebook notes 
-  * function definitions
-  * tests
-  * code examples
-  * data analyses
+* Everything can be a note
+  * function definition
+  * test
+  * code example
+  * data analysis
 * But nothing *has* to be a note
 * Different modes of refresh
   * Oz-like refresh-downwards-from-this-note
   * refresh-this-note
   * refresh-everything
 
-## Usage
-
-FIXME
 
 ## License
 
