@@ -10,26 +10,31 @@
 (note-md
  "#Title
 ##Subtitle
+text
 ")
 
 (note-md "Define a function:")
 
 (note
- (defn f [x]))
-
+ (defn f [x]
+   (+ x 3)))
 
 (note-md "Use the function:")
 
 (note
  (delay
    [:hiccup
-    [:h5 (-> 4 f)]]))
+    [:h5 (-> 12 f)]]))
 
 (note-md "Create some data:")
 
-(note  (def n 4)
+(note  (def n 14)
        (for [i (range n)] {:a i}))
 
-(note/render-ns! *ns*)
+
 (note/render-ns! *ns*)
 
+
+
+(comment
+  @note/ns->notes)
