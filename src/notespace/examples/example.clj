@@ -8,31 +8,6 @@
             [clojuress :as r :refer [r]]))
 
 
-(comment
- (note/update-notes! *ns*)
-
- @note/ns->forms->note-idx
-
- @note/ns->notes
-
- (note/ns-expressions *ns*)
-
- (note/ns-notes *ns*)
-
- (note/updated-notes *ns*)
-
- (->> (note/updated-notes *ns*)
-      :notes
-      (map-indexed (fn [idx note]
-                     {:idx  idx
-                      :note note}))
-      #_(group-by (comp :forms :note))
-      #_(fmap (comp :idx only-one)))
-
- (note/update-notes! *ns*)
-)
-
-
 
 (note
  (defn f [x]

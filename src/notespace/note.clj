@@ -202,20 +202,30 @@
   ["https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"])
 
 (defn footer []
-  [:div
-   [:hr]
-   [:small
-    [:p
-    "Created by " [:a {:href "https://github.com/scicloj/notespace"}
-                   "notespace"] ", " (java.util.Date.) "."]
-   [:p
-    "ns:  " *ns*]
-   [:p
-    "git: " (let [url (-> (sh "git" "remote" "get-url" "origin")
-                          :out)]
-              (if (seq url)
-                url
-                "?"))]]])
+  (let [origin-url (-> (sh "git" "remote" "get-url" "origin")
+                       :out)
+
+        repo (when (seq origin-url)
+               (string/replace origin-url #"git@github.com:|.git" ""))
+        repo-url (some->> repo
+                          (str "https://github.com/"))
+        ns-url (some-> repo-url
+                       (str
+                        "/tree/master/"
+                        (ns->src-filename *ns*)))]
+    [:div
+     [:hr]
+     [:small
+      [:p
+       "Created by " [:a {:href "https://github.com/scicloj/notespace"}
+                      "notespace"] ", " (java.util.Date.) "."]
+      (when repo
+        [:p
+         "gh: " [:a {:href repo-url} repo]])
+      [:p "ns:  "
+       (if ns-url
+         [:a {:href ns-url} *ns*]
+         *ns*)]]]))
 
 (defn render-notes!
   [notes & {:keys [file]
