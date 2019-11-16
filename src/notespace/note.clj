@@ -167,12 +167,13 @@
                      :value
                      deref-if-ideref
                      renderer)
-        idx      (->> anote :forms (forms->location *ns*))]
-    (swap! ns->notes update-in [*ns* idx]
+        idx      (->> anote :forms (forms->location *ns*))
+        path [*ns* idx]]
+    (swap! ns->notes update-in path
            #(merge %
                    {:rendered rendered
                     :status   :fresh}))
-    rendered))
+    (get-in @ns->notes path)))
 
 ;; Any namespace has a corresponding output html file.
 (defn ns->out-filename [namespace]
@@ -234,9 +235,8 @@
 (defn render-notes!
   [notes & {:keys [file]
             :or   {file (str (File/createTempFile "rendered" ".html"))}}]
-  (doseq [anote notes]
-    (render! anote))
   (->> notes
+       (map render!)
        (map note->hiccup)
        (#(concat
           %
@@ -262,6 +262,6 @@
 ;; and showing the rendered value in the browser.
 (defmethod print-method Note [anote _]
   (let [file (render-notes! [anote])]
-    (future (sh "firefox" file))
+    (sh "firefox" file)
     #_(browse-url file)))
 
