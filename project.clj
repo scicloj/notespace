@@ -10,5 +10,6 @@
                  [clojuress "0.1.0-SNAPSHOT"]
                  [alembic "0.3.2"]
                  [zprint "0.5.2"]
-                 [cljfmt "0.6.4"]]
+                 [cljfmt "0.6.4"]
+                 [markdown-clj "1.10.0"]]
   :repl-options {:init-ns notespace.core})

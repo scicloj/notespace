@@ -9,7 +9,8 @@
             [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
             [zprint.core :as zp]
-            [clojure.java.shell :refer [sh]])
+            [clojure.java.shell :refer [sh]]
+            [markdown.core :refer [md-to-html-string]])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -18,10 +19,13 @@
 (defrecord Note [kind forms value rendered status])
 
 ;; A note's kind controls various parameters of its evaluation and rendering.
+(declare value->html)
 
 (def kind->behaviour
-  {:code {:render-src true}
-   :md   {:render-src false}})
+  {:code {:render-src? true
+          :value-renderer value->html}
+   :md   {:render-src? false
+          :value-renderer md-to-html-string}})
 
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
@@ -59,8 +63,8 @@
 ;; that have corresponding note kinds.
 ;; E.g., en expression of the form (note-md ...) is a note expression
 ;; of kind :md.
-(def note-symbol->kind #{'note :code
-                         'note-md :md})
+(def note-symbol->kind {'note :code
+                        'note-md :md})
 
 ;; Each note expression can be converted to a note.
 (defn expr->Note
@@ -146,9 +150,9 @@
   [:code {:class "prettyprint"}
    (-> form
        print-fn
-        with-out-str
-        (string/replace #"\n" "</br>")
-        (string/replace #" " "&nbsp;"))])
+       with-out-str
+       (string/replace #"\n" "</br>")
+       (string/replace #" " "&nbsp;"))])
 
 (defn value->html [v]
   (cond (fn? v) ""
@@ -157,11 +161,15 @@
                           (form->html v pp/pprint))
         :else   (form->html v pp/pprint)))
 
+(defn md->html [v]
+  )
+
 (defn render! [anote]
-  (let [rendered (-> anote
+  (let [renderer (-> anote :kind kind->behaviour :value-renderer)
+        rendered (-> anote
                      :value
                      deref-if-ideref
-                     value->html)
+                     renderer)
         idx      (->> anote :forms (forms->location *ns*))]
     (swap! ns->notes update-in [*ns* idx]
            #(merge %
@@ -183,19 +191,18 @@
     filename))
 
 ;; We can render the notes of a namespace to the file.
-
 (defn note->hiccup [anote]
   [:p
-   (->> anote
-        :forms
-        (map (fn [form]
-               [:div
-                (-> form
-                    (form->html zp/zprint)
- )]))
-        (into [:div
-               {:style "background-color:#eeeeee;"}])
-        (vector :p))
+   (when (-> anote :kind kind->behaviour :render-src?)
+     (->> anote
+          :forms
+          (map (fn [form]
+                 [:div
+                  (-> form
+                      (form->html zp/zprint))]))
+          (into [:div
+                 {:style "background-color:#eeeeee;"}])
+          (vector :p)))
    (:rendered anote)])
 
 (defn js-deps []
@@ -215,17 +222,19 @@
                         (ns->src-filename *ns*)))]
     [:div
      [:hr]
-     [:small
-      [:p
-       "Created by " [:a {:href "https://github.com/scicloj/notespace"}
-                      "notespace"] ", " (java.util.Date.) "."]
-      (when repo
-        [:p
-         "gh: " [:a {:href repo-url} repo]])
-      [:p "ns:  "
-       (if ns-url
-         [:a {:href ns-url} *ns*]
-         *ns*)]]]))
+     [:i
+      [:small
+       (when repo
+         [:p
+          "gh: "
+          [:a {:href repo-url} repo]
+          "&nbsp;ns:  "
+          (if ns-url
+            [:a {:href ns-url} *ns*]
+            *ns*)])
+       [:p
+        "Created by " [:a {:href "https://github.com/scicloj/notespace"}
+                       "notespace"] ", " (java.util.Date.) "."]]]]))
 
 (defn render-notes!
   [notes & {:keys [file]
