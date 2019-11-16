@@ -14,8 +14,14 @@
            clojure.lang.IDeref))
 
 
-;; A note has a collection of forms, a return value, a rendered result, and a status.
-(defrecord Note [forms value rendered status])
+;; A note has a kind, a collection of forms, a return value, a rendered result, and a status.
+(defrecord Note [kind forms value rendered status])
+
+;; A note's kind controls various parameters of its evaluation and rendering.
+
+(def kind->behaviour
+  {:code {:render-src true}
+   :md   {:render-src false}})
 
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
@@ -49,16 +55,24 @@
            (format "[%s]")
            read-string)))
 
-;; Each expression of the form '(note ...) can be converted to a note.
+;; A note expression begins with one of several note symbols,
+;; that have corresponding note kinds.
+;; E.g., en expression of the form (note-md ...) is a note expression
+;; of kind :md.
+(def note-symbol->kind #{'note :code
+                         'note-md :md})
+
+;; Each note expression can be converted to a note.
 (defn expr->Note
   ([expr]
-   (when (and (sequential? expr)
-              (-> expr first (= 'note)))
-     (let [forms (rest expr)]
-       (->Note (vec forms)
-               nil
-               nil
-               {})))))
+   (when (sequential? expr)
+     (when-let [kind (-> expr first note-symbol->kind)]
+       (let [[& forms] (rest expr)]
+         (->Note kind
+                 (vec forms)
+                 nil
+                 nil
+                 {}))))))
 
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
@@ -89,14 +103,14 @@
 (defn update-notes! [namespace]
   (let [{:keys [modified notes]} (updated-notes namespace)]
     (when modified
-      (swap! ns->notes assoc namespace notes)
-      (swap! ns->forms->note-idx assoc namespace
-             (->> notes
-                  (map-indexed (fn [idx note]
-                                 {:idx  idx
-                                  :note note}))
-                  (group-by (comp :forms :note))
-                  (fmap (comp :idx only-one)))))
+      (let [forms->note-idx (->> notes
+                                 (map-indexed (fn [idx note]
+                                                {:idx  idx
+                                                 :note note}))
+                                 (group-by (comp :forms :note))
+                                 (fmap (comp :idx only-one)))]
+        (swap! ns->notes assoc namespace notes)
+        (swap! ns->forms->note-idx assoc namespace forms->note-idx)))
     notes))
 
 ;; Given the forms of a note in a namespace,
@@ -104,15 +118,19 @@
 (defn forms->location [namespace forms]
   (get-in @ns->forms->note-idx [namespace forms]))
 
-;; When a note is evaluated,
+;; When a note of a certain kind is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
-(defmacro note [& forms]
+(defmacro note-kind [kind forms]
+  (println [:forms forms])
   (update-notes! *ns*)
   (let [value (eval (cons 'do forms))
         idx (forms->location *ns* forms)]
     (swap! ns->notes assoc-in [*ns* idx :value]
            value)
     `(get-in @ns->notes [~*ns* ~idx])))
+
+(defmacro note [& forms] `(note-kind :code ~forms))
+(defmacro note-md [& forms] `(note-kind :md ~forms))
 
 ;; A note is rendered in the following way:
 ;; If its value is an IDeref, then the it is dereferenced.
@@ -186,12 +204,18 @@
 (defn footer []
   [:div
    [:hr]
-   "Created by "
-   [:a {:href "https://github.com/scicloj/notespace"}
-    "notespace"]
-   ", "
-   (java.util.Date.)
-   "."])
+   [:small
+    [:p
+    "Created by " [:a {:href "https://github.com/scicloj/notespace"}
+                   "notespace"] ", " (java.util.Date.) "."]
+   [:p
+    "ns:  " *ns*]
+   [:p
+    "git: " (let [url (-> (sh "git" "remote" "get-url" "origin")
+                          :out)]
+              (if (seq url)
+                url
+                "?"))]]])
 
 (defn render-notes!
   [notes & {:keys [file]

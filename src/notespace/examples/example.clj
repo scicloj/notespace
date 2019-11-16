@@ -5,7 +5,7 @@
             [hiccup.core :as hiccup
              :refer [html]]
             [hiccup.page :as page]
-            #_[clojuress :as r :refer [r]]))
+            [clojuress :as r :refer [r]]))
 
 
 (comment
@@ -20,23 +20,33 @@
  (note/ns-notes *ns*)
 
  (note/updated-notes *ns*)
+
+ (->> (note/updated-notes *ns*)
+      :notes
+      (map-indexed (fn [idx note]
+                     {:idx  idx
+                      :note note}))
+      #_(group-by (comp :forms :note))
+      #_(fmap (comp :idx only-one)))
+
+ (note/update-notes! *ns*)
 )
 
 
 
 (note
  (defn f [x]
-   (do
-     (+ x 11))))
+   (+ x 11)))
 
 (note
  (delay
    [:hiccup
-    [:h5 (-> 109 f)]]))
+    [:h5 (-> 4 f)]]))
 
-(note  (def n 11)
+(note  (def n 3)
        (for [i (range n)] {:a i}))
 
 (note/render-ns! *ns*)
 (note/render-ns! *ns*)
+
 
