@@ -2,6 +2,9 @@
 
 Notebook experience in your Clojure namespace
 
+# What does it mean?
+Stay tuned -- a screencast is coming soon.
+
 # Status
 Experimental
 
