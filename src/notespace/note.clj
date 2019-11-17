@@ -38,9 +38,9 @@
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
 
-;; We can also find a note's location in the sequence by its forms.
-;; To do that, we assume and make sure that no two notes have the same forms.
-(def ns->forms->note-idx (atom {}))
+;; We can also find a given note's index in the sequence.
+;; To do that, we assume and make sure that any given combinnation of kind and forms appears only once.
+(def ns->kind-and-forms->idx (atom {}))
 
 ;; We also keep track of changes in source files corresponding to namespaces.
 (def ns->last-modification (atom {}))
@@ -109,8 +109,10 @@
               old-notes
               (let [new-notes (ns-notes *ns*)]
                 (mapv (fn [old-note new-note]
-                       (let [change (not= (:forms old-note)
-                                          (:forms new-note))]
+                        (let [change (->> [old-note new-note]
+                                          (map (juxt :kind :forms))
+                                          (apply =)
+                                          not)]
                          (if change
                            (assoc new-note :status :changed)
                            old-note)))
@@ -121,27 +123,25 @@
 (defn update-notes! [namespace]
   (let [{:keys [modified notes]} (updated-notes namespace)]
     (when modified
-      (let [forms->note-idx (->> notes
-                                 (map-indexed (fn [idx note]
-                                                {:idx  idx
-                                                 :note note}))
-                                 (group-by (comp :forms :note))
-                                 (fmap (comp :idx only-one)))]
+      (let [kind-and-forms->idx (->> notes
+                                     (map-indexed (fn [idx note]
+                                                    {:idx  idx
+                                                     :kind-and-forms (select-keys note [:kind :forms])}))
+                                     (group-by :kind-and-forms)
+                                     (fmap (comp :idx only-one)))]
         (swap! ns->notes assoc namespace notes)
-        (swap! ns->forms->note-idx assoc namespace forms->note-idx)))
+        (swap! ns->kind-and-forms->idx assoc namespace kind-and-forms->idx)))
     notes))
-
-;; Given the forms of a note in a namespace,
-;; we can check its location in the sequence of notes.
-(defn forms->location [namespace forms]
-  (get-in @ns->forms->note-idx [namespace forms]))
 
 ;; When a note of a certain kind is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
 (defmacro note-kind [kind forms]
   (update-notes! *ns*)
   (let [value (eval (cons 'do forms))
-        idx (forms->location *ns* forms)]
+        idx (get-in @ns->kind-and-forms->idx
+                    [*ns*
+                     {:kind  kind
+                      :forms forms}])]
     (swap! ns->notes assoc-in [*ns* idx :value]
            value)
     `(get-in @ns->notes [~*ns* ~idx])))
@@ -181,7 +181,9 @@
                      :value
                      deref-if-ideref
                      renderer)
-        idx      (->> anote :forms (forms->location *ns*))
+        idx      (get-in @ns->kind-and-forms->idx
+                         [*ns*
+                          (select-keys anote [:kind :forms])])
         path [*ns* idx]]
     (swap! ns->notes update-in path
            #(merge %
