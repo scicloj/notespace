@@ -4,8 +4,7 @@
             [clojure.pprint :as pp]
             [hiccup.core :as hiccup
              :refer [html]]
-            [hiccup.page :as page]
-            [clojuress :as r :refer [r]]))
+            [hiccup.page :as page]))
 
 (note-md
  "#Title
@@ -35,6 +34,3 @@ text
 (note/render-ns! *ns*)
 
 
-
-(comment
-  @note/ns->notes)
