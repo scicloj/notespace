@@ -1,6 +1,7 @@
 (ns notespace.note
   (:require [clojure.string :as string]
             [hiccup.core :as hiccup]
+            [hiccup.element :as element]
             [hiccup.page :as page]
             [notespace.util :refer [fmap only-one pprint-and-return]]
             [clojure.pprint :as pp]
@@ -14,6 +15,10 @@
   (:import java.io.File
            clojure.lang.IDeref))
 
+(def ns->config (atom {}))
+
+(defn config-this-ns! [conf]
+  (swap! ns->config assoc *ns* conf))
 
 ;; A note has a kind, a collection of forms, a return value, a rendered result, and a status.
 (defrecord Note [kind forms value rendered status])
@@ -22,10 +27,13 @@
 (declare value->html)
 
 (def kind->behaviour
-  {:code {:render-src? true
-          :value-renderer value->html}
-   :md   {:render-src? false
-          :value-renderer md-to-html-string}})
+  (atom
+   {:code {:render-src?    true
+           :value-renderer #'value->html}
+    :md   {:render-src?    false
+           :value-renderer md-to-html-string}
+    :void {:render-src?    true
+           :value-renderer (constantly nil)}}))
 
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
@@ -38,10 +46,16 @@
 (def ns->last-modification (atom {}))
 
 (defn ns->src-filename [namespace]
-  (-> namespace
-      str
-      (string/replace "." "/")
-      (->> (format "src/%s.clj"))))
+  (let [base-path (-> namespace
+                      (@ns->config)
+                      :base-path
+                      (or "src/"))]
+    (str base-path
+         (-> namespace
+             str
+             (string/replace "." "/")
+             (string/replace "-" "_"))
+         ".clj")))
 
 (defn src-file-modified? [namespace]
   (let [previous-modifiction-time (@ns->last-modification namespace)
@@ -51,26 +65,26 @@
 
 ;; We can collect all expressions in a namespace.
 (defn ns-expressions [namespace]
-  (-> namespace
-      str
-      (string/replace #"\." "/")
-      (->> (format "src/%s.clj")
-           slurp
-           (format "[%s]")
-           read-string)))
+  (->> namespace
+       ns->src-filename
+       slurp
+       (format "[%s]")
+       read-string))
 
 ;; A note expression begins with one of several note symbols,
 ;; that have corresponding note kinds.
 ;; E.g., en expression of the form (note-md ...) is a note expression
 ;; of kind :md.
-(def note-symbol->kind {'note :code
-                        'note-md :md})
+(def note-symbol->kind
+  (atom {'note      :code
+         'note-md   :md
+         'note-void :void}))
 
 ;; Each note expression can be converted to a note.
 (defn expr->Note
   ([expr]
    (when (sequential? expr)
-     (when-let [kind (-> expr first note-symbol->kind)]
+     (when-let [kind (-> expr first (@note-symbol->kind))]
        (let [[& forms] (rest expr)]
          (->Note kind
                  (vec forms)
@@ -125,7 +139,6 @@
 ;; When a note of a certain kind is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
 (defmacro note-kind [kind forms]
-  (println [:forms forms])
   (update-notes! *ns*)
   (let [value (eval (cons 'do forms))
         idx (forms->location *ns* forms)]
@@ -135,6 +148,7 @@
 
 (defmacro note [& forms] `(note-kind :code ~forms))
 (defmacro note-md [& forms] `(note-kind :md ~forms))
+(defmacro note-void [& forms] `(note-kind :void ~forms))
 
 ;; A note is rendered in the following way:
 ;; If its value is an IDeref, then the it is dereferenced.
@@ -162,7 +176,7 @@
         :else   (form->html v pp/pprint)))
 
 (defn render! [anote]
-  (let [renderer (-> anote :kind kind->behaviour :value-renderer)
+  (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (-> anote
                      :value
                      deref-if-ideref
@@ -191,7 +205,7 @@
 ;; We can render the notes of a namespace to the file.
 (defn note->hiccup [anote]
   [:p
-   (when (-> anote :kind kind->behaviour :render-src?)
+   (when (-> anote :kind (@kind->behaviour) :render-src?)
      (->> anote
           :forms
           (map (fn [form]
@@ -199,7 +213,7 @@
                   (-> form
                       (form->html zp/zprint))]))
           (into [:div
-                 {:style "background-color:#eeeeee;"}])
+                 {:style "background-color:#e6e6e6;"}])
           (vector :p)))
    (:rendered anote)])
 
@@ -250,6 +264,7 @@
        hiccup/html
        page/html5
        (spit file))
+  (println [:wrote file])
   file)
 
 (defn render-ns! [namespace]
@@ -258,10 +273,13 @@
       (render-notes!
        :file (ns->out-filename namespace))))
 
+(defn render-this-ns! []
+  (render-ns! *ns*))
+
 ;; Printing a note results in rendering it,
 ;; and showing the rendered value in the browser.
 (defmethod print-method Note [anote _]
   (let [file (render-notes! [anote])]
-    (sh "firefox" file)
+    (future (sh "firefox" file))
     #_(browse-url file)))
 
