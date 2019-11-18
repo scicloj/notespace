@@ -5,13 +5,13 @@
             [hiccup.page :as page]
             [notespace.util :refer [fmap only-one pprint-and-return]]
             [clojure.pprint :as pp]
-            [cljfmt.core]
             [rewrite-clj.node]
             [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
             [zprint.core :as zp]
             [clojure.java.shell :refer [sh]]
-            [markdown.core :refer [md-to-html-string]])
+            [markdown.core :refer [md-to-html-string]]
+            [clojure.walk :as walk])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -24,16 +24,20 @@
 (defrecord Note [kind forms value rendered status])
 
 ;; A note's kind controls various parameters of its evaluation and rendering.
-(declare value->html)
-
 (def kind->behaviour
-  (atom
-   {:code {:render-src?    true
-           :value-renderer #'value->html}
-    :md   {:render-src?    false
-           :value-renderer md-to-html-string}
-    :void {:render-src?    true
-           :value-renderer (constantly nil)}}))
+  (atom {}))
+
+;; A note expression begins with one of several note symbols,
+;; that have corresponding note kinds.
+;; E.g., en expression of the form (note-md ...) is a note expression
+;; of kind :md.
+(def note-symbol->kind
+  (atom {'note      :code
+         'note-md   :md
+         'note-void :void}))
+
+
+
 
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
@@ -71,26 +75,20 @@
        (format "[%s]")
        read-string))
 
-;; A note expression begins with one of several note symbols,
-;; that have corresponding note kinds.
-;; E.g., en expression of the form (note-md ...) is a note expression
-;; of kind :md.
-(def note-symbol->kind
-  (atom {'note      :code
-         'note-md   :md
-         'note-void :void}))
-
 ;; Each note expression can be converted to a note.
+(defn kind-and-forms->Note [kind forms]
+  (->Note kind
+          (vec forms)
+          nil
+          nil
+          {}))
+
 (defn expr->Note
   ([expr]
    (when (sequential? expr)
      (when-let [kind (-> expr first (@note-symbol->kind))]
        (let [[& forms] (rest expr)]
-         (->Note kind
-                 (vec forms)
-                 nil
-                 nil
-                 {}))))))
+         (kind-and-forms->Note kind forms))))))
 
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
@@ -126,7 +124,7 @@
       (let [kind-and-forms->idx (->> notes
                                      (map-indexed (fn [idx note]
                                                     {:idx  idx
-                                                     :kind-and-forms (select-keys note [:kind :forms])}))
+                                                     :kind-and-forms (-> note ((juxt :kind :forms)))}))
                                      (group-by :kind-and-forms)
                                      (fmap (comp :idx only-one)))]
         (swap! ns->notes assoc namespace notes)
@@ -135,20 +133,41 @@
 
 ;; When a note of a certain kind is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
-(defmacro note-kind [kind forms]
+(defmacro note-of-kind [kind forms]
   (update-notes! *ns*)
-  (let [value (eval (cons 'do forms))
-        idx (get-in @ns->kind-and-forms->idx
-                    [*ns*
-                     {:kind  kind
-                      :forms forms}])]
-    (swap! ns->notes assoc-in [*ns* idx :value]
-           value)
-    `(get-in @ns->notes [~*ns* ~idx])))
+  (let [value (eval (cons 'do forms))]
+    (if-let [idx (get-in @ns->kind-and-forms->idx
+                         [*ns* [kind forms]])]
+      (do (swap! ns->notes assoc-in [*ns* idx :value]
+                 value)
+          `(get-in @ns->notes [~*ns* ~idx]))
+      (do (println [:note-not-found-in-ns :did-you-save?])
+          (kind-and-forms->Note kind forms)))))
 
-(defmacro note [& forms] `(note-kind :code ~forms))
-(defmacro note-md [& forms] `(note-kind :md ~forms))
-(defmacro note-void [& forms] `(note-kind :void ~forms))
+;; A specific note kind is defined by:
+;; - defining their behaviour
+;; - connecting a dedicated note-symbol
+;; - assigning to that symbol a macro that wraps note-of-kind
+
+(defmacro defkind [note-symbol kind behaviour]
+  (swap! kind->behaviour assoc kind (eval behaviour))
+  (swap! note-symbol->kind assoc note-symbol kind)
+  `(defmacro ~note-symbol [& forms#]
+     (list 'note-of-kind ~kind forms#)))
+
+;; Now let us define several built-in kinds:
+
+(defkind note
+  :code {:render-src?    true
+         :value-renderer #'value->html})
+(defkind note-md
+  :md   {:render-src?    false
+        :value-renderer md-to-html-string})
+
+(defkind note-void
+  :void {:render-src?    true
+         :value-renderer (constantly nil)})
+
 
 ;; A note is rendered in the following way:
 ;; If its value is an IDeref, then the it is dereferenced.
@@ -183,7 +202,7 @@
                      renderer)
         idx      (get-in @ns->kind-and-forms->idx
                          [*ns*
-                          (select-keys anote [:kind :forms])])
+                          (-> anote ((juxt :kind :forms)))])
         path [*ns* idx]]
     (swap! ns->notes update-in path
            #(merge %
@@ -205,6 +224,17 @@
     filename))
 
 ;; We can render the notes of a namespace to the file.
+
+;; https://stackoverflow.com/questions/58308404/configure-symbol-quote-expansion-in-clojure-zprint
+(defn careful-zprint [form]
+  (-> form
+      zp/zprint
+      with-out-str
+      (#(.replaceAll
+         ^String %
+         "\\(quote ([a-zA-Z]*)\\)" "'$1"))
+      println))
+
 (defn note->hiccup [anote]
   [:p
    (when (-> anote :kind (@kind->behaviour) :render-src?)
@@ -284,4 +314,6 @@
   (let [file (render-notes! [anote])]
     (future (sh "firefox" file))
     #_(browse-url file)))
+
+
 
