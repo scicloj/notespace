@@ -32,11 +32,7 @@
 ;; E.g., en expression of the form (note-md ...) is a note expression
 ;; of kind :md.
 (def note-symbol->kind
-  (atom {'note      :code
-         'note-md   :md
-         'note-void :void}))
-
-
+  (atom {}))
 
 
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
@@ -157,12 +153,18 @@
 
 ;; Now let us define several built-in kinds:
 
+(declare value->html)
 (defkind note
   :code {:render-src?    true
          :value-renderer #'value->html})
+
 (defkind note-md
   :md   {:render-src?    false
         :value-renderer md-to-html-string})
+
+(defkind note-hiccup
+  :hiccup {:render-src? false
+           :value-renderer (fn [h] (hiccup/html h))})
 
 (defkind note-void
   :void {:render-src?    true
