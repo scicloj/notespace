@@ -3,7 +3,7 @@
             [hiccup.core :as hiccup]
             [hiccup.element :as element]
             [hiccup.page :as page]
-            [notespace.util :refer [fmap only-one pprint-and-return]]
+            [notespace.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
             [clojure.java.io :as io]
@@ -131,6 +131,7 @@
 ;; itw forms are evaluated, and the catalogue of notes is updated.
 (defmacro note-of-kind [kind forms]
   (update-notes! *ns*)
+  (pp/pprint [:kind kind :forms forms])
   (let [value (eval (cons 'do forms))]
     (if-let [idx (get-in @ns->kind-and-forms->idx
                          [*ns* [kind forms]])]
@@ -138,7 +139,8 @@
                  value)
           `(get-in @ns->notes [~*ns* ~idx]))
       (do (println [:note-not-found-in-ns :did-you-save?])
-          (kind-and-forms->Note kind forms)))))
+          (assoc (kind-and-forms->Note kind forms)
+                 :value value)))))
 
 ;; A specific note kind is defined by:
 ;; - defining their behaviour
@@ -160,10 +162,18 @@
 
 (defkind note-md
   :md   {:render-src?    false
-        :value-renderer md-to-html-string})
+         :value-renderer md-to-html-string})
+
+(defkind note-as-md
+  :as-md   {:render-src?    true
+            :value-renderer md-to-html-string})
 
 (defkind note-hiccup
   :hiccup {:render-src? false
+           :value-renderer (fn [h] (hiccup/html h))})
+
+(defkind note-as-hiccup
+  :as-hiccup {:render-src?    true
            :value-renderer (fn [h] (hiccup/html h))})
 
 (defkind note-void
@@ -176,18 +186,15 @@
 ;; Otherwise, its value is taken as-is.
 ;; The rendered value is saved.
 
-(defn deref-if-ideref [v]
-  (if (instance? IDeref v)
-    @v
-    v))
 
 (defn form->html [form print-fn]
-  [:code {:class "prettyprint"}
+  [:code {:class "prettyprint lang-clj"}
    (-> form
        print-fn
        with-out-str
        (string/replace #"\n" "</br>")
        (string/replace #" " "&nbsp;"))])
+
 
 (defn value->html [v]
   (cond (fn? v) ""
@@ -201,16 +208,17 @@
         rendered (-> anote
                      :value
                      deref-if-ideref
-                     renderer)
-        idx      (get-in @ns->kind-and-forms->idx
-                         [*ns*
-                          (-> anote ((juxt :kind :forms)))])
-        path [*ns* idx]]
-    (swap! ns->notes update-in path
-           #(merge %
-                   {:rendered rendered
-                    :status   :fresh}))
-    (get-in @ns->notes path)))
+                     renderer)]
+    (if-let [idx      (get-in @ns->kind-and-forms->idx
+                             [*ns*
+                              (-> anote ((juxt :kind :forms)))])]
+      (let [path [*ns* idx]]
+        (swap! ns->notes update-in path
+               #(merge %
+                       {:rendered rendered
+                        :status   :fresh}))
+        (get-in @ns->notes path))
+      (assoc anote :rendered rendered))))
 
 ;; Any namespace has a corresponding output html file.
 (defn ns->out-filename [namespace]
@@ -226,17 +234,6 @@
     filename))
 
 ;; We can render the notes of a namespace to the file.
-
-;; https://stackoverflow.com/questions/58308404/configure-symbol-quote-expansion-in-clojure-zprint
-(defn careful-zprint [form]
-  (-> form
-      zp/zprint
-      with-out-str
-      (#(.replaceAll
-         ^String %
-         "\\(quote ([a-zA-Z]*)\\)" "'$1"))
-      println))
-
 (defn note->hiccup [anote]
   [:p
    (when (-> anote :kind (@kind->behaviour) :render-src?)
@@ -245,14 +242,15 @@
           (map (fn [form]
                  [:div
                   (-> form
-                      (form->html zp/zprint))]))
+                      (form->html #(careful-zprint % 40)))]))
           (into [:div
-                 {:style "background-color:#e6e6e6;"}])
+                 {:style "background-color:#f2f2f2;"}])
           (vector :p)))
    (:rendered anote)])
 
 (defn js-deps []
-  ["https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"])
+  ["https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"
+   "https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-clj.js"])
 
 (defn footer []
   (let [origin-url (-> (sh "git" "remote" "get-url" "origin")
@@ -310,12 +308,23 @@
 (defn render-this-ns! []
   (render-ns! *ns*))
 
+
 ;; Printing a note results in rendering it,
 ;; and showing the rendered value in the browser.
-(defmethod print-method Note [anote _]
+
+(defn print-note [anote]
   (let [file (render-notes! [anote])]
-    (future (sh "firefox" file))
-    #_(browse-url file)))
+    (browse-url file)))
 
+;; Overriding print
+(defmethod print-method Note [anote _]
+  (print-note anote))
 
+;; Overriding pprint
+(defmethod pp/simple-dispatch Note [anote]
+  (print-note anote))
+
+;; Why is this necessary?
+(defmethod print-dup Note [anote _]
+  (print-note anote))
 
