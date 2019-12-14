@@ -11,7 +11,9 @@
             [zprint.core :as zp]
             [clojure.java.shell :refer [sh]]
             [markdown.core :refer [md-to-html-string]]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [cljfmt.core]
+            [cljfmt.main])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -129,15 +131,14 @@
 
 ;; When a note of a certain kind is evaluated,
 ;; itw forms are evaluated, and the catalogue of notes is updated.
-(defmacro note-of-kind [kind forms]
+(defn note-of-kind [kind forms]
   (update-notes! *ns*)
-  (pp/pprint [:kind kind :forms forms])
   (let [value (eval (cons 'do forms))]
     (if-let [idx (get-in @ns->kind-and-forms->idx
                          [*ns* [kind forms]])]
       (do (swap! ns->notes assoc-in [*ns* idx :value]
                  value)
-          `(get-in @ns->notes [~*ns* ~idx]))
+          (get-in @ns->notes [*ns* idx]))
       (do (println [:note-not-found-in-ns :did-you-save?])
           (assoc (kind-and-forms->Note kind forms)
                  :value value)))))
@@ -151,7 +152,7 @@
   (swap! kind->behaviour assoc kind (eval behaviour))
   (swap! note-symbol->kind assoc note-symbol kind)
   `(defmacro ~note-symbol [& forms#]
-     (list 'note-of-kind ~kind forms#)))
+     (list 'note-of-kind ~kind (list 'quote forms#))))
 
 ;; Now let us define several built-in kinds:
 
@@ -194,7 +195,6 @@
        with-out-str
        (string/replace #"\n" "</br>")
        (string/replace #" " "&nbsp;"))])
-
 
 (defn value->html [v]
   (cond (fn? v) ""
