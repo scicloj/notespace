@@ -161,13 +161,17 @@
   :code {:render-src?    true
          :value-renderer #'value->html})
 
+(defn md->html [md]
+  [:div
+   (md-to-html-string md)])
+
 (defkind note-md
   :md   {:render-src?    false
-         :value-renderer md-to-html-string})
+         :value-renderer md->html})
 
 (defkind note-as-md
   :as-md   {:render-src?    true
-            :value-renderer md-to-html-string})
+            :value-renderer md->html})
 
 (defkind note-hiccup
   :hiccup {:render-src? false
@@ -204,6 +208,7 @@
         :else   (form->html v pp/pprint)))
 
 (defn render! [anote]
+  (pp/pprint (select-keys anote [:kind :forms]))
   (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (-> anote
                      :value
@@ -244,7 +249,7 @@
                   (-> form
                       (form->html #(careful-zprint % 40)))]))
           (into [:div
-                 {:style "background-color:#f2f2f2;"}])
+                 {:style "background-color:#f2f2f2; width: 100%"}])
           (vector :p)))
    (:rendered anote)])
 
