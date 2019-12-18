@@ -11,9 +11,7 @@
             [zprint.core :as zp]
             [clojure.java.shell :refer [sh]]
             [markdown.core :refer [md-to-html-string]]
-            [clojure.walk :as walk]
-            [cljfmt.core]
-            [cljfmt.main])
+            [clojure.walk :as walk])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -257,31 +255,58 @@
   ["https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"
    "https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-clj.js"])
 
-(defn footer []
-  (let [origin-url (-> (sh "git" "remote" "get-url" "origin")
-                       :out)
 
-        repo (when (seq origin-url)
-               (string/replace origin-url #"git@github.com:|.git" ""))
-        repo-url (some->> repo
-                          (str "https://github.com/"))
-        ns-url (some-> repo-url
-                       (str
-                        "/tree/master/"
-                        (ns->src-filename *ns*)))]
-    [:div
-     [:hr]
-     [:i
-      [:small
-       ;; "gh: "
-       ;; [:a {:href repo-url} repo]
-       ;; [:br]
-       ;; "ns:  "
-       (if ns-url
-         [:a {:href ns-url} *ns*]
-         *ns*)
-       " - created by " [:a {:href "https://github.com/scicloj/notespace"}
-                       "notespace"] ", " (java.util.Date.) "."]]]))
+(defn working-directory []
+  (io/file (System/getProperty "user.dir")))
+
+(defn path-relative-to-git-home []
+  (loop [relative-path ""
+         base-dir      (working-directory)]
+    (if (some (fn [^File f]
+                (-> f (.getName) (= ".git")))
+              (file-seq base-dir))
+      relative-path
+      (when-let [parent (.getParentFile base-dir)]
+        (recur (str (.getName base-dir) "/" relative-path)
+               parent)))))
+
+(defn origin-url []
+  (-> (sh "git" "remote" "get-url" "origin")
+      :out))
+
+(defn repo-url []
+  (some-> (origin-url)
+          seq
+          (->> (apply str))
+          (string/replace #"\n" "")
+          (string/replace #"git@github.com:|.git" "")
+          (->> (str "https://github.com/"))))
+
+(defn ns-url []
+  (some-> (repo-url)
+          (str
+           "/tree/master/"
+           (path-relative-to-git-home)
+           (ns->src-filename *ns*))))
+
+(defn reference []
+  [:i
+   [:small
+    (if-let [url (ns-url)]
+      [:a {:href url} *ns*]
+      *ns*)
+    " - created by " [:a {:href "https://github.com/scicloj/notespace"}
+                      "notespace"] ", " (java.util.Date.) "."]])
+
+(defn header []
+  [:div
+   (reference)
+   [:hr]])
+
+(defn footer []
+  [:div
+   [:hr]
+   (reference)])
 
 (defn render-notes!
   [notes & {:keys [file]
@@ -290,6 +315,7 @@
        (map render!)
        (map note->hiccup)
        (#(concat
+          [(header)]
           %
           [(footer)]))
        (into [:div])
