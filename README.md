@@ -13,21 +13,21 @@ Experimental
 # Goals
 
 * Use any Clojure namespace, in any Clojure editor, as a notebook
-  * [v] editing is done in your beloved editor
-  * [v] rendering is done at the browser
+  * [x] editing is done in your beloved editor
+  * [x] rendering is done at the browser
   * [ ] typical workflow has almost zero latency in namespace evaluation
 * Live reload experience
   * [ ] re-rendering of relevant notebook part(s)
 * Everything can be a note
-  * [v] function definition
+  * [x] function definition
   * [ ] test
-  * [v] code example
-  * [v] data analysis
+  * [x] code example
+  * [x] data analysis
 * But nothing *has* to be a note
 * Different modes of refresh
   * [ ] Oz-like refresh-downwards-from-this-note
-  * [v] refresh-this-note
-  * [v] refresh-everything
+  * [x] refresh-this-note
+  * [x] refresh-everything
 
 ## License
 
