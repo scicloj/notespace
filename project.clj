@@ -8,4 +8,6 @@
                  [hiccup "1.0.5"]
                  [zprint "0.5.2"]
                  [markdown-clj "1.10.0"]
-                 [com.rpl/specter "1.1.3"]])
+                 [com.rpl/specter "1.1.3"]
+                 [metosin/jsonista "0.2.5"]
+                 [garden "1.3.9"]])

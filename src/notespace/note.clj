@@ -11,7 +11,8 @@
             [zprint.core :as zp]
             [clojure.java.shell :refer [sh]]
             [markdown.core :refer [md-to-html-string]]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [notespace.cdn :as cdn])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -251,9 +252,7 @@
           (vector :p)))
    (:rendered anote)])
 
-(defn js-deps []
-  ["https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"
-   "https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-clj.js"])
+
 
 
 (defn working-directory []
@@ -321,8 +320,8 @@
        (into [:div])
        (vector :body
                {:style "background-color:#dddddd;"}
-               (->> (js-deps)
-                    (map page/include-js)
+               (->> :prettify
+                    cdn/header
                     (into [:head])))
        hiccup/html
        page/html5
@@ -358,4 +357,5 @@
 ;; Why is this necessary?
 (defmethod print-dup Note [anote _]
   (print-note anote))
+
 
