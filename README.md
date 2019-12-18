@@ -2,6 +2,8 @@
 
 Notebook experience in your Clojure namespace
 
+[![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
+
 # What does it mean?
 Stay tuned -- a screencast is coming soon.
 
@@ -11,22 +13,21 @@ Experimental
 # Goals
 
 * Use any Clojure namespace, in any Clojure editor, as a notebook
-  * editing is done in your beloved editor
-  * rendering is done at the browser
-  * no latency in namespace evaluation
+  * [v] editing is done in your beloved editor
+  * [v] rendering is done at the browser
+  * [ ] typical workflow has almost zero latency in namespace evaluation
 * Live reload experience
-  * re-rendering of relevant notebook part(s)
+  * [ ] re-rendering of relevant notebook part(s)
 * Everything can be a note
-  * function definition
-  * test
-  * code example
-  * data analysis
+  * [v] function definition
+  * [ ] test
+  * [v] code example
+  * [v] data analysis
 * But nothing *has* to be a note
 * Different modes of refresh
-  * Oz-like refresh-downwards-from-this-note
-  * refresh-this-note
-  * refresh-everything
-
+  * [ ] Oz-like refresh-downwards-from-this-note
+  * [v] refresh-this-note
+  * [v] refresh-everything
 
 ## License
 
