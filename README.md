@@ -21,10 +21,14 @@ Experimental
 * Live reload experience
   * [ ] re-rendering of relevant notebook part(s)
 * A nootebook is a sequence of notes
+  * [x] a note represents a piece of computation and its output
   * [x] any note can be rendered independently
+  * [x] the notebook's rendering is the concatenation of its notes' renderings
+  * [x] a notes' rendering can depend on its code and its output
+  * [x] the precise way it depends on them is configurable in an extensible way
+  * [ ] a notes' rendering can depend on the stdout and stderr of its computation
   * [x] we remember notes' last rendering
   * [ ] we know if notes need a refresh (after code change)
-  * [x] the notebook's rendering is the concatenation of the notes renderings
 * Everything can be a note
   * [x] function definition
   * [ ] test
