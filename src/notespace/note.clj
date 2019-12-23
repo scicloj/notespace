@@ -198,7 +198,19 @@
 
 (defkind note-as-hiccup
   :as-hiccup {:render-src?    true
-           :value-renderer (fn [h] (hiccup/html h))})
+              :value-renderer (fn [h] (hiccup/html h))})
+
+(defkind note-test
+  :test {:render-src? true
+         :value-renderer (fn [[rel & vals]]
+                           [:div
+                            (if (apply rel vals)
+                              [:p  {:style "color:green"} "PASSED:"]
+                              [:p  {:style "color:red"} "FAILED:"])
+                            (->> vals
+                                 (map (fn [v]
+                                        [:li (value->html v)]))
+                                 (into [:ul]))])})
 
 (defkind note-void
   :void {:render-src?    true
@@ -347,7 +359,6 @@
 
 (defn render-this-ns! []
   (render-ns! *ns*))
-
 
 ;; Printing a note results in rendering it,
 ;; and showing the rendered value in the browser.
