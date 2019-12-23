@@ -22,8 +22,8 @@
 (defn config-this-ns! [conf]
   (swap! ns->config assoc *ns* conf))
 
-;; A note has a kind, a collection of forms, a return value, a rendered result, and a status.
-(defrecord Note [kind forms value rendered status])
+;; A note has a kind, possibly a label, a collection of forms, a return value, a rendered result, and a status.
+(defrecord Note [kind label forms value rendered status])
 
 ;; A note's kind controls various parameters of its evaluation and rendering.
 (def kind->behaviour
@@ -43,6 +43,9 @@
 ;; We can also find a given note's index in the sequence.
 ;; To do that, we assume and make sure that any given combinnation of kind and forms appears only once.
 (def ns->kind-and-forms->idx (atom {}))
+
+;; We also map from notes' label (when it exists) to their index.
+(def ns->label->idx (atom {}))
 
 ;; We also keep track of changes in source files corresponding to namespaces.
 (def ns->last-modification (atom {}))
@@ -73,9 +76,16 @@
        (format "[%s]")
        read-string))
 
+;; When the first form of a note is a keyword,
+;; then it would be considered the form's label
+(defn forms->label [[first-form & _]]
+  (when (keyword? first-form)
+    first-form))
+
 ;; Each note expression can be converted to a note.
 (defn kind-and-forms->Note [kind forms]
   (->Note kind
+          (forms->label forms)
           (vec forms)
           nil
           nil
@@ -121,12 +131,20 @@
     (when modified
       (let [kind-and-forms->idx (->> notes
                                      (map-indexed (fn [idx note]
-                                                    {:idx  idx
+                                                    {:idx            idx
                                                      :kind-and-forms (-> note ((juxt :kind :forms)))}))
                                      (group-by :kind-and-forms)
-                                     (fmap (comp :idx only-one)))]
+                                     (fmap (comp :idx only-one)))
+            label->idx (->> notes
+                            (map-indexed (fn [idx note]
+                                           {:idx            idx
+                                            :label (:label note)}))
+                            (filter :label)
+                            (group-by :label)
+                            (fmap (comp :idx only-one)))]
         (swap! ns->notes assoc namespace notes)
-        (swap! ns->kind-and-forms->idx assoc namespace kind-and-forms->idx)))
+        (swap! ns->kind-and-forms->idx assoc namespace kind-and-forms->idx)
+        (swap! ns->label->idx assoc namespace label->idx)))
     notes))
 
 ;; When a note of a certain kind is evaluated,
@@ -136,12 +154,13 @@
   (let [value (eval (cons 'do forms))]
     (if-let [idx (get-in @ns->kind-and-forms->idx
                          [*ns* [kind forms]])]
-      (do (swap! ns->notes assoc-in [*ns* idx :value]
-                 value)
+      (do (swap! ns->notes update-in [*ns* idx]
+                 #(assoc % :value value))
           (get-in @ns->notes [*ns* idx]))
       (do (println [:note-not-found-in-ns :did-you-save?])
           (assoc (kind-and-forms->Note kind forms)
                  :value value)))))
+
 
 ;; A specific note kind is defined by:
 ;; - defining their behaviour
@@ -239,19 +258,33 @@
     filename))
 
 ;; We can render the notes of a namespace to the file.
-(defn note->hiccup [anote]
-  [:p
-   (when (-> anote :kind (@kind->behaviour) :render-src?)
-     (->> anote
-          :forms
-          (map (fn [form]
-                 [:div
-                  (-> form
-                      (form->html #(careful-zprint % 40)))]))
-          (into [:div
-                 {:style "background-color:#f2f2f2; width: 100%"}])
-          (vector :p)))
-   (:rendered anote)])
+
+(defn label->anchor-id [label]
+  (->> label name (str "#")))
+
+(defn label->anchor [label]
+  [:a  {;; :style "border: 2px solid green;"
+        :id (label->anchor-id label)}
+   (format "~~~~%s~~~~" (name label))])
+
+(defn note->hiccup [{:keys [forms label rendered]
+                     :as anote}]
+  (let [forms-without-label (if label
+                              (rest forms)
+                              forms)]
+    [:p
+     (when (-> anote :kind (@kind->behaviour) :render-src?)
+       (->> forms-without-label
+            (map (fn [form]
+                   [:div
+                    (-> form
+                        (form->html #(careful-zprint % 40)))]))
+            (into [:div
+                   {:style "background-color:#f2f2f2; width: 100%"}
+                   (when label
+                     (label->anchor label))])
+            (vector :p)))
+     (:rendered anote)]))
 
 (defn ns-url []
   (some-> (repo/repo-url)
@@ -269,32 +302,37 @@
     " - created by " [:a {:href "https://github.com/scicloj/notespace"}
                       "notespace"] ", " (java.util.Date.) "."]])
 
-(defn header []
-  [:div
-   (reference)
-   [:hr]])
 
-(defn footer []
+(defn toc [notes]
   [:div
-   [:hr]
-   (reference)])
+   "Table of contents"
+   (->> notes
+        (filter :label)
+        (map (fn [{:keys [label]}]
+               [:li [:a {:href (label->anchor-id label)}
+                     (name label)]]))
+        (into [:ul]))])
 
 (defn render-notes!
   [notes & {:keys [file]
             :or   {file (str (File/createTempFile "rendered" ".html"))}}]
-  (->> notes
-       (map render!)
-       (map note->hiccup)
-       (#(concat
-          [(header)]
-          %
-          [(footer)]))
-       (into [:div])
-       (vector :body
-               {:style "background-color:#dddddd;"}
-               (->> :prettify
-                    cdn/header
-                    (into [:head])))
+  (println [:labels (map :label notes)
+            :toc (toc notes)])
+  (->> [:body
+        {:style "background-color:#dddddd;"}
+        (->> :prettify
+             cdn/header
+             (into [:head]))
+        [:div
+         (reference)
+         [:hr]
+         (toc notes)
+         [:hr]
+         (->> notes
+              (map render!)
+              (map note->hiccup))
+         [:hr]
+         (reference)]]
        hiccup/html
        page/html5
        (spit file))
