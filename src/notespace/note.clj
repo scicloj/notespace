@@ -3,6 +3,7 @@
             [hiccup.core :as hiccup]
             [hiccup.element :as element]
             [hiccup.page :as page]
+            [notespace.repo :as repo]
             [notespace.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
@@ -252,40 +253,11 @@
           (vector :p)))
    (:rendered anote)])
 
-
-
-
-(defn working-directory []
-  (io/file (System/getProperty "user.dir")))
-
-(defn path-relative-to-git-home []
-  (loop [relative-path ""
-         base-dir      (working-directory)]
-    (if (some (fn [^File f]
-                (-> f (.getName) (= ".git")))
-              (file-seq base-dir))
-      relative-path
-      (when-let [parent (.getParentFile base-dir)]
-        (recur (str (.getName base-dir) "/" relative-path)
-               parent)))))
-
-(defn origin-url []
-  (-> (sh "git" "remote" "get-url" "origin")
-      :out))
-
-(defn repo-url []
-  (some-> (origin-url)
-          seq
-          (->> (apply str))
-          (string/replace #"\n" "")
-          (string/replace #"git@github.com:|.git" "")
-          (->> (str "https://github.com/"))))
-
 (defn ns-url []
-  (some-> (repo-url)
+  (some-> (repo/repo-url)
           (str
            "/tree/master/"
-           (path-relative-to-git-home)
+           (repo/path-relative-to-git-home)
            (ns->src-filename *ns*))))
 
 (defn reference []
