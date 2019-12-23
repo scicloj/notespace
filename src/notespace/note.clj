@@ -50,11 +50,21 @@
 ;; We also keep track of changes in source files corresponding to namespaces.
 (def ns->last-modification (atom {}))
 
+(defn src-or-test [namespace]
+  (if (-> namespace
+          str
+          (string/split #"-")
+          last
+          (= "test"))
+    "test"
+    "src"))
+
 (defn ns->src-filename [namespace]
   (let [base-path (-> namespace
                       (@ns->config)
                       :base-path
-                      (or "src/"))]
+                      (or (str (src-or-test namespace)
+                               "/")))]
     (str base-path
          (-> namespace
              str
@@ -205,9 +215,9 @@
          :value-renderer (fn [[rel & vals]]
                            [:div
                             (if (apply rel vals)
-                              [:p  {:style "color:green"} "PASSED:"]
-                              [:p  {:style "color:red"} "FAILED:"])
-                            (->> vals
+                              [:p  {:style "color:green"} "PASSED"]
+                              [:p  {:style "color:red"} "FAILED"])
+                            #_(->> vals
                                  (map (fn [v]
                                         [:li (value->html v)]))
                                  (into [:ul]))])})
