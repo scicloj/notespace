@@ -31,7 +31,7 @@ Experimental
   * [ ] we know if notes need a refresh (after code change)
 * Everything can be a note
   * [x] function definition
-  * [ ] test
+  * [x] test
   * [x] code example
   * [x] data analysis
 * But nothing *has* to be a note
