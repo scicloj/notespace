@@ -13,7 +13,8 @@
             [clojure.java.shell :refer [sh]]
             [markdown.core :refer [md-to-html-string]]
             [clojure.walk :as walk]
-            [notespace.cdn :as cdn])
+            [notespace.cdn :as cdn]
+            [clojure.tools.logging :as log])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -167,7 +168,7 @@
       (do (swap! ns->notes update-in [*ns* idx]
                  #(assoc % :value value))
           (get-in @ns->notes [*ns* idx]))
-      (do (println [:note-not-found-in-ns :did-you-save?])
+      (do (log/warn [:note-not-found-in-ns :did-you-save?])
           (assoc (kind-and-forms->Note kind forms)
                  :value value)))))
 
@@ -252,7 +253,7 @@
         :else   (form->html v pp/pprint)))
 
 (defn render! [namepace anote]
-  (pp/pprint (select-keys anote [:kind :forms]))
+  (log/info (select-keys anote [:kind :forms]))
   (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (-> anote
                      :value
@@ -343,8 +344,6 @@
   [namespace notes
    & {:keys [file]
       :or   {file (str (File/createTempFile "rendered" ".html"))}}]
-  (println [:labels (map :label notes)
-            :toc (toc notes)])
   (->> [:body
         {:style "background-color:#dddddd;"}
         (->> :prettify
@@ -364,7 +363,7 @@
        hiccup/html
        page/html5
        (spit file))
-  (println [:wrote file])
+  (log/info [:wrote file])
   file)
 
 (defn render-ns! [namespace]
