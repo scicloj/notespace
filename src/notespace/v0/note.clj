@@ -253,7 +253,7 @@
         :else   (form->html v pp/pprint)))
 
 (defn render! [namepace anote]
-  (log/info (select-keys anote [:kind :forms]))
+  (log/info [::rendering (select-keys anote [:kind :forms])])
   (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (-> anote
                      :value
