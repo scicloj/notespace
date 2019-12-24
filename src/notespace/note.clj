@@ -74,7 +74,7 @@
 
 (defn src-file-modified? [namespace]
   (let [previous-modifiction-time (@ns->last-modification namespace)
-        modification-time (-> *ns* ns->src-filename io/file (.lastModified))]
+        modification-time (-> namespace ns->src-filename io/file (.lastModified))]
     (swap! ns->last-modification assoc namespace modification-time)
     (not= previous-modifiction-time modification-time)))
 
@@ -123,7 +123,7 @@
     {:modified modified
      :notes (if (not modified)
               old-notes
-              (let [new-notes (ns-notes *ns*)]
+              (let [new-notes (ns-notes namespace)]
                 (mapv (fn [old-note new-note]
                         (let [change (->> [old-note new-note]
                                           (map (juxt :kind :forms))
@@ -251,7 +251,7 @@
                           (form->html v pp/pprint))
         :else   (form->html v pp/pprint)))
 
-(defn render! [anote]
+(defn render! [namepace anote]
   (pp/pprint (select-keys anote [:kind :forms]))
   (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (-> anote
@@ -259,9 +259,9 @@
                      deref-if-ideref
                      renderer)]
     (if-let [idx      (get-in @ns->kind-and-forms->idx
-                             [*ns*
+                              [namespace
                               (-> anote ((juxt :kind :forms)))])]
-      (let [path [*ns* idx]]
+      (let [path [namespace idx]]
         (swap! ns->notes update-in path
                #(merge %
                        {:rendered rendered
@@ -311,22 +311,21 @@
             (vector :p)))
      (:rendered anote)]))
 
-(defn ns-url []
+(defn ns-url [namespace]
   (some-> (repo/repo-url)
           (str
            "/tree/master/"
            (repo/path-relative-to-git-home)
-           (ns->src-filename *ns*))))
+           (ns->src-filename namespace))))
 
-(defn reference []
+(defn reference [namespace]
   [:i
    [:small
-    (if-let [url (ns-url)]
-      [:a {:href url} *ns*]
-      *ns*)
+    (if-let [url (ns-url namespace)]
+      [:a {:href url} namespace]
+      namespace)
     " - created by " [:a {:href "https://github.com/scicloj/notespace"}
                       "notespace"] ", " (java.util.Date.) "."]])
-
 
 (defn toc [notes]
   [:div
@@ -341,8 +340,9 @@
         (into [:ul]))])
 
 (defn render-notes!
-  [notes & {:keys [file]
-            :or   {file (str (File/createTempFile "rendered" ".html"))}}]
+  [namespace notes
+   & {:keys [file]
+      :or   {file (str (File/createTempFile "rendered" ".html"))}}]
   (println [:labels (map :label notes)
             :toc (toc notes)])
   (->> [:body
@@ -351,16 +351,16 @@
              cdn/header
              (into [:head]))
         [:div
-         [:h1
-          (reference)]
+         [:h1 (str namespace)]
+         (reference namespace)
          [:hr]
          (toc notes)
          [:hr]
          (->> notes
-              (map render!)
+              (map (partial render! namespace))
               (map note->hiccup))
          [:hr]
-         (reference)]]
+         (reference namespace)]]
        hiccup/html
        page/html5
        (spit file))
@@ -368,10 +368,10 @@
   file)
 
 (defn render-ns! [namespace]
-  (-> namespace
-      (@ns->notes)
-      (render-notes!
-       :file (ns->out-filename namespace))))
+  (render-notes!
+   namespace
+   (@ns->notes namespace)
+   :file (ns->out-filename namespace)))
 
 (defn render-this-ns! []
   (render-ns! *ns*))
@@ -380,7 +380,7 @@
 ;; and showing the rendered value in the browser.
 
 (defn print-note [anote]
-  (let [file (render-notes! [anote])]
+  (let [file (render-notes! *ns* [anote])]
     (browse-url file)))
 
 ;; Overriding print
