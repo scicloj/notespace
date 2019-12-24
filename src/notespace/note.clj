@@ -212,15 +212,18 @@
 
 (defkind note-test
   :test {:render-src? true
-         :value-renderer (fn [[rel & vals]]
-                           [:div
-                            (if (apply rel vals)
-                              [:p  {:style "color:green"} "PASSED"]
-                              [:p  {:style "color:red"} "FAILED"])
-                            #_(->> vals
-                                 (map (fn [v]
-                                        [:li (value->html v)]))
-                                 (into [:ul]))])})
+         :value-renderer
+         (fn [checks]
+           (->> checks
+                (map (fn [[relation & vals]]
+                       (if (apply relation vals)
+                         [:p  {:style "color:green"} "PASSED"]
+                         [:p  {:style "color:red"} "FAILED"
+                          (->> vals
+                               (map (fn [v]
+                                      [:li (value->html v)]))
+                               (into [:ul]))])))
+                (into [:div])))})
 
 (defkind note-void
   :void {:render-src?    true
