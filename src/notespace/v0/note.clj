@@ -325,8 +325,8 @@
     (if-let [url (ns-url namespace)]
       [:a {:href url} namespace]
       namespace)
-    " - created by " [:a {:href "https://github.com/scicloj/notespace.v0"}
-                      "notespace.v0"] ", " (java.util.Date.) "."]])
+    " - created by " [:a {:href "https://github.com/scicloj/notespace"}
+                      "notespace"] ", " (java.util.Date.) "."]])
 
 (defn toc [notes]
   [:div

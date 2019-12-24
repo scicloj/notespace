@@ -1,5 +1,5 @@
 (ns notespace.v0.repo
-  "Figuring out details related to the github repo holding a given notespace.v0."
+  "Figuring out details related to the github repo holding a given notespace."
   (:require [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.string :as string])
