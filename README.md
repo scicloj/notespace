@@ -7,7 +7,7 @@ Notebook experience in your Clojure namespace
 # What does it mean?
 Stay tuned -- a screencast is coming soon.
 
-[Example](https://pycloj.github.io/libpython-clj-examples/using-1.28/resources/public/basic-tests/keras-test/index.html)
+[Examples](https://pycloj.github.io/pycloj-tools)
 
 # Status
 Experimental
