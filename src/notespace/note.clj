@@ -285,7 +285,7 @@
 ;; We can render the notes of a namespace to the file.
 
 (defn label->anchor-id [label]
-  (->> label name (str "#")))
+  (->> label name))
 
 (defn label->anchor [label]
   [:a  {;; :style "border: 2px solid green;"
@@ -334,7 +334,9 @@
    (->> notes
         (filter :label)
         (map (fn [{:keys [label]}]
-               [:li [:a {:href (label->anchor-id label)}
+               [:li [:a {:href (->> label
+                                    label->anchor-id
+                                    (str "#"))}
                      (name label)]]))
         (into [:ul]))])
 
@@ -349,7 +351,8 @@
              cdn/header
              (into [:head]))
         [:div
-         (reference)
+         [:h1
+          (reference)]
          [:hr]
          (toc notes)
          [:hr]
