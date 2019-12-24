@@ -1,4 +1,4 @@
-(ns notespace.io
+(ns notespace.v0.io
   (:require [clojure.java.browse :as browse])
   (:import (java.io File)))
 

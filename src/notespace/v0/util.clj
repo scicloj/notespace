@@ -1,4 +1,4 @@
-(ns notespace.util
+(ns notespace.v0.util
   (:require [clojure.pprint :as pp]
             [com.rpl.specter :refer [MAP-VALS transform]]
             [zprint.core :as zp])

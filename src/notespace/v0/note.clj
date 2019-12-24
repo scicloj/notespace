@@ -1,10 +1,10 @@
-(ns notespace.note
+(ns notespace.v0.note
   (:require [clojure.string :as string]
             [hiccup.core :as hiccup]
             [hiccup.element :as element]
             [hiccup.page :as page]
-            [notespace.repo :as repo]
-            [notespace.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
+            [notespace.v0.repo :as repo]
+            [notespace.v0.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
             [clojure.java.io :as io]
@@ -13,7 +13,7 @@
             [clojure.java.shell :refer [sh]]
             [markdown.core :refer [md-to-html-string]]
             [clojure.walk :as walk]
-            [notespace.cdn :as cdn]
+            [notespace.v0.cdn :as cdn]
             [clojure.tools.logging :as log])
   (:import java.io.File
            clojure.lang.IDeref))
@@ -325,8 +325,8 @@
     (if-let [url (ns-url namespace)]
       [:a {:href url} namespace]
       namespace)
-    " - created by " [:a {:href "https://github.com/scicloj/notespace"}
-                      "notespace"] ", " (java.util.Date.) "."]])
+    " - created by " [:a {:href "https://github.com/scicloj/notespace.v0"}
+                      "notespace.v0"] ", " (java.util.Date.) "."]])
 
 (defn toc [notes]
   [:div

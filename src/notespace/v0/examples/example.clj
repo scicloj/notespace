@@ -1,5 +1,5 @@
-(ns notespace.examples.example
-  (:require [notespace.note :as note
+(ns notespace.v0.examples.example
+  (:require [notespace.v0.note :as note
              :refer [note note-md]]
             [clojure.pprint :as pp]
             [hiccup.core :as hiccup

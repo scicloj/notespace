@@ -1,11 +1,11 @@
-(ns notespace.table
+(ns notespace.v0.table
   "Interactive table visualisations."
   (:require [hiccup.core :as hiccup]
             [hiccup.element :as elem]
             [garden.core :as garden]
             [jsonista.core :as jsonista]
-            [notespace.cdn :as cdn]
-            [notespace.io :refer [view-html!]])
+            [notespace.v0.cdn :as cdn]
+            [notespace.v0.io :refer [view-html!]])
   (:import java.io.File
            java.util.UUID))
 
