@@ -10,4 +10,5 @@
                  [markdown-clj "1.10.0"]
                  [com.rpl/specter "1.1.3"]
                  [metosin/jsonista "0.2.5"]
-                 [garden "1.3.9"]])
+                 [garden "1.3.9"]
+                 [org.clojure/tools.logging "0.5.0"]])
