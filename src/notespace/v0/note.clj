@@ -306,7 +306,7 @@
                     (-> form
                         (form->html #(careful-zprint % 40)))]))
             (into [:div
-                   {:style "background-color:#f2f2f2; width: 100%"}
+                   {:style "background-color:#e8e3f0; width: 100%"}
                    (when label
                      (label->anchor label))])
             (vector :p)))
@@ -345,7 +345,7 @@
    & {:keys [file]
       :or   {file (str (File/createTempFile "rendered" ".html"))}}]
   (->> [:body
-        {:style "background-color:#dddddd;"}
+        {:style "background-color:#fbf8ef;"}
         (->> :prettify
              cdn/header
              (into [:head]))
