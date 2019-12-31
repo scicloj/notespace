@@ -20,14 +20,12 @@
 
 
 ;; https://stackoverflow.com/questions/58308404/configure-symbol-quote-expansion-in-clojure-zprint
+;; https://github.com/kkinnear/zprint/issues/121
 (defn careful-zprint [form width]
   (-> form
-      (zp/zprint width)
+      clojure.pprint/pprint
       with-out-str
-      (#(.replaceAll
-         ^String %
-         "\\(quote ([a-zA-Z]*)\\)" "'$1"))
-      println))
+      (zprint.core/zprint width {:parse-string? true})))
 
 (defn deref-if-ideref [v]
   (if (instance? IDeref v)
