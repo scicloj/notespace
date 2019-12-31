@@ -329,16 +329,18 @@
                       "notespace"] ", " (java.util.Date.) "."]])
 
 (defn toc [notes]
-  [:div
-   "Table of contents"
-   (->> notes
-        (filter :label)
-        (map (fn [{:keys [label]}]
-               [:li [:a {:href (->> label
-                                    label->anchor-id
-                                    (str "#"))}
-                     (name label)]]))
-        (into [:ul]))])
+  (when-let [labels (->> notes
+                         (map :label)
+                         (filter some?))]
+    [:div
+     "Table of contents"
+     (->> labels
+          (map (fn [label]
+                 [:li [:a {:href (->> label
+                                      label->anchor-id
+                                      (str "#"))}
+                       (name label)]]))
+          (into [:ul]))]))
 
 (defn render-notes!
   [namespace notes
