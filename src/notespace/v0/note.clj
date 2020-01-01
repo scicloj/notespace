@@ -331,7 +331,8 @@
 (defn toc [notes]
   (when-let [labels (->> notes
                          (map :label)
-                         (filter some?))]
+                         (filter some?)
+                         seq)]
     [:div
      "Table of contents"
      (->> labels
