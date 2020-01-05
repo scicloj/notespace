@@ -304,7 +304,7 @@
             (map (fn [form]
                    [:div
                     (-> form
-                        (form->html #(careful-zprint % 40)))]))
+                        (form->html #(careful-zprint % 80)))]))
             (into [:div
                    {:style "background-color:#e8e3f0; width: 100%"}
                    (when label
