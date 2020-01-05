@@ -3,8 +3,8 @@
   (:require [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.string :as string])
-  (:import (java.io File)))
-
+  (:import (java.io File)
+           (java.nio.file Files)))
 
 (defn working-directory []
   (io/file (System/getProperty "user.dir")))
@@ -14,7 +14,7 @@
          base-dir      (working-directory)]
     (if (some (fn [^File f]
                 (-> f (.getName) (= ".git")))
-              (file-seq base-dir))
+              (.listFiles ^File (io/file base-dir)))
       relative-path
       (when-let [parent (.getParentFile base-dir)]
         (recur (str (.getName base-dir) "/" relative-path)
