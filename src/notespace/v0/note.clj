@@ -43,7 +43,13 @@
 
 ;; We can also find a given note's index in the sequence.
 ;; To do that, we assume and make sure that any given combinnation of kind and forms appears only once.
-(def ns->kind-and-forms->idx (atom {}))
+;; Technically, we require that the string representation of the kind and forms be unique
+;; (rather than requiring that their value as data structures be unique according to Clojure's equality semantics).
+;; This way, we do distinguish lists from vectors, and do identify identical regexps.
+(defn ->kind-and-forms-str [[kind forms]]
+  (pr-str [kind (vec forms)]))
+
+(def ns->kind-and-forms-str->idx (atom {}))
 
 ;; We also map from notes' label (when it exists) to their index.
 (def ns->label->idx (atom {}))
@@ -140,11 +146,13 @@
 (defn update-notes! [namespace]
   (let [{:keys [modified notes]} (updated-notes namespace)]
     (when modified
-      (let [kind-and-forms->idx (->> notes
+      (let [kind-and-forms-str->idx (->> notes
                                      (map-indexed (fn [idx note]
                                                     {:idx            idx
-                                                     :kind-and-forms (-> note ((juxt :kind :forms)))}))
-                                     (group-by :kind-and-forms)
+                                                     :kind-and-forms-str (-> note
+                                                                             ((juxt :kind :forms))
+                                                                             ->kind-and-forms-str)}))
+                                     (group-by :kind-and-forms-str)
                                      (fmap (comp :idx only-one)))
             label->idx (->> notes
                             (map-indexed (fn [idx note]
@@ -154,7 +162,7 @@
                             (group-by :label)
                             (fmap (comp :idx only-one)))]
         (swap! ns->notes assoc namespace notes)
-        (swap! ns->kind-and-forms->idx assoc namespace kind-and-forms->idx)
+        (swap! ns->kind-and-forms-str->idx assoc namespace kind-and-forms-str->idx)
         (swap! ns->label->idx assoc namespace label->idx)))
     notes))
 
@@ -163,8 +171,8 @@
 (defn note-of-kind [kind forms]
   (update-notes! *ns*)
   (let [value (eval (cons 'do forms))]
-    (if-let [idx (get-in @ns->kind-and-forms->idx
-                         [*ns* [kind forms]])]
+    (if-let [idx (get-in @ns->kind-and-forms-str->idx
+                         [*ns* (->kind-and-forms-str [kind forms])])]
       (do (swap! ns->notes update-in [*ns* idx]
                  #(assoc % :value value))
           (get-in @ns->notes [*ns* idx]))
@@ -259,9 +267,11 @@
                      :value
                      deref-if-ideref
                      renderer)]
-    (if-let [idx      (get-in @ns->kind-and-forms->idx
+    (if-let [idx      (get-in @ns->kind-and-forms-str->idx
                               [namespace
-                              (-> anote ((juxt :kind :forms)))])]
+                              (-> anote
+                                  ((juxt :kind :forms))
+                                  ->kind-and-forms-str)])]
       (let [path [namespace idx]]
         (swap! ns->notes update-in path
                #(merge %
@@ -319,14 +329,16 @@
            (repo/path-relative-to-git-home)
            (ns->src-filename namespace))))
 
-(defn reference [namespace]
-  [:i
-   [:small
-    (if-let [url (ns-url namespace)]
-      [:a {:href url} namespace]
-      namespace)
-    " - created by " [:a {:href "https://github.com/scicloj/notespace"}
-                      "notespace"] ", " (java.util.Date.) "."]])
+(defn ->reference [namespace]
+  [:div
+   [:i
+    [:small
+     (if-let [url (ns-url namespace)]
+       [:a {:href url} namespace]
+       namespace)
+     " - created by " [:a {:href "https://github.com/scicloj/notespace"}
+                       "notespace"] ", " (java.util.Date.) "."]]
+   [:hr]])
 
 (defn toc [notes]
   (when-let [labels (->> notes
@@ -341,31 +353,60 @@
                                       label->anchor-id
                                       (str "#"))}
                        (name label)]]))
-          (into [:ul]))]))
+          (into [:ul]))
+     [:hr]]))
+
+(defn checks-freqs [notes]
+  (when-let [checks-results (->> notes
+                                 (map :value)
+                                 (filter (fn [v]
+                                           (and (vector? v)
+                                                (-> v first (#{:FAILED :PASSED})))))
+                                 (map first)
+                                 seq)]
+    (->> checks-results
+         frequencies)))
+
+(defn ->checks-summary [notes]
+  (when-let [freqs (checks-freqs notes)]
+    (log/info [::checks-summary freqs])
+    [:div
+     "Checks: "
+     (->> freqs
+          (map (fn [[k n]]
+                 (let [color (case k
+                               :PASSED "green"
+                               :FAILED "red")]
+                   [:b {:style (str "color:" color)}
+                    n " " (name k) " "])))
+          (into [:b]))
+     [:hr]]))
 
 (defn render-notes!
   [namespace notes
    & {:keys [file]
       :or   {file (str (File/createTempFile "rendered" ".html"))}}]
-  (->> [:body
-        {:style "background-color:#fbf8ef;"}
-        (->> :prettify
-             cdn/header
-             (into [:head]))
-        [:div
-         [:h1 (str namespace)]
-         (reference namespace)
-         [:hr]
-         (toc notes)
-         [:hr]
-         (->> notes
-              (map (partial render! namespace))
-              (map note->hiccup))
-         [:hr]
-         (reference namespace)]]
-       hiccup/html
-       page/html5
-       (spit file))
+  (let [checks-summary (->checks-summary notes)
+        reference (->reference namespace)]
+    (->> [:body
+          {:style "background-color:#fbf8ef;"}
+          (->> :prettify
+               cdn/header
+               (into [:head]))
+          [:div
+           [:h1 (str namespace)]
+           reference
+           checks-summary
+           (toc notes)
+           (->> notes
+                (map (partial render! namespace))
+                (map note->hiccup))
+           [:hr]
+           checks-summary
+           reference]]
+         hiccup/html
+         page/html5
+         (spit file)))
   (log/info [:wrote file])
   file)
 
