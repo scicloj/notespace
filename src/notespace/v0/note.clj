@@ -176,7 +176,7 @@
       (do (swap! ns->notes update-in [*ns* idx]
                  #(assoc % :value value))
           (get-in @ns->notes [*ns* idx]))
-      (do (log/warn [:note-not-found-in-ns :did-you-save?])
+      (do (log/warn [::note-not-found-in-ns :did-you-save?])
           (assoc (kind-and-forms->Note kind forms)
                  :value value)))))
 
@@ -356,7 +356,7 @@
           (into [:ul]))
      [:hr]]))
 
-(defn checks-freqs [notes]
+(defn ->checks-freqs [notes]
   (when-let [checks-results (->> notes
                                  (map :value)
                                  (filter (fn [v]
@@ -367,12 +367,11 @@
     (->> checks-results
          frequencies)))
 
-(defn ->checks-summary [notes]
-  (when-let [freqs (checks-freqs notes)]
-    (log/info [::checks-summary freqs])
+(defn ->checks-summary [checks-freqs]
+  (when checks-freqs
     [:div
      "Checks: "
-     (->> freqs
+     (->> checks-freqs
           (map (fn [[k n]]
                  (let [color (case k
                                :PASSED "green"
@@ -386,7 +385,8 @@
   [namespace notes
    & {:keys [file]
       :or   {file (str (File/createTempFile "rendered" ".html"))}}]
-  (let [checks-summary (->checks-summary notes)
+  (let [checks-freqs (->checks-freqs notes)
+        checks-summary (->checks-summary checks-freqs)
         reference (->reference namespace)]
     (->> [:body
           {:style "background-color:#fbf8ef;"}
@@ -406,8 +406,10 @@
            reference]]
          hiccup/html
          page/html5
-         (spit file)))
-  (log/info [:wrote file])
+         (spit file))
+    (log/info [::wrote file])
+    (when checks-freqs
+      (log/info [::checks checks-freqs])))
   file)
 
 (defn render-ns! [namespace]
