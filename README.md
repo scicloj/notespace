@@ -16,7 +16,7 @@ Experimental
 
 * Use any Clojure namespace, in any Clojure editor, as a notebook
   * [x] editing is done in your beloved editor
-  * [x] rendering is done at the browser
+  * [x] rendering s shown at the browser
   * [ ] typical workflow has almost zero latency in namespace evaluation
 * Live reload experience
   * [ ] re-rendering of relevant notebook part(s)
