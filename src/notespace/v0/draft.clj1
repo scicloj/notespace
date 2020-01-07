@@ -1,9 +1,0 @@
-
-;;;;;;;;;;;;;;;;
-
-(defn starts-with? [x s]
-  (and (sequential? s)
-       (-> s first (= x))))
-
-(defn note-expression? [expr]
-  (starts-with? 'note expr))

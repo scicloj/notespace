@@ -1,10 +1,10 @@
-(ns notespace.v0.note
+(ns notespace.v1.note
   (:require [clojure.string :as string]
             [hiccup.core :as hiccup]
             [hiccup.element :as element]
             [hiccup.page :as page]
-            [notespace.v0.repo :as repo]
-            [notespace.v0.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
+            [notespace.v1.repo :as repo]
+            [notespace.v1.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
             [clojure.java.io :as io]
@@ -13,7 +13,7 @@
             [clojure.java.shell :refer [sh]]
             [markdown.core :refer [md-to-html-string]]
             [clojure.walk :as walk]
-            [notespace.v0.cdn :as cdn]
+            [notespace.v1.cdn :as cdn]
             [cambium.core :as log])
   (:import java.io.File
            clojure.lang.IDeref))
