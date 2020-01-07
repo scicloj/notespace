@@ -14,7 +14,7 @@
             [markdown.core :refer [md-to-html-string]]
             [clojure.walk :as walk]
             [notespace.v0.cdn :as cdn]
-            [clojure.tools.logging :as log])
+            [cambium.core :as log])
   (:import java.io.File
            clojure.lang.IDeref))
 
