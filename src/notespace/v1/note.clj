@@ -4,94 +4,53 @@
             [hiccup.element :as element]
             [hiccup.page :as page]
             [notespace.v1.repo :as repo]
-            [notespace.v1.util :refer [deref-if-ideref careful-zprint fmap only-one pprint-and-return]]
+            [notespace.v1.reader :as reader]
+            [notespace.v1.util :refer [deref-if-ideref careful-zprint fmap only-one first-when-one pprint-and-return]]
+            [notespace.v1.source :refer [ns->source-filename source-file-modified?]]
+            [notespace.v1.hiccup :refer [code->hiccup form->hiccup value->hiccup md->hiccup]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
             [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
             [zprint.core :as zp]
             [clojure.java.shell :refer [sh]]
-            [markdown.core :refer [md-to-html-string]]
             [clojure.walk :as walk]
             [notespace.v1.cdn :as cdn]
             [cambium.core :as log])
   (:import java.io.File
            clojure.lang.IDeref))
 
-(def ns->config (atom {}))
-
-(defn config-this-ns! [conf]
-  (swap! ns->config assoc *ns* conf))
-
-;; A note has a kind, possibly a label, a collection of forms, a return value, a rendered result, and a status.
-(defrecord Note [kind label forms value rendered status])
+;; A note has a kind, possibly a label, a collection of forms, the reader metadata, a return value, a rendered result, and a status.
+(defrecord Note [kind label forms metadata value rendered status])
 
 ;; A note's kind controls various parameters of its evaluation and rendering.
 (def kind->behaviour
   (atom {}))
 
-;; A note expression begins with one of several note symbols,
+;; A note form begins with one of several note symbols,
 ;; that have corresponding note kinds.
-;; E.g., en expression of the form (note-md ...) is a note expression
+;; E.g., a form of the form (note-md ...) is a note form
 ;; of kind :md.
 (def note-symbol->kind
   (atom {}))
 
-
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
 
-;; We can also find a given note's index in the sequence.
-;; To do that, we assume and make sure that any given combinnation of kind and forms appears only once.
-;; Technically, we require that the string representation of the kind and forms be unique
-;; (rather than requiring that their value as data structures be unique according to Clojure's equality semantics).
-;; This way, we do distinguish lists from vectors, and do identify identical regexps.
-(defn ->kind-and-forms-str [[kind forms]]
-  (pr-str [kind (vec forms)]))
+;; We also keep, for every line of code,
+;; the index of the corresponding note in the sequence of notes,
+;; if that line happens to lie inside a note.
+(def ns->line->index (atom {}))
 
-(def ns->kind-and-forms-str->idx (atom {}))
+;; We also keep the indices of every note's label appearances in the sequence.
+(def ns->label->indices (atom {}))
 
-;; We also map from notes' label (when it exists) to their index.
-(def ns->label->idx (atom {}))
-
-;; We also keep track of changes in source files corresponding to namespaces.
-(def ns->last-modification (atom {}))
-
-(defn src-or-test [namespace]
-  (if (-> namespace
-          str
-          (string/split #"-")
-          last
-          (= "test"))
-    "test"
-    "src"))
-
-(defn ns->src-filename [namespace]
-  (let [base-path (-> namespace
-                      (@ns->config)
-                      :base-path
-                      (or (str (src-or-test namespace)
-                               "/")))]
-    (str base-path
-         (-> namespace
-             str
-             (string/replace "." "/")
-             (string/replace "-" "_"))
-         ".clj")))
-
-(defn src-file-modified? [namespace]
-  (let [previous-modifiction-time (@ns->last-modification namespace)
-        modification-time (-> namespace ns->src-filename io/file (.lastModified))]
-    (swap! ns->last-modification assoc namespace modification-time)
-    (not= previous-modifiction-time modification-time)))
-
-;; We can collect all expressions in a namespace.
-(defn ns-expressions [namespace]
+;; We can collect all toplevel forms in a namespace,
+;; together with the reader metadata.
+(defn ->ns-topforms-with-metadata [namespace]
   (->> namespace
-       ns->src-filename
-       slurp
-       (format "[%s]")
-       read-string))
+       ns->source-filename
+       reader/file->topforms-with-metadata))
 
 ;; When the first form of a note is a keyword,
 ;; then it would be considered the form's label
@@ -99,117 +58,110 @@
   (when (keyword? first-form)
     first-form))
 
-;; Each note expression can be converted to a note.
-(defn kind-and-forms->Note [kind forms]
+;; Each note toplevel form can be converted to a Note.
+(defn kind-forms-and-metadata->Note [kind forms metadata]
   (->Note kind
           (forms->label forms)
           (vec forms)
+          metadata
           nil
           nil
           {}))
 
-(defn expr->Note
-  ([expr]
-   (when (sequential? expr)
-     (when-let [kind (-> expr first (@note-symbol->kind))]
-       (let [[& forms] (rest expr)]
-         (kind-and-forms->Note kind forms))))))
+(defn topform-with-metadata->Note
+  ([topform-with-metadata]
+   (when (sequential? topform-with-metadata)
+     (when-let [kind (-> topform-with-metadata first (@note-symbol->kind))]
+       (let [[& forms] (rest topform-with-metadata)]
+         (kind-forms-and-metadata->Note
+          kind
+          forms
+          (meta topform-with-metadata)))))))
 
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
   (->> namespace
-       ns-expressions
-       (map expr->Note)
+       ->ns-topforms-with-metadata
+       (map topform-with-metadata->Note)
        (filter some?)))
 
 ;; We can get the updated notes of a namespace.
 ;; We try not to update things that have not changed.
-(defn updated-notes [namespace]
+(defn updated-notes-seq [namespace]
   (let [old-notes (@ns->notes namespace)
-        modified (src-file-modified? namespace)]
+        modified (source-file-modified? namespace)]
     {:modified modified
-     :notes (if (not modified)
-              old-notes
-              (let [new-notes (ns-notes namespace)]
-                (mapv (fn [old-note new-note]
-                        (let [change (->> [old-note new-note]
-                                          (map (juxt :kind :forms))
-                                          (apply =)
-                                          not)]
-                         (if change
-                           (assoc new-note :status :changed)
-                           old-note)))
-                     (concat old-notes (repeat nil))
-                     new-notes)))}))
+     :notes    (if (not modified)
+                 old-notes
+                 (let [new-notes (ns-notes namespace)]
+                   (mapv (fn [old-note new-note]
+                           (let [change (and (->> [old-note new-note]
+                                                  (map (comp :source :metadata))
+                                                  (apply =)
+                                                  not)
+                                             (->> [old-note new-note]
+                                                  (map (juxt :kind :forms))
+                                                  (apply =)
+                                                  not))]
+                             (if change
+                               (assoc new-note :status :changed)
+                               old-note)))
+                         (concat old-notes (repeat nil))
+                         new-notes)))}))
 
 ;; We can update our memory regarding the notes in the namespace.
-(defn update-notes! [namespace]
-  (let [{:keys [modified notes]} (updated-notes namespace)]
+(defn update-notes-seq! [namespace]
+  (let [{:keys [modified notes]} (updated-notes-seq namespace)]
     (when modified
-      (let [kind-and-forms-str->idx (->> notes
-                                     (map-indexed (fn [idx note]
-                                                    {:idx            idx
-                                                     :kind-and-forms-str (-> note
-                                                                             ((juxt :kind :forms))
-                                                                             ->kind-and-forms-str)}))
-                                     (group-by :kind-and-forms-str)
-                                     (fmap (comp :idx only-one)))
-            label->idx (->> notes
-                            (map-indexed (fn [idx note]
-                                           {:idx            idx
-                                            :label (:label note)}))
-                            (filter :label)
-                            (group-by :label)
-                            (fmap (comp :idx only-one)))]
+      (let [line->index (->> notes
+                             (map-indexed (fn [idx {:keys [metadata]}]
+                                            {:idx  idx
+                                             :lines (range (:line metadata)
+                                                           (-> metadata :end-line inc))}))
+                             (mapcat (fn [{:keys [idx lines]}]
+                                       (->> lines
+                                            (map (fn [line]
+                                                   {:idx idx
+                                                    :line line})))))
+                             (group-by :line)
+                             (fmap (comp :idx only-one)))
+            label->indices (->> notes
+                                (map-indexed (fn [idx note]
+                                               {:idx   idx
+                                                :label (:label note)}))
+                                (filter :label)
+                                (group-by :label)
+                                (fmap (partial mapv :idx)))]
         (swap! ns->notes assoc namespace notes)
-        (swap! ns->kind-and-forms-str->idx assoc namespace kind-and-forms-str->idx)
-        (swap! ns->label->idx assoc namespace label->idx)))
-    notes))
-
-;; When a note of a certain kind is evaluated,
-;; itw forms are evaluated, and the catalogue of notes is updated.
-(defn note-of-kind [kind forms]
-  (update-notes! *ns*)
-  (let [value (eval (cons 'do forms))]
-    (if-let [idx (get-in @ns->kind-and-forms-str->idx
-                         [*ns* (->kind-and-forms-str [kind forms])])]
-      (do (swap! ns->notes update-in [*ns* idx]
-                 #(assoc % :value value))
-          (get-in @ns->notes [*ns* idx]))
-      (do (log/warn [::note-not-found-in-ns :did-you-save?])
-          (assoc (kind-and-forms->Note kind forms)
-                 :value value)))))
-
-
-;; A specific note kind is defined by:
-;; - defining their behaviour
-;; - connecting a dedicated note-symbol
-;; - assigning to that symbol a macro that wraps note-of-kind
+        (swap! ns->line->index assoc namespace line->index)
+        (swap! ns->label->indices assoc namespace label->indices)))
+    (->> notes
+         (mapv (fn [anote]
+                 (-> anote
+                     :metadata
+                     :source
+                     read-string
+                     eval))))))
 
 (defmacro defkind [note-symbol kind behaviour]
   (swap! kind->behaviour assoc kind (eval behaviour))
   (swap! note-symbol->kind assoc note-symbol kind)
   `(defmacro ~note-symbol [& forms#]
-     (list 'note-of-kind ~kind (list 'quote forms#))))
+     nil))
 
 ;; Now let us define several built-in kinds:
 
-(declare value->html)
 (defkind note
   :code {:render-src?    true
-         :value-renderer #'value->html})
-
-(defn md->html [md]
-  [:div
-   (md-to-html-string md)])
+         :value-renderer #'value->hiccup})
 
 (defkind note-md
   :md   {:render-src?    false
-         :value-renderer md->html})
+         :value-renderer md->hiccup})
 
 (defkind note-as-md
   :as-md   {:render-src?    true
-            :value-renderer md->html})
+            :value-renderer md->hiccup})
 
 (defkind note-hiccup
   :hiccup {:render-src? false
@@ -230,7 +182,7 @@
                          [:p  {:style "color:red"} "FAILED"
                           (->> vals
                                (map (fn [v]
-                                      [:li (value->html v)]))
+                                      [:li (value->hiccup v)]))
                                (into [:ul]))])))
                 (into [:div])))})
 
@@ -238,47 +190,48 @@
   :void {:render-src?    true
          :value-renderer (constantly nil)})
 
+;; We may need support various update transformations for notes.
+;; If it has reader metadata, then the catalogue of notes is updated
+;; with the resulting note-with-value.
+(defn update-note! [namespace transf anote]
+  (let [new-note (transf anote)]
+    (when-let [m (:metadata anote)]
+      (swap! ns->notes
+             assoc
+             (-> m
+                 :line
+                 (@ns->line->index))
+             new-note))
+    new-note))
+
+;; A note is computed by evaluating its form to compute its value.
+(defn compute [anote]
+  (assoc anote
+         :value (->> anote
+                     :forms
+                     (cons 'do)
+                     eval)))
 
 ;; A note is rendered in the following way:
-;; If its value is an IDeref, then the it is dereferenced.
+;; If its value is an IDeref, then it is dereferenced.
 ;; Otherwise, its value is taken as-is.
 ;; The rendered value is saved.
-
-
-(defn form->html [form print-fn]
-  [:code {:class "prettyprint lang-clj"}
-   (-> form
-       print-fn
-       with-out-str
-       (string/replace #"\n" "</br>")
-       (string/replace #" " "&nbsp;"))])
-
-(defn value->html [v]
-  (cond (fn? v) ""
-        (sequential? v) (case (first v)
-                          :hiccup (hiccup/html v)
-                          (form->html v pp/pprint))
-        :else   (form->html v pp/pprint)))
-
-(defn render! [namepace anote]
-  (log/info [::rendering (select-keys anote [:kind :forms])])
+(defn render [anote]
   (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (-> anote
                      :value
                      deref-if-ideref
                      renderer)]
-    (if-let [idx      (get-in @ns->kind-and-forms-str->idx
-                              [namespace
-                              (-> anote
-                                  ((juxt :kind :forms))
-                                  ->kind-and-forms-str)])]
-      (let [path [namespace idx]]
-        (swap! ns->notes update-in path
-               #(merge %
-                       {:rendered rendered
-                        :status   :fresh}))
-        (get-in @ns->notes path))
-      (assoc anote :rendered rendered))))
+    (assoc anote
+           :rendered rendered)))
+
+(defn interactive-render [line]
+  (update-notes-seq! *ns*)
+  (some->> line
+           ((@ns->line->index *ns*))
+           ((@ns->notes *ns*))
+           (interactive-update-note! *ns* (comp render compute))
+           prn))
 
 ;; Any namespace has a corresponding output html file.
 (defn ns->out-filename [namespace]
@@ -294,7 +247,6 @@
     filename))
 
 ;; We can render the notes of a namespace to the file.
-
 (defn label->anchor-id [label]
   (->> label name))
 
@@ -305,29 +257,32 @@
 
 (defn note->hiccup [{:keys [forms label rendered]
                      :as anote}]
-  (let [forms-without-label (if label
-                              (rest forms)
-                              forms)]
-    [:p
-     (when (-> anote :kind (@kind->behaviour) :render-src?)
-       (->> forms-without-label
-            (map (fn [form]
-                   [:div
-                    (-> form
-                        (form->html #(careful-zprint % 80)))]))
-            (into [:div
-                   {:style "background-color:#e8e3f0; width: 100%"}
-                   (when label
-                     (label->anchor label))])
-            (vector :p)))
-     (:rendered anote)]))
+  [:p
+   (when (-> anote :kind (@kind->behaviour) :render-src?)
+     (->> (or [(some-> anote
+                       :metadata
+                       :source
+                       code->hiccup)]
+              (->> (if label
+                     (rest forms)
+                     forms)
+                   (map (fn [form]
+                          [:div
+                           (-> form
+                               (form->hiccup #(careful-zprint % 80)))]))))
+          (into [:div
+                 {:style "background-color:#e8e3f0; width: 100%"}
+                 (when label
+                   (label->anchor label))])
+          (vector :p)))
+   rendered])
 
 (defn ns-url [namespace]
   (some-> (repo/repo-url)
           (str
            "/tree/master/"
            (repo/path-relative-to-git-home)
-           (ns->src-filename namespace))))
+           (ns->source-filename namespace))))
 
 (defn ->reference [namespace]
   [:div
@@ -399,8 +354,9 @@
            checks-summary
            (toc notes)
            (->> notes
-                (map (partial render! namespace))
-                (map note->hiccup))
+                (map (comp note->hiccup
+                           (partial update-note!
+                                    namespace (comp render compute)))))
            [:hr]
            checks-summary
            reference]]
@@ -413,12 +369,14 @@
   file)
 
 (defn render-ns! [namespace]
+  (update-notes-seq! namespace)
   (render-notes!
    namespace
    (@ns->notes namespace)
    :file (ns->out-filename namespace)))
 
 (defn render-this-ns! []
+  (update-notes-seq! *ns*)
   (render-ns! *ns*))
 
 ;; Printing a note results in rendering it,
@@ -439,5 +397,7 @@
 ;; Why is this necessary?
 (defmethod print-dup Note [anote _]
   (print-note anote))
+
+
 
 

@@ -18,6 +18,10 @@
     (throw (ex-info "Expected only one element."
                     {:elements elements}))))
 
+(defn first-when-one
+  [elements]
+  (when (-> elements count (= 1))
+    (first elements)))
 
 ;; https://stackoverflow.com/questions/58308404/configure-symbol-quote-expansion-in-clojure-zprint
 ;; https://github.com/kkinnear/zprint/issues/121
