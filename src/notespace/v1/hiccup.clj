@@ -13,6 +13,9 @@
 (defn code->hiccup [code]
   [:code {:class "prettyprint lang-clj"}
    (-> code
+       (string/replace #"\n" " ")
+       (string/replace #"^[(]([a-z-]*)" "")
+       (string/replace #"[)]$" "")
        (zprint/zprint 40 {:parse-string? true})
        with-out-str
        htmlify-whitespace)])
