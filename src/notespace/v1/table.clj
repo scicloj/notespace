@@ -64,9 +64,8 @@
 (defn table-hiccup->datatables-html
   ([table-hiccup] (table-hiccup->datatables-html {} table-hiccup))
   ([datatables-options table-hiccup]
-   (table-hiccup->datatables-html true datatables-options table-hiccup))
+   (table-hiccup->datatables-html {} datatables-options table-hiccup))
   ([{:keys [cdn?]} datatables-options table-hiccup]
-   (println cdn?)
    (let [id (str (UUID/randomUUID))]
      (->> (str (when cdn?
                  (->> :datatables
@@ -79,23 +78,17 @@
                     elem/javascript-tag
                     hiccup/html))))))
 
+(defn ->datatable [row-maps]
+  (->> row-maps
+       notespace.v1.table/row-maps->table-hiccup
+       (notespace.v1.table/table-hiccup->datatables-html {:cdn? true}
+                                                         {})))
 
 (comment
   (->> (for [i (range 99)]
          {:x i
           :y (if (even? i) "a" "b")
           :z (rand)})
-       row-maps->table-hiccup
-       (table-hiccup->datatables-html {:cdn? true}
-                                      {})
+       ->datatable
        view-html!))
 
-
-(notespace.v1.note/note-as-hiccup
- (->> (for [i (range 99)]
-        {:x i
-         :y (if (even? i) "a" "b")
-         :z (rand)})
-      notespace.v1.table/row-maps->table-hiccup
-      (notespace.v1.table/table-hiccup->datatables-html {:cdn? true}
-                                                        {})))
