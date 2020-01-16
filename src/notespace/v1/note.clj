@@ -230,7 +230,7 @@
   (some->> line
            ((@ns->line->index *ns*))
            ((@ns->notes *ns*))
-           (interactive-update-note! *ns* (comp render compute))
+           (update-note! *ns* (comp render compute))
            prn))
 
 ;; Any namespace has a corresponding output html file.
