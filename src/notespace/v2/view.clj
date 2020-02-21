@@ -37,6 +37,11 @@
    (-> form
        print-fn
        with-out-str
+       (string/split #"\n")
+       (->> (filter (complement (partial re-find #"nRepl-session")))
+            (string/join "\n")
+            (#(do (pp/pprint [:dbg %])
+                  %)))
        htmlify-whitespace)])
 
 (defn value->hiccup [v]
@@ -63,7 +68,7 @@
 (defn note->hiccup [{:keys [forms label rendered kind]
                      :as   anote}]
   [:div
-   [:br]
+   [:p]
    (when label
      (label->anchor label))
    (when (-> kind (@kind->behaviour) :render-src?)
@@ -81,7 +86,8 @@
                                (form->hiccup #(careful-zprint % 80)))]))))
           (into [:div
                  {:style "background-color:#e8e3f0; width: 100%"}])))
-   rendered])
+   rendered
+   [:br]])
 
 
 (defn ->reference [namespace]
