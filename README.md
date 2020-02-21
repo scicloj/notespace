@@ -53,8 +53,7 @@ Creating a separate alternative would be the least desired outcome of the curren
 
 ## Usage
 
-Assume that you have some Clojure namespace.
-
+See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [rendered html](./resources/public/notespace/v2/tutorial_test/index.html).
 
 ## Known issues
 * Links to external resources (e.g., images in separate files) will appear at the rendered static html, but are currently invisible at the live-reload view.
