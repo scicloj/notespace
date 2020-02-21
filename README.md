@@ -16,7 +16,7 @@ Experimental
 
 ## Usage
 
-See this [example namespace](./test/notespace/v2/tutorial-test.clj) and its [rendered html](./resources/public/notespace/v2/tutorial_test/index.html).
+See this [example namespace](./test/notespace/v2/tutorial-test.clj) and its [rendered html](https://scicloj.github.io/notespace/resources/public/notespace/v2/tutorial_test/index.html).
 
 ## Goals
 
