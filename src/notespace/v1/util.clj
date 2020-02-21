@@ -35,9 +35,3 @@
   (if (instance? IDeref v)
     @v
     v))
-
-(defn check [pred & args]
-  [(if (apply pred args)
-    :PASSED
-    :FAILED)
-   (last args)])

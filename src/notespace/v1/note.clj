@@ -1,31 +1,24 @@
 (ns notespace.v1.note
   (:require [clojure.string :as string]
             [hiccup.core :as hiccup]
-            [hiccup.element :as element]
             [hiccup.page :as page]
-            [notespace.v1.repo :as repo]
             [notespace.v1.reader :as reader]
-            [notespace.v1.util :refer [deref-if-ideref careful-zprint fmap only-one first-when-one pprint-and-return]]
-            [notespace.v1.source :refer [ns->source-filename source-file-modified?]]
-            [notespace.v1.hiccup :refer [code->hiccup form->hiccup value->hiccup md->hiccup]]
+            [notespace.v1.util :refer [fmap only-one]]
+            [notespace.v1.check :as check]
+            [notespace.v1.view :as view]
+            [notespace.v1.behaviours :refer [kind->behaviour]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
-            [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
-            [zprint.core :as zp]
-            [clojure.java.shell :refer [sh]]
-            [clojure.walk :as walk]
             [notespace.v1.cdn :as cdn]
-            [cambium.core :as log])
+            [notespace.v1.js :as js]
+            [cambium.core :as log]
+            [notespace.v1.source :as source])
   (:import java.io.File
            clojure.lang.IDeref))
 
 ;; A note has a kind, possibly a label, a collection of forms, the reader metadata, a return value, a rendered result, and a status.
 (defrecord Note [kind label forms metadata value rendered status])
-
-;; A note's kind controls various parameters of its evaluation and rendering.
-(def kind->behaviour
-  (atom {}))
 
 ;; A note form begins with one of several note symbols,
 ;; that have corresponding note kinds.
@@ -49,7 +42,7 @@
 ;; together with the reader metadata.
 (defn ->ns-topforms-with-metadata [namespace]
   (->> namespace
-       ns->source-filename
+       source/ns->source-filename
        reader/file->topforms-with-metadata))
 
 ;; When the first form of a note is a keyword,
@@ -87,9 +80,10 @@
 
 ;; We can get the updated notes of a namespace.
 ;; We try not to update things that have not changed.
-(defn updated-notes-seq [namespace]
+(defn read-notes-seq [namespace]
   (let [old-notes (@ns->notes namespace)
-        modified (source-file-modified? namespace)]
+        modified  (or (not old-notes)
+                      (source/source-file-modified? namespace))]
     {:modified modified
      :notes    (if (not modified)
                  old-notes
@@ -110,8 +104,8 @@
                          new-notes)))}))
 
 ;; We can update our memory regarding the notes in the namespace.
-(defn update-notes-seq! [namespace]
-  (let [{:keys [modified notes]} (updated-notes-seq namespace)]
+(defn read-notes-seq! [namespace]
+  (let [{:keys [modified notes]} (read-notes-seq namespace)]
     (when modified
       (let [line->index (->> notes
                              (map-indexed (fn [idx {:keys [metadata]}]
@@ -150,18 +144,17 @@
      nil))
 
 ;; Now let us define several built-in kinds:
-
 (defkind note
   :code {:render-src?    true
-         :value-renderer #'value->hiccup})
+         :value-renderer #'view/value->hiccup})
 
 (defkind note-md
   :md   {:render-src?    false
-         :value-renderer md->hiccup})
+         :value-renderer view/md->hiccup})
 
 (defkind note-as-md
   :as-md   {:render-src?    true
-            :value-renderer md->hiccup})
+            :value-renderer view/md->hiccup})
 
 (defkind note-hiccup
   :hiccup {:render-src? false
@@ -170,21 +163,6 @@
 (defkind note-as-hiccup
   :as-hiccup {:render-src?    true
               :value-renderer (fn [h] (hiccup/html h))})
-
-(defkind note-test
-  :test {:render-src? true
-         :value-renderer
-         (fn [checks]
-           (->> checks
-                (map (fn [[relation & vals]]
-                       (if (apply relation vals)
-                         [:p  {:style "color:green"} "PASSED"]
-                         [:p  {:style "color:red"} "FAILED"
-                          (->> vals
-                               (map (fn [v]
-                                      [:li (value->hiccup v)]))
-                               (into [:ul]))])))
-                (into [:div])))})
 
 (defkind note-void
   :void {:render-src?    true
@@ -197,41 +175,28 @@
   (let [new-note (transf anote)]
     (when-let [m (:metadata anote)]
       (swap! ns->notes
-             assoc
-             (-> m
-                 :line
-                 (@ns->line->index))
+             assoc-in
+             [namespace
+              (-> m
+                  :line
+                  ((@ns->line->index namespace)))]
              new-note))
     new-note))
 
 ;; A note is computed by evaluating its form to compute its value.
-(defn compute [anote]
-  (assoc anote
-         :value (->> anote
-                     :forms
-                     (cons 'do)
-                     eval)))
-
-;; A note is rendered in the following way:
-;; If its value is an IDeref, then it is dereferenced.
-;; Otherwise, its value is taken as-is.
-;; The rendered value is saved.
-(defn render [anote]
-  (let [renderer (-> anote :kind (@kind->behaviour) :value-renderer)
-        rendered (-> anote
-                     :value
-                     deref-if-ideref
-                     renderer)]
+(defn compute-note [anote]
+  (let [value (->> anote
+                   :forms
+                   (cons 'do)
+                   eval)
+        renderer (-> anote :kind (@kind->behaviour) :value-renderer)
+        rendered (renderer value)]
     (assoc anote
+           :value value
            :rendered rendered)))
 
-(defn interactive-render [line]
-  (update-notes-seq! *ns*)
-  (some->> line
-           ((@ns->line->index *ns*))
-           ((@ns->notes *ns*))
-           (update-note! *ns* (comp render compute))
-           prn))
+(defn compute-note! [namespace anote]
+  (update-note! namespace compute-note anote))
 
 ;; Any namespace has a corresponding output html file.
 (defn ns->out-filename [namespace]
@@ -246,158 +211,59 @@
       (.mkdirs dir))
     filename))
 
-;; We can render the notes of a namespace to the file.
-(defn label->anchor-id [label]
-  (->> label name))
+(defn render-to-file! [render-fn path]
+  (let [path-to-use (or path (str (File/createTempFile "rendered" ".html")))
+        html (page/html5 (render-fn))]
+    (spit path-to-use html)
+  (log/info [::wrote path-to-use])
+  html))
 
-(defn label->anchor [label]
-  [:a  {;; :style "border: 2px solid green;"
-        :id (label->anchor-id label)}
-   (format "~~~~%s~~~~" (name label))])
+(defn render-notes! [namespace notes & {:keys [file]}]
+  (render-to-file! (partial view/notes->hiccup namespace notes)
+                   file))
 
-(defn note->hiccup [{:keys [forms label rendered]
-                     :as anote}]
-  [:p
-   (when (-> anote :kind (@kind->behaviour) :render-src?)
-     (->> (or [(some-> anote
-                       :metadata
-                       :source
-                       code->hiccup)]
-              (->> (if label
-                     (rest forms)
-                     forms)
-                   (map (fn [form]
-                          [:div
-                           (-> form
-                               (form->hiccup #(careful-zprint % 80)))]))))
-          (into [:div
-                 {:style "background-color:#e8e3f0; width: 100%"}
-                 (when label
-                   (label->anchor label))])
-          (vector :p)))
-   rendered])
+(defn render-ns [namespace]
+  (hiccup.core/html
+   [:html
+    {:style "background-color:#fbf8ef;"}
+    (into [:head
+           (js/mirador-setup)]
+          (cdn/header :prettify))
+    [:body
+     (if (not namespace)
+       "Waiting for a first notespace to appear ..."
+       (do (read-notes-seq! namespace)
+           (view/notes->hiccup
+            namespace
+            (@ns->notes namespace))))]]))
 
-(defn ns-url [namespace]
-  (some-> (repo/repo-url)
-          (str
-           "/tree/master/"
-           (repo/path-relative-to-git-home)
-           (ns->source-filename namespace))))
-
-(defn ->reference [namespace]
-  [:div
-   [:i
-    [:small
-     (if-let [url (ns-url namespace)]
-       [:a {:href url} namespace]
-       namespace)
-     " - created by " [:a {:href "https://github.com/scicloj/notespace"}
-                       "notespace"] ", " (java.util.Date.) "."]]
-   [:hr]])
-
-(defn toc [notes]
-  (when-let [labels (->> notes
-                         (map :label)
-                         (filter some?)
-                         seq)]
-    [:div
-     "Table of contents"
-     (->> labels
-          (map (fn [label]
-                 [:li [:a {:href (->> label
-                                      label->anchor-id
-                                      (str "#"))}
-                       (name label)]]))
-          (into [:ul]))
-     [:hr]]))
-
-(defn ->checks-freqs [notes]
-  (when-let [checks-results (->> notes
-                                 (map :value)
-                                 (filter (fn [v]
-                                           (and (vector? v)
-                                                (-> v first (#{:FAILED :PASSED})))))
-                                 (map first)
-                                 seq)]
-    (->> checks-results
-         frequencies)))
-
-(defn ->checks-summary [checks-freqs]
-  (when checks-freqs
-    [:div
-     "Checks: "
-     (->> checks-freqs
-          (map (fn [[k n]]
-                 (let [color (case k
-                               :PASSED "green"
-                               :FAILED "red")]
-                   [:b {:style (str "color:" color)}
-                    n " " (name k) " "])))
-          (into [:b]))
-     [:hr]]))
-
-(defn render-notes!
-  [namespace notes
-   & {:keys [file]
-      :or   {file (str (File/createTempFile "rendered" ".html"))}}]
-  (let [checks-freqs (->checks-freqs notes)
-        checks-summary (->checks-summary checks-freqs)
-        reference (->reference namespace)]
-    (->> [:body
-          {:style "background-color:#fbf8ef;"}
-          (->> :prettify
-               cdn/header
-               (into [:head]))
-          [:div
-           [:h1 (str namespace)]
-           reference
-           checks-summary
-           (toc notes)
-           (->> notes
-                (map (comp note->hiccup
-                           (partial update-note!
-                                    namespace (comp render compute)))))
-           [:hr]
-           checks-summary
-           reference]]
-         hiccup/html
-         page/html5
-         (spit file))
-    (log/info [::wrote file])
-    (when checks-freqs
-      (log/info [::checks checks-freqs])))
-  file)
+(def last-ns-rendered
+  (atom nil))
 
 (defn render-ns! [namespace]
-  (update-notes-seq! namespace)
-  (render-notes!
-   namespace
-   (@ns->notes namespace)
-   :file (ns->out-filename namespace)))
+  (let [html (render-to-file! (partial render-ns namespace)
+                              (ns->out-filename namespace))]
+    (reset! last-ns-rendered namespace)
+    [:rendered namespace]))
+
+(defn render-this-ns []
+  (render-ns *ns*))
 
 (defn render-this-ns! []
-  (update-notes-seq! *ns*)
   (render-ns! *ns*))
 
-;; Printing a note results in rendering it,
-;; and showing the rendered value in the browser.
+(defn compute-note-at-line! [line]
+  (read-notes-seq! *ns*)
+  (some->> line
+           ((@ns->line->index *ns*))
+           ((@ns->notes *ns*))
+           (compute-note! *ns*))
+  (render-this-ns!))
 
-(defn print-note [anote]
-  (let [file (render-notes! *ns* [anote])]
-    (browse-url file)))
-
-;; Overriding print
-(defmethod print-method Note [anote _]
-  (print-note anote))
-
-;; Overriding pprint
-(defmethod pp/simple-dispatch Note [anote]
-  (print-note anote))
-
-;; Why is this necessary?
-(defmethod print-dup Note [anote _]
-  (print-note anote))
-
-
-
+(defn compute-this-notespace! []
+  (read-notes-seq! *ns*)
+  (->> *ns*
+       (@ns->notes)
+       (run! (partial compute-note! *ns*)))
+  (render-this-ns!))
 

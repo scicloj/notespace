@@ -2,7 +2,8 @@
   "Figuring out details related to the github repo holding a given notespace."
   (:require [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [notespace.v1.source :as source])
   (:import (java.io File)
            (java.nio.file Files)))
 
@@ -32,3 +33,9 @@
           (string/replace #"git@github.com:|.git" "")
           (->> (str "https://github.com/"))))
 
+(defn ns-url [namespace]
+  (some-> (repo-url)
+          (str
+           "/tree/master/"
+           (path-relative-to-git-home)
+           (source/ns->source-filename namespace))))

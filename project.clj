@@ -14,4 +14,9 @@
                  [cambium/cambium.core         "0.9.3"]
                  [cambium/cambium.codec-simple "0.9.3"]
                  [cambium/cambium.logback.core "0.4.3"]
-                 [org.clojure/tools.reader "1.3.2"]])
+                 [org.clojure/tools.reader "1.3.2"]
+                 [ring/ring "1.8.0"]
+                 [compojure "1.6.1"]
+                 [http-kit "2.4.0-alpha6"]
+                 [com.akolov/mirador "0.2.1"]
+                 [javax.servlet/servlet-api "2.5"]])
