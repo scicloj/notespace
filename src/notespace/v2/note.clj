@@ -78,47 +78,43 @@
        (map topform-with-metadata->Note)
        (filter some?)))
 
-;; We can get the updated notes of a namespace.
+;; We can update our notes structures by reading the notes of a namespace.
 ;; We try not to update things that have not changed.
-(defn read-notes-seq [namespace]
-  (let [old-notes (@ns->notes namespace)
-        modified  (or (not old-notes)
-                      (source/source-file-modified? namespace))]
-    {:modified modified
-     :notes    (if (not modified)
-                 old-notes
-                 (let [new-notes (ns-notes namespace)]
-                   (mapv (fn [old-note new-note]
-                           (let [change (and (->> [old-note new-note]
-                                                  (map (comp :source :metadata))
-                                                  (apply =)
-                                                  not)
-                                             (->> [old-note new-note]
-                                                  (map (juxt :kind :forms))
-                                                  (apply =)
-                                                  not))]
-                             (if change
-                               (assoc new-note :status :changed)
-                               old-note)))
-                         (concat old-notes (repeat nil))
-                         new-notes)))}))
-
-;; We can update our memory regarding the notes in the namespace.
 (defn read-notes-seq! [namespace]
-  (let [{:keys [modified notes]} (read-notes-seq namespace)]
-    (when modified
-      (let [line->index (->> notes
-                             (map-indexed (fn [idx {:keys [metadata]}]
-                                            {:idx  idx
-                                             :lines (range (:line metadata)
-                                                           (-> metadata :end-line inc))}))
-                             (mapcat (fn [{:keys [idx lines]}]
-                                       (->> lines
-                                            (map (fn [line]
-                                                   {:idx idx
-                                                    :line line})))))
-                             (group-by :line)
-                             (fmap (comp :idx only-one)))
+  (let [old-notes       (@ns->notes namespace)
+        source-modified (source/source-file-modified? namespace)
+        needs-update    (or (not old-notes)
+                            source-modified)
+        notes           (if (not needs-update)
+                          old-notes
+                          (let [new-notes (ns-notes namespace)]
+                            (mapv (fn [old-note new-note]
+                                    (let [change (and (->> [old-note new-note]
+                                                           (map (comp :source :metadata))
+                                                           (apply =)
+                                                           not)
+                                                      (->> [old-note new-note]
+                                                           (map (juxt :kind :forms))
+                                                           (apply =)
+                                                           not))]
+                                      (if change
+                                        (assoc new-note :status :changed)
+                                        old-note)))
+                                  (concat old-notes (repeat nil))
+                                  new-notes)))]
+    (when needs-update
+      (let [line->index    (->> notes
+                                (map-indexed (fn [idx {:keys [metadata]}]
+                                               {:idx   idx
+                                                :lines (range (:line metadata)
+                                                              (-> metadata :end-line inc))}))
+                                (mapcat (fn [{:keys [idx lines]}]
+                                          (->> lines
+                                               (map (fn [line]
+                                                      {:idx  idx
+                                                       :line line})))))
+                                (group-by :line)
+                                (fmap (comp :idx only-one)))
             label->indices (->> notes
                                 (map-indexed (fn [idx note]
                                                {:idx   idx
@@ -129,13 +125,7 @@
         (swap! ns->notes assoc namespace notes)
         (swap! ns->line->index assoc namespace line->index)
         (swap! ns->label->indices assoc namespace label->indices)))
-    (->> notes
-         (mapv (fn [anote]
-                 (-> anote
-                     :metadata
-                     :source
-                     read-string
-                     eval))))))
+    [:notes (count notes)]))
 
 (defmacro defkind [note-symbol kind behaviour]
   (swap! kind->behaviour assoc kind (eval behaviour))
@@ -272,4 +262,3 @@
        (@ns->notes)
        (run! (partial compute-note! *ns*)))
   (render-this-ns!))
-
