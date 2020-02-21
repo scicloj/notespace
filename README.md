@@ -10,8 +10,6 @@ This library is an attempt to answer the following question: can we have a noteb
 
 Stay tuned -- a screencast is coming soon.
 
-[Examples](https://github.com/scicloj/clojisr-examples#list-of-examples)
-
 ## Status
 
 Experimental
