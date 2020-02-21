@@ -1,11 +1,5 @@
 (ns notespace.v2.check)
 
-(defn check [pred & args]
-  [(if (apply pred args)
-     :PASSED
-     :FAILED)
-   (last args)])
-
 (defn ->checks-freqs [notes]
   (when-let [checks-results (->> notes
                                  (map :value)
@@ -30,4 +24,3 @@
                     n " " (name k) " "])))
           (into [:b]))
      [:hr]]))
-

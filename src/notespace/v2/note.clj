@@ -252,6 +252,12 @@
 (defn render-this-ns! []
   (render-ns! *ns*))
 
+(defn check [pred & args]
+  [(if (apply pred args)
+     :PASSED
+     :FAILED)
+   (last args)])
+
 (defn compute-note-at-line! [line]
   (read-notes-seq! *ns*)
   (some->> line
