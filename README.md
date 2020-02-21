@@ -13,7 +13,12 @@ Stay tuned -- a screencast is coming soon.
 [Examples](https://github.com/scicloj/clojisr-examples#list-of-examples)
 
 ## Status
+
 Experimental
+
+## Usage
+
+See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [rendered html](./resources/public/notespace/v2/tutorial_test/index.html).
 
 ## Goals
 
@@ -50,10 +55,6 @@ Experimental
 There are several magnificent existing options for literate programming in Clojure: Marginalia, Org-Babel, Gorilla REPL, Pink Gorilla, Clojuopyter, Nextjournal, Saite, Oz. Most of them are actively developed.
 
 Creating a separate alternative would be the least desired outcome of the current project. Rather, the hope is to compose and integrate well with some of the other projects. There has been some thoughts and experiments in that direction, and it seems promising.
-
-## Usage
-
-See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [rendered html](./resources/public/notespace/v2/tutorial_test/index.html).
 
 ## Known issues
 * Links to external resources (e.g., images in separate files) will appear at the rendered static html, but are currently invisible at the live-reload view.
