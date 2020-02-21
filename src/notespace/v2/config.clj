@@ -1,4 +1,4 @@
-(ns notespace.v1.config)
+(ns notespace.v2.config)
 
 ;; Here we hold general defaults.
 

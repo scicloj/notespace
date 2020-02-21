@@ -1,4 +1,4 @@
-(ns notespace.v1.live-reload
+(ns notespace.v2.live-reload
   (:require [org.httpkit.server :as httpkit-server]
             [compojure.core :refer (GET POST ANY PUT DELETE defroutes)]
             [compojure.handler :as handler]
@@ -8,8 +8,8 @@
             [com.akolov.mirador.core :refer [watch-reload watcher-folder]]
             [cambium.core :as log]
             [clojure.java.browse :as browse]
-            [notespace.v1.note :as note]
-            [notespace.v1.config :as config]))
+            [notespace.v2.note :as note]
+            [notespace.v2.config :as config]))
 
 (defn html-response [body]
       {:status  200

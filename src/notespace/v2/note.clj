@@ -1,19 +1,19 @@
-(ns notespace.v1.note
+(ns notespace.v2.note
   (:require [clojure.string :as string]
             [hiccup.core :as hiccup]
             [hiccup.page :as page]
-            [notespace.v1.reader :as reader]
-            [notespace.v1.util :refer [fmap only-one]]
-            [notespace.v1.check :as check]
-            [notespace.v1.view :as view]
-            [notespace.v1.behaviours :refer [kind->behaviour]]
+            [notespace.v2.reader :as reader]
+            [notespace.v2.util :refer [fmap only-one]]
+            [notespace.v2.check :as check]
+            [notespace.v2.view :as view]
+            [notespace.v2.behaviours :refer [kind->behaviour]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
             [clojure.java.browse :refer [browse-url]]
-            [notespace.v1.cdn :as cdn]
-            [notespace.v1.js :as js]
+            [notespace.v2.cdn :as cdn]
+            [notespace.v2.js :as js]
             [cambium.core :as log]
-            [notespace.v1.source :as source])
+            [notespace.v2.source :as source])
   (:import java.io.File
            clojure.lang.IDeref))
 

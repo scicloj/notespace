@@ -1,4 +1,4 @@
-(ns notespace.v1.check)
+(ns notespace.v2.check)
 
 (defn check [pred & args]
   [(if (apply pred args)

@@ -1,6 +1,6 @@
-(ns notespace.v1.source
+(ns notespace.v2.source
   (:require [clojure.string :as string]
-            [notespace.v1.config :refer [ns->config]]
+            [notespace.v2.config :refer [ns->config]]
             [clojure.java.io :as io]))
 
 ;; We keep track of changes in source files corresponding to namespaces.

@@ -1,4 +1,4 @@
-(ns notespace.v1.cdn
+(ns notespace.v2.cdn
   (:require [hiccup.page :as page]
             [hiccup.core :as hiccup]))
 

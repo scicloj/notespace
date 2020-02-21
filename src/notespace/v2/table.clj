@@ -1,11 +1,11 @@
-(ns notespace.v1.table
+(ns notespace.v2.table
   "Interactive table visualisations."
   (:require [hiccup.core :as hiccup]
             [hiccup.element :as elem]
             [garden.core :as garden]
             [jsonista.core :as jsonista]
-            [notespace.v1.cdn :as cdn]
-            [notespace.v1.io :refer [view-html!]])
+            [notespace.v2.cdn :as cdn]
+            [notespace.v2.io :refer [view-html!]])
   (:import java.io.File
            java.util.UUID))
 
@@ -80,8 +80,8 @@
 
 (defn ->datatable [row-maps]
   (->> row-maps
-       notespace.v1.table/row-maps->table-hiccup
-       (notespace.v1.table/table-hiccup->datatables-html {:cdn? true}
+       notespace.v2.table/row-maps->table-hiccup
+       (notespace.v2.table/table-hiccup->datatables-html {:cdn? true}
                                                          {})))
 
 (comment
