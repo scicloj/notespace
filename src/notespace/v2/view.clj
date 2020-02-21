@@ -39,9 +39,7 @@
        with-out-str
        (string/split #"\n")
        (->> (filter (complement (partial re-find #"nRepl-session")))
-            (string/join "\n")
-            (#(do (pp/pprint [:dbg %])
-                  %)))
+            (string/join "\n"))
        htmlify-whitespace)])
 
 (defn value->hiccup [v]
