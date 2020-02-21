@@ -147,3 +147,12 @@ where `line` is one of the lines of the file that are taken by that note.")
   [:circle {:cx 50 :cy 50 :r 40
             :stroke "purple" :stroke-width 4
             :fill "lightgrey"}]])
+
+(note-md :Tests "## Tests")
+
+(note-md "One may use the `check` function to create tests using arbitrar functions.")
+
+(note (->> (+ 1 2)
+           (check = 3)))
+
+(note (check pos? -9))
