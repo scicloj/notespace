@@ -12,7 +12,7 @@
 
 (note-md "It is recommended to read this notespace alongside its rendered result.")
 
-(note-md :Intro "## Computing and rendering")
+(note-md :Computing-and-rendering "## Computing and rendering")
 
 (note-md "To use notespace, require the namespace `notespace.v2.note`, bringing the symbols of the relevant note kinds to your own namespace using `:refer`. For example, if you want to use notes of kind `:md`, you may like to `(require '[notespace.v2.note :refer [note-md]])`. More about note kinds -- below.")
 
