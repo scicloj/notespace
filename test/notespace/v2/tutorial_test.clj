@@ -33,7 +33,9 @@ where `line` is one of the lines of the file that are taken by that note.")
 ```
 (require 'notespace.v2.note :reload)
 ```
- Soon things will be more robust.")
+ Soon things will be more robust.
+
+Sometimes, the live-reload stops happening. A browser refresh sometimes fixes that.")
 
 (note-md :Editor-integration "## Editor integration.")
 
