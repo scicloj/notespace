@@ -4,41 +4,62 @@ Notebook experience in your Clojure namespace
 
 [![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
 
-# What does it mean?
+## What is it?
+
+This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving our favourite editor?
+
 Stay tuned -- a screencast is coming soon.
 
-[Examples](https://pycloj.github.io/pycloj-tools)
+[Examples](https://github.com/scicloj/clojisr-examples#list-of-examples)
 
-# Status
+## Status
 Experimental
 
-# Goals
+## Goals
 
 * Use any Clojure namespace, in any Clojure editor, as a notebook
   * [x] editing is done in your beloved editor
-  * [x] rendering s shown at the browser
-  * [ ] typical workflow has almost zero latency in namespace evaluation
-* Live reload experience
-  * [ ] re-rendering of relevant notebook part(s)
+  * [x] rendering is shown at the browser
+  * [x] a typical workflow has zero latency in namespace evaluation
 * A nootebook is a sequence of notes
   * [x] a note represents a piece of computation and its output
-  * [x] any note can be rendered independently
   * [x] the notebook's rendering is the concatenation of its notes' renderings
   * [x] a notes' rendering can depend on its code and its output
-  * [x] the precise way it depends on them is configurable in an extensible way
+  * [x] the precise way it depends on them varies across different kinds of nodes
   * [ ] a notes' rendering can depend on the stdout and stderr of its computation
   * [x] we remember notes' last rendering
   * [ ] we know if notes need a refresh (after code change)
 * Everything can be a note
-  * [x] function definition
-  * [x] test
-  * [x] code example
+  * [x] function definitions
+  * [x] tests
+  * [x] code examples
   * [x] data analysis
-* But nothing *has* to be a note
-* Different modes of refresh
+* Support for tests
+  * [x] summary of checks passed/failed
+* Live reload experience
+  * [x] refreshing the browser view after a note's computation has been refreshed
+  * [ ] re-rendering of relevant notebook part(s)
+* Different modes of computation-refresh
+  * [x] compute-this-note
+  * [x] compute-the-whole-namespace
+
   * [ ] Oz-like refresh-downwards-from-this-note
-  * [x] refresh-this-note
-  * [x] refresh-everything
+
+## Relation to other projects
+
+There are several magnificent existing options for literate programming in Clojure: Marginalia, Org-Babel, Gorilla REPL, Pink Gorilla, Clojuopyter, Nextjournal, Saite, Oz. Most of them are actively developed.
+
+Creating a separate alternative would be the least desired outcome of the current project. Rather, the hope is to compose and integrate well with some of the other projects. There has been some thoughts and experiments in that direction, and it seems promising.
+
+## Usage
+
+Assume that you have some Clojure namespace.
+
+
+## Known issues
+* Links to external resources (e.g., images in separate files) will appear at the rendered static html, but are currently invisible at the live-reload view.
+* In general, there are some rough edges. Currently, things are easy to break. They will get more attention in the coming weeks.
+* Markdown tables do not render properly.
 
 ## License
 
