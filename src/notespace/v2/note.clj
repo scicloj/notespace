@@ -218,7 +218,7 @@
     {:style "background-color:#fbf8ef;"}
     (into [:head
            (js/mirador-setup)]
-          (cdn/header :prettify))
+          (mapcat cdn/header [:prettify :datatables]))
     [:body
      (if (not namespace)
        "Waiting for a first notespace to appear ..."

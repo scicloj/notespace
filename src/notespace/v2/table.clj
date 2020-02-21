@@ -78,17 +78,12 @@
                     elem/javascript-tag
                     hiccup/html))))))
 
-(defn ->datatable [row-maps]
-  (->> row-maps
-       notespace.v2.table/row-maps->table-hiccup
-       (notespace.v2.table/table-hiccup->datatables-html {:cdn? true}
-                                                         {})))
-
-(comment
-  (->> (for [i (range 99)]
-         {:x i
-          :y (if (even? i) "a" "b")
-          :z (rand)})
-       ->datatable
-       view-html!))
+(defn ->datatable
+  ([row-maps]
+   (->> row-maps
+        (->datatable {})))
+  ([datatables-options row-maps]
+   (->> row-maps
+        notespace.v2.table/row-maps->table-hiccup
+        (notespace.v2.table/table-hiccup->datatables-html datatables-options))))
 
