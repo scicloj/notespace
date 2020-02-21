@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [2.0.0-alpha1] - 2019-02-21
+- a major change with a new mechanism, breaks the previous workflow
+  - live-reload
+  - usage of tools.reader for more accurate code-rendering
+  - now code can be represented as text (rather than the forms read from the text)
+  - code is indexed by lines, rather than forms
+  - fixing various bugs and limitations that were related related to representing code as forms
+  - written to be integrated with some basic editor support
+
 ## [1.0.3] - 2019-01-07
 - changed in page rendering
 - recognizing source path carefully
