@@ -10,7 +10,7 @@
 
 (note-md "This is a notespace -- a namespace that is a sequence of notes. It is intented to be a tutorial about creating and using notespaces.")
 
-(note-md "It is recommended to read this notespace alongside its rendered result.")
+(note-md "It is recommended to read [this notespace](https://github.com/scicloj/notespace/blob/master/test/notespace/v2/tutorial_test.clj) alongside its [rendered result](https://scicloj.github.io/notespace/resources/public/notespace/v2/tutorial-test/index.html).")
 
 (note-md :Computing-and-rendering "## Computing and rendering")
 
