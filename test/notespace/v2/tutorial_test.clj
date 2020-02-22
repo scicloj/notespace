@@ -29,7 +29,7 @@
 ```
 where `line` is one of the lines of the file that are taken by that note.")
 
-(note-md "The notespace library is still experimental. **In the (not unlikely) that something breaks**, our current recommendation to reload the main notespace namespace, so that the broken state will overridden.
+(note-md "The notespace library is still experimental. **In the (not unlikely) case where something breaks**, our current recommendation to reload the main notespace namespace, so that the broken state will overridden.
 ```
 (require 'notespace.v2.note :reload)
 ```
@@ -108,17 +108,17 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
  **| kind       | symbol        | render source? | value-rendering |**
 
- | code      | note          | v              | pretty printing |
+ | `:code`      | `note`          | v              | pretty printing |
 
- | void      | note-void     | v              | x               |
+ | `:void`      | `note-void`     | v              | x               |
 
- | md        | note-md       | x              | as markdown     |
+ | `:md`        | `note-md`       | x              | as markdown     |
 
- | as-md     | note-as-md    | v              | as markdown     |
+ | `:as-md`     | `note-as-md`    | v              | as markdown     |
 
- | hiccup    | note-hiccup   | x              | as hiccup       |
+ | `:hiccup`    | `note-hiccup`   | x              | as hiccup       |
 
- | as-hiccup | note-as-hiccu | v              | as hiccup       |
+ | `:as-hiccup` | `note-as-hiccu` | v              | as hiccup       |
 "))
 
 (note-md :Labels "## Labels")
