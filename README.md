@@ -45,9 +45,14 @@ See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [ren
 * Different modes of computation-refresh
   * [x] compute-this-note
   * [x] compute-the-whole-namespace
-
   * [ ] Oz-like refresh-downwards-from-this-note
-
+* Composing with classical Clojure documentation practices.
+  * [ ] Think how that should work.
+  * [ ] Can we somehow automatically generate docstrings (like `hara.test` does) ?
+  * [ ] Can we automatically generate API docs ?
+  * [ ] Can we integrate with cljdocs ?
+  
+  
 ## Relation to other projects
 
 There are several magnificent existing options for literate programming in Clojure: Marginalia, Org-Babel, Gorilla REPL, Pink Gorilla, Clojuopyter, Nextjournal, Saite, Oz. Most of them are actively developed.
