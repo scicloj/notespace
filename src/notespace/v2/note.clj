@@ -99,7 +99,7 @@
                                                            not))]
                                       (if change
                                         (assoc new-note :status :changed)
-                                        old-note)))
+                                        new-note)))
                                   (concat old-notes (repeat nil))
                                   new-notes)))]
     (when needs-update
