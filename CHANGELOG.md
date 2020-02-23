@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [2.0.0-alpha2] - 2019-02-21
+- fixed the re-read mechanism, to update existing notes with reader metadata (e.g., source lines)
+- added a `reset-state!` API function
+
 ## [2.0.0-alpha1] - 2019-02-21
 - a major change with a new mechanism, breaks the previous workflow
   - live-reload
