@@ -16,24 +16,24 @@
 
 (note-md "To use notespace, require the namespace `notespace.v2.note`, bringing the symbols of the relevant note kinds to your own namespace using `:refer`. For example, if you want to use notes of kind `:md`, you may like to `(require '[notespace.v2.note :refer [note-md]])`. More about note kinds -- below.")
 
-(note-md "To see your rendered results with a live-reload experience, require the namespace `notespace.v2.live-reload` too. This will setup a live-reload server using Ring and Mirador, and will open a browser showing the rendered data.")
+(note-md "To see your rendered results with a live-reload experience, require the namespace `notespace.v2.live-reload` too. This will setup a live-reload server using Ring and [Mirador](https://github.com/kolov/mirador) and will open a browser showing the rendered data.")
 
-(note-md "To compute and render the whole notespace, call:
+(note-md "To compute and render the whole notespace, save the file and call:
 ```
 (notespace.v2.note/compute-this-notespace!)
 ```")
 
-(note-md "To compute and rerender a certain note, call:
+(note-md "To compute and rerender a certain note, save the file and call:
 ```
 (notespace.v2.note/compute-note-at-line! line)
 ```
 where `line` is one of the lines of the file that are taken by that note.")
 
-(note-md "The notespace library is still experimental. **In the (not unlikely) case where something breaks**, our current recommendation to reload the main notespace namespace, so that the broken state will overridden.
+(note-md "The notespace library is still experimental. **In the (not unlikely) case where something breaks**, our current recommendation to reset the system's state.
 ```
-(require 'notespace.v2.note :reload)
+(notespace.v2.note/reset-state!)
 ```
- Soon things will be more robust.
+Soon things will be more robust.
 
 Sometimes, the live-reload stops happening. A browser refresh sometimes fixes that.")
 
