@@ -110,7 +110,8 @@
                                                            not))]
                                       (if change
                                         (assoc new-note :status :changed)
-                                        new-note)))
+                                        (merge old-note
+                                               (select-keys new-note [:metadata])))))
                                   (concat old-notes (repeat nil))
                                   new-notes)))]
     (when needs-update
