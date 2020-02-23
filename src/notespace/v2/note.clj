@@ -234,7 +234,7 @@
   (let [html (render-to-file! (partial render-ns namespace)
                               (ns->out-filename namespace))]
     (reset! last-ns-rendered namespace)
-    [:rendered namespace]))
+    [:rendered {:ns namespace}]))
 
 (defn render-this-ns []
   (render-ns *ns*))
@@ -254,11 +254,14 @@
            ((@ns->line->index *ns*))
            ((@ns->notes *ns*))
            (compute-note! *ns*))
-  (render-this-ns!))
+  [[:computed {:ns   *ns*
+               :line line}]
+   (render-this-ns!)])
 
 (defn compute-this-notespace! []
   (read-notes-seq! *ns*)
   (->> *ns*
        (@ns->notes)
        (run! (partial compute-note! *ns*)))
-  (render-this-ns!))
+  [[:computed {:ns *ns*}]
+   (render-this-ns!)])
