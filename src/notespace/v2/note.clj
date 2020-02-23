@@ -24,8 +24,7 @@
 ;; that have corresponding note kinds.
 ;; E.g., a form of the form (note-md ...) is a note form
 ;; of kind :md.
-(def note-symbol->kind
-  (atom {}))
+(def note-symbol->kind (atom {}))
 
 ;; We have a catalogue of notes, holding a sequence of notes per namespace.
 (def ns->notes (atom {}))
@@ -37,6 +36,16 @@
 
 ;; We also keep the indices of every note's label appearances in the sequence.
 (def ns->label->indices (atom {}))
+
+;; We keep track of the last notespace rendered.
+(def last-ns-rendered (atom nil))
+
+(defn reset! []
+  (reset! note-symbol->kind {})
+  (reset! ns->notes {})
+  (reset! ns->line->index {})
+  (reset! {})
+  (reset! nil))
 
 ;; We can collect all toplevel forms in a namespace,
 ;; together with the reader metadata.
@@ -227,8 +236,7 @@
             namespace
             (@ns->notes namespace))))]]))
 
-(def last-ns-rendered
-  (atom nil))
+
 
 (defn render-ns! [namespace]
   (let [html (render-to-file! (partial render-ns namespace)
