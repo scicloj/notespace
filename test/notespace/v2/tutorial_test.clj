@@ -92,7 +92,7 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md "Sometimes, we may want to render things as markdown or hiccup, but do want to see the source too. The following two kinds of notes are useful in those cases.")
 
-(note-md "This is a note of kind `:as-md`. Shows the source, renders as markdown.")
+(note-as-md "This is a note of kind `:as-md`. Shows the source, renders as markdown.")
 
 (note-md "The following is a note of kind `:as-hiccup`. Shows the source, renders as hiccup.")
 
