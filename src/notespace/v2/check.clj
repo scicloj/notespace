@@ -17,10 +17,6 @@
      "Checks: "
      (->> checks-freqs
           (map (fn [[k n]]
-                 (let [color (case k
-                               :PASSED "green"
-                               :FAILED "red")]
-                   [:b {:style (str "color:" color)}
-                    n " " (name k) " "])))
-          (into [:b]))
+                 [:b {:class (name k)}
+                  n " " (name k) " "])))
      [:hr]]))

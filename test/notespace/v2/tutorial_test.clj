@@ -45,7 +45,7 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md
  "```
- (defun notespace/compute-note-at-line ()
+(defun notespace/compute-note-at-line ()
   (interactive)
   (save-buffer)
   (cider-interactive-eval
@@ -64,8 +64,7 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
    (cider-interactive-eval-handler nil (point))
    nil
    nil)
-  ```
-  ")
+```")
 
 (note-md :Note-kinds "## Note kinds")
 
@@ -104,22 +103,15 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md (markdown.core/md-to-html-string
           "Here is the summary of the note kinds we mentioned:
-(Sorry for this strange table. Markdown tables do not render properly at the moment.)
 
- **| kind       | symbol        | render source? | value-rendering |**
-
- | `:code`      | `note`          | v              | pretty printing |
-
- | `:void`      | `note-void`     | v              | x               |
-
- | `:md`        | `note-md`       | x              | as markdown     |
-
- | `:as-md`     | `note-as-md`    | v              | as markdown     |
-
- | `:hiccup`    | `note-hiccup`   | x              | as hiccup       |
-
- | `:as-hiccup` | `note-as-hiccu` | v              | as hiccup       |
-"))
+| kind       | symbol        | render source? | value-rendering |
+| - | - | - | - |
+| `:code`      | `note`          | v              | pretty printing |
+| `:void`      | `note-void`     | v              | x               |
+| `:md`        | `note-md`       | x              | as markdown     |
+| `:as-md`     | `note-as-md`    | v              | as markdown     |
+| `:hiccup`    | `note-hiccup`   | x              | as hiccup       |
+| `:as-hiccup` | `note-as-hiccup` | v              | as hiccup       |"))
 
 (note-md :Labels "## Labels")
 
@@ -147,8 +139,8 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 (note-as-hiccup
  [:svg {:height 100 :width 100}
   [:circle {:cx 50 :cy 50 :r 40
-            :stroke "purple" :stroke-width 4
-            :fill "lightgrey"}]])
+            :stroke "#3e3c3f" :stroke-width 4
+            :fill "#d7d2c3"}]])
 
 (note-md :Tests "## Tests")
 
@@ -158,3 +150,5 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
            (check = 3)))
 
 (note (check pos? -9))
+
+#_(notespace.v2.note/compute-this-notespace!)

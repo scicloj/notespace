@@ -1,0 +1,48 @@
+body {
+    background-image: linear-gradient(0deg, #fff4e8 25%, #fef8e9 25%, #fef8e9 50%, #fff4e8 50%, #fff4e8 75%, #fef8e9 75%, #fef8e9 100%);
+    background-size: 32.00px 32.00px;
+    color: #3e3c3f;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 0;
+}
+
+.nspin {
+    border-radius: 10px;
+    background: #d7d2c3;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.nspout {
+    border-radius: 10px;
+    background: #e4ded0;
+    padding: 10px;
+    margin-left: 10px;
+}
+
+.nspbox {
+    padding-bottom: 5px;
+    margin: 0;
+}
+
+.FAILED { color: #bb0000; }
+.PASSED { color: #009500; }
+
+p {
+    margin-top: 0;
+    margin-bottom: 5px; }
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #720000;
+}
+
+a:visited { color: #5E5E59; }
+a:link { color: #720000; }
+tr:nth-child(even) { background-color: #e4ded0; }
+th { background-color: #d7d2c3; }
+

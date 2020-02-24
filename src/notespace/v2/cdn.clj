@@ -8,7 +8,8 @@
                 [:js "https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-clj.js"]]
    :datatables [[:css "https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"]
                 [:js "https://code.jquery.com/jquery-3.4.1.min.js"]
-                [:js "https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"]]})
+                [:js "https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"]]
+   :fonts      [[:css "https://fonts.googleapis.com/css?family=Source+Sans+Pro"]]})
 
 (def include-fns
   {:css page/include-css
