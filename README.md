@@ -61,8 +61,6 @@ Creating a separate alternative would be the least desired outcome of the curren
 
 ## Known issues
 * Links to external resources (e.g., images in separate files) will appear at the rendered static html, but are currently invisible at the live-reload view.
-* In general, there are some rough edges. Currently, things are easy to break. They will get more attention in the coming weeks.
-* Markdown tables do not render properly.
 
 ## License
 
