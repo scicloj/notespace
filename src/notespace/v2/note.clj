@@ -6,6 +6,7 @@
             [notespace.v2.util :refer [fmap only-one]]
             [notespace.v2.check :as check]
             [notespace.v2.view :as view]
+            [notespace.v2.css :as css]
             [notespace.v2.behaviours :refer [kind->behaviour]]
             [clojure.pprint :as pp]
             [rewrite-clj.node]
@@ -16,6 +17,9 @@
             [notespace.v2.source :as source])
   (:import java.io.File
            clojure.lang.IDeref))
+
+;; 
+(def ^:dynamic *css* :basic)
 
 ;; A note has a kind, possibly a label, a collection of forms, the reader metadata, a return value, a rendered result, and a status.
 (defrecord Note [kind label forms metadata value rendered status])
@@ -148,7 +152,7 @@
 ;; Now let us define several built-in kinds:
 (defkind note
   :code {:render-src?    true
-         :value-renderer #'view/value->hiccup})
+         :value-renderer view/value->hiccup})
 
 (defkind note-md
   :md   {:render-src?    false
@@ -200,25 +204,26 @@
 (defn compute-note! [namespace anote]
   (update-note! namespace compute-note anote))
 
-;; Any namespace has a corresponding output html file.
-(defn ns->out-filename [namespace]
-  (let [filename  (-> namespace
-                      str
-                      (string/replace "." "/")
-                      (->> (format "resources/public/%s/index.html")))
-        dir (-> filename
-                (File.)
-                (.getParentFile))]
+(defn ns->out-dir [namespace]
+  (let [dirname (-> namespace
+                    str
+                    (string/replace "." "/")
+                    (->> (format "resources/public/%s/")))
+        dir (File. dirname)]
     (when-not (.exists dir)
       (.mkdirs dir))
-    filename))
+    dirname))
+
+;; Any namespace has a corresponding output html file.
+(defn ns->out-filename [namespace]
+  (format "%s/index.html" (ns->out-dir namespace)))
 
 (defn render-to-file! [render-fn path]
   (let [path-to-use (or path (str (File/createTempFile "rendered" ".html")))
         html (page/html5 (render-fn))]
     (spit path-to-use html)
-  (log/info [::wrote path-to-use])
-  html))
+    (log/info [::wrote path-to-use])
+    html))
 
 (defn render-notes! [namespace notes & {:keys [file]}]
   (render-to-file! (partial view/notes->hiccup namespace notes)
@@ -227,10 +232,10 @@
 (defn render-ns [namespace]
   (hiccup.core/html
    [:html
-    {:style "background-color:#fbf8ef;"}
     (into [:head
-           (js/mirador-setup)]
-          (mapcat cdn/header [:prettify :datatables]))
+           (js/mirador-setup)
+           (css/include-css *css*)]
+          (mapcat cdn/header [:prettify :datatables :fonts]))
     [:body
      (if (not namespace)
        "Waiting for a first notespace to appear ..."
@@ -238,8 +243,6 @@
            (view/notes->hiccup
             namespace
             (@ns->notes namespace))))]]))
-
-
 
 (defn render-ns! [namespace]
   (let [html (render-to-file! (partial render-ns namespace)

@@ -1,0 +1,45 @@
+body {
+    background: #E8DDCB;
+    color: #033649;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 13px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 0;
+}
+
+.nspin {
+    border-radius: 10px;
+    background: #CDB380;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.nspout {
+    border-radius: 10px;
+    background: #f8ecda;
+    padding: 10px;
+}
+
+.nspbox {
+    padding-bottom: 5px;
+    margin: 0;
+}
+
+.FAILED { color: #741400; }
+.PASSED { color: #00541F; }
+
+p {
+    margin-top: 0;
+    margin-bottom: 5px; }
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+a:visited { color: #031634; }
+a:link { color: #297c7a; }
+tr:nth-child(even) { background-color: #f8ecda; }
+th { background-color: #CDB380; }
+

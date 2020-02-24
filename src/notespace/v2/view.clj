@@ -43,11 +43,12 @@
        htmlify-whitespace)])
 
 (defn value->hiccup [v]
-  (cond (fn? v)         ""
-        (sequential? v) (case (first v)
-                          :hiccup (hiccup/html v)
-                          (form->hiccup v pp/pprint))
-        :else           (form->hiccup v pp/pprint)))
+  [:div {:class "nspout"}
+   (cond (fn? v)         ""
+         (sequential? v) (case (first v)
+                           :hiccup (hiccup/html v)
+                           (form->hiccup v pp/pprint))
+         :else           (form->hiccup v pp/pprint))])
 
 (defn md->hiccup [md]
   [:div
@@ -65,8 +66,7 @@
 ;; We can render the notes of a namespace to the file.
 (defn note->hiccup [{:keys [forms label rendered kind]
                      :as   anote}]
-  [:div
-   [:p]
+  [:div {:class "nspbox"}
    (when label
      (label->anchor label))
    (when (-> kind (@kind->behaviour) :render-src?)
@@ -82,10 +82,8 @@
                           [:div
                            (-> form
                                (form->hiccup #(careful-zprint % 80)))]))))
-          (into [:div
-                 {:style "background-color:#e8e3f0; width: 100%"}])))
-   rendered
-   [:br]])
+          (into [:div {:class "nspin"}])))
+   rendered])
 
 
 (defn ->reference [namespace]

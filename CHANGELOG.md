@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [2.0.0-alpha3] - 2019-02-24
+- added css processing + basic.css file for rendered notebooks
+
 ## [2.0.0-alpha2] - 2019-02-21
 - fixed the re-read mechanism, to update existing notes with reader metadata (e.g., source lines)
 - added a `reset-state!` API function
