@@ -144,7 +144,7 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md :Tests "## Tests")
 
-(note-md "One may use the `check` function to create tests using arbitrar functions.")
+(note-md "One may use the `check` function to create tests using arbitrary functions.")
 
 (note (->> (+ 1 2)
            (check = 3)))
