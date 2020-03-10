@@ -45,7 +45,7 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md
  "```
-(defun notespace/compute-note-at-line ()
+(defun notespace/compute-note-at-this-line ()
   (interactive)
   (save-buffer)
   (cider-interactive-eval
