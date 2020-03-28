@@ -21,7 +21,7 @@
        (string/replace #"^[(]([a-z-]*)" "")
        (string/replace #"[)]$" "")
        (#(format "[%s]" %))
-       (zprint/zprint 40 {:parse-string? true})
+       (zprint/zprint 72 {:parse-string? true})
        with-out-str
        (string/replace #"\]\n$" "")
        (string/replace #"^\[" "")
