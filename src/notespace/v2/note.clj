@@ -14,7 +14,8 @@
             [notespace.v2.cdn :as cdn]
             [notespace.v2.js :as js]
             [cambium.core :as log]
-            [notespace.v2.source :as source])
+            [notespace.v2.source :as source]
+            [notespace.v2.config :as config])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -208,11 +209,12 @@
 (defn compute-note! [namespace anote]
   (update-note! namespace compute-note anote))
 
+
 (defn ns->out-dir [namespace]
-  (let [dirname (-> namespace
-                    str
-                    (string/replace "." "/")
-                    (->> (format "resources/public/%s/")))
+  (let [dirname (str (:target-path @config/defaults)
+                     "/"
+                     (-> namespace str (string/replace "." "/"))
+                     "/")
         dir (File. dirname)]
     (when-not (.exists dir)
       (.mkdirs dir))

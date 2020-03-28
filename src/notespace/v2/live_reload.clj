@@ -39,7 +39,7 @@
 
 (def app (-> routes
              (ring.middleware.reload/wrap-reload)
-             (watch-reload {:watcher (watcher-folder "resources")
+             (watch-reload {:watcher (watcher-folder (:target-path @config/defaults))
                             :uri     "/watch-reload"})
              handler/site))
 

@@ -3,7 +3,8 @@
 ;; Here we hold general defaults.
 
 (def defaults
-  (atom {:live-reload-port 5678}))
+  (atom {:live-reload-port 5678
+         :target-path "doc"}))
 
 ;; Here we can hold namespace-specific configuration.
 
