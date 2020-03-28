@@ -191,10 +191,14 @@
 
 ;; A note is computed by evaluating its form to compute its value.
 (defn compute-note [anote]
-  (let [value (->> anote
-                   :forms
-                   (cons 'do)
-                   eval)
+  (let [value (try (->> anote
+                        :forms
+                        (cons 'do)
+                        eval)
+                   (catch Exception e
+                     (throw (ex-info "Note computation failed."
+                                     {:note anote
+                                      :exception e}))))
         renderer (-> anote :kind (@kind->behaviour) :value-renderer)
         rendered (renderer value)]
     (assoc anote
