@@ -144,10 +144,10 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
             :stroke "#3e3c3f" :stroke-width 4
             :fill "#d7d2c3"}]])
 
-(note-md :Plots "## Vega plots")
+(note-md :Plots "## Vega(-lite) plots")
 
 
-(note-md "Vega-lite plots can be converted to hiccup and then rendered. ")
+(note-md "Vega or Vega-lite plots can be converted to hiccup and then rendered. ")
 
 (note
  (defn play-data [& names]
@@ -155,17 +155,65 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
         i (range 20)]
     {:time i :item n :quantity (+ (Math/pow (* i (count n)) 0.8) (rand-int (count n)))}))
  (def line-plot
-  {:data {:values (play-data "monkey" "slipper" "broom")}
-   :encoding {:x {:field "time" :type "quantitative"}
-              :y {:field "quantity" :type "quantitative"}
-              :color {:field "item" :type "nominal"}}
-   :mark "line"})      
-
+   {:width 300
+    :height 300
+    :data
+    {:values (play-data "monkey" "slipper" "broom")}
+    :encoding {:x {:field "time" :type "quantitative"}
+               :y {:field "quantity" :type "quantitative"}
+               :color {:field "item" :type "nominal"}}
+    :mark "line"})      
+ 
  )
 
 (note-as-hiccup
- (notespace.v2.vega/vega->hiccup line-plot)
+ (notespace.v2.vega/vega->hiccup line-plot :vega-lite)
  )
+
+
+(note-as-hiccup
+ (def vega-data
+  {:style "cell",
+   :width 300,
+   :height 300,
+   :data
+   [{:name "source_0",
+     :url "https://vega.github.io/editor/data/cars.json",
+     :format {:type "json"}}],
+   :marks
+   [{:name "marks",
+     :type "symbol",
+     :style ["point"],
+     :from {:data "source_0"},
+     :encode
+     {:update
+      {:stroke {:scale "color", :field "Origin"},
+       :x {:scale "x", :field "Horsepower"},
+       :y {:scale "y", :field "Miles_per_Gallon"}}}}],
+   :scales
+   [{:name "x",
+     :type "linear",
+     :domain {:data "source_0", :field "Horsepower"},
+     :range [0 {:signal "width"}]}
+    {:name "y",
+     :type "linear",
+     :domain {:data "source_0", :field "Miles_per_Gallon"},
+     :range [{:signal "height"} 0]}
+    {:name "color",
+     :type "ordinal",
+     :domain {:data "source_0", :field "Origin"},
+                                        ;   :range "category"
+     :range "category"}]}
+
+
+   )
+
+ (notespace.v2.vega/vega->hiccup 
+  vega-data :vega
+  
+  )
+ )
+
 
 (note-md :Tests "## Tests")
 
