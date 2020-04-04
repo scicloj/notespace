@@ -19,4 +19,6 @@
                  [compojure "1.6.1"]
                  [http-kit "2.4.0-alpha6"]
                  [com.akolov/mirador "0.2.1"]
-                 [javax.servlet/servlet-api "2.5"]])
+                 [javax.servlet/servlet-api "2.5"]
+                 [hickory "0.7.1"]
+                 ])

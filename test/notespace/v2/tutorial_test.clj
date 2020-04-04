@@ -4,7 +4,9 @@
                      note-md note-hiccup
                      note-as-md note-as-hiccup
                      check]]
-            [notespace.v2.live-reload]))
+            [notespace.v2.live-reload]
+            [notespace.v2.vega]
+            ))
 
 (note-md :Intro "## Intro")
 
@@ -141,6 +143,29 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
   [:circle {:cx 50 :cy 50 :r 40
             :stroke "#3e3c3f" :stroke-width 4
             :fill "#d7d2c3"}]])
+
+(note-md :Plots "## Vega plots")
+
+
+(note-md "Vega-lite plots can be converted to hiccup and then rendered. ")
+
+(note
+ (defn play-data [& names]
+  (for [n names
+        i (range 20)]
+    {:time i :item n :quantity (+ (Math/pow (* i (count n)) 0.8) (rand-int (count n)))}))
+ (def line-plot
+  {:data {:values (play-data "monkey" "slipper" "broom")}
+   :encoding {:x {:field "time" :type "quantitative"}
+              :y {:field "quantity" :type "quantitative"}
+              :color {:field "item" :type "nominal"}}
+   :mark "line"})      
+
+ )
+
+(note-as-hiccup
+ (notespace.v2.vega/vega->hiccup line-plot)
+ )
 
 (note-md :Tests "## Tests")
 
