@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [2.0.0-alpha5-SNAPSHOT]
+- basic support for vega static rendering
 - making sure the default target path exists
 
 ## [2.0.0-alpha4] - 2019-03-29
