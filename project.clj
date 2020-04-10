@@ -1,4 +1,4 @@
-(defproject scicloj/notespace "2.0.0-alpha4"
+(defproject scicloj/notespace "2.0.0-alpha5-SNAPSHOT"
   :description "Notebook experience in your Clojure namespace."
   :url "http://github.com/scicloj/notespace"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
