@@ -29,6 +29,11 @@
               slurp)
       (note/render-ns nil)))
 
+;; Use to add current ns path prefix to URI so we cna load
+;; static files directly from the ns output directory. This way
+;; we can create a parallel experience between live loading
+;; pages referencing static files (e.g. images) and the case
+;; where output files are loaded directly in the browser.
 (defn wrap-add-ns-path-prefix [handler]
   (fn [request]
     (let [curr-ns-path (note/ns->out-dir @note/last-ns-rendered)
