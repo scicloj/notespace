@@ -29,7 +29,7 @@
               slurp)
       (note/render-ns nil)))
 
-;; Use to add current ns path prefix to URI so we cna load
+;; Use to add current ns path prefix to URI so we can load
 ;; static files directly from the ns output directory. This way
 ;; we can create a parallel experience between live loading
 ;; pages referencing static files (e.g. images) and the case
