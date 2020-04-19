@@ -29,13 +29,22 @@
               slurp)
       (note/render-ns nil)))
 
+(defn wrap-add-ns-path-prefix [handler]
+  (fn [request]
+    (let [curr-ns-path (note/ns->out-dir @note/last-ns-rendered)
+          new-uri (-> (str "/" curr-ns-path (:uri request))
+                      (clojure.string/replace #"//" "/"))]
+      (handler (assoc request :uri new-uri)))))
+
+
 (defn main [req]
   (->> (notespace-html)
        html-response))
 
 (defroutes routes
   (GET "/" req (main req))
-  (route/resources "/static" {:root "static"}))
+  (wrap-inject-ns-path-prefix
+   (route/files "" {:root (System/getProperty "user.dir")})))
 
 (def app (-> routes
              (ring.middleware.reload/wrap-reload)
