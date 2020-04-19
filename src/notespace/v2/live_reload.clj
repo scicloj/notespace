@@ -41,7 +41,6 @@
                       (clojure.string/replace #"//" "/"))]
       (handler (assoc request :uri new-uri)))))
 
-
 (defn main [req]
   (->> (notespace-html)
        html-response))
