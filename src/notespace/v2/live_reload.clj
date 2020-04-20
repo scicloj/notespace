@@ -47,7 +47,7 @@
 
 (defroutes routes
   (GET "/" req (main req))
-  (wrap-inject-ns-path-prefix
+  (wrap-add-ns-path-prefix
    (route/files "" {:root (System/getProperty "user.dir")})))
 
 (def app (-> routes
