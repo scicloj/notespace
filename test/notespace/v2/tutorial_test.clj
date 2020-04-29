@@ -5,8 +5,7 @@
                      note-as-md note-as-hiccup
                      check]]
             [notespace.v2.live-reload]
-            [notespace.v2.vega]
-            ))
+            [notespace.v2.vega]))
 
 (note-md :Intro "## Intro")
 
@@ -144,16 +143,16 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
             :stroke "#3e3c3f" :stroke-width 4
             :fill "#d7d2c3"}]])
 
-(note-md :Plots "## Vega(-lite) plots")
+(note-md :Vega-Lite-Plots "## Vega(-lite) plots")
 
+(note-md "Vega or Vega-lite plots can be converted to hiccup and then rendered.")
 
-(note-md "Vega or Vega-lite plots can be converted to hiccup and then rendered. ")
-
-(note
+(note-void
  (defn play-data [& names]
   (for [n names
         i (range 20)]
     {:time i :item n :quantity (+ (Math/pow (* i (count n)) 0.8) (rand-int (count n)))}))
+
  (def line-plot
    {:width 300
     :height 300
@@ -162,17 +161,13 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
     :encoding {:x {:field "time" :type "quantitative"}
                :y {:field "quantity" :type "quantitative"}
                :color {:field "item" :type "nominal"}}
-    :mark "line"})      
- 
- )
+    :mark "line"}))
 
 (note-as-hiccup
- (notespace.v2.vega/vega->hiccup line-plot :vega-lite)
- )
+ (notespace.v2.vega/vega->svg line-plot :vega-lite))
 
-
-(note-as-hiccup
- (def vega-data
+(note-void
+ (def vega-spec
   {:style "cell",
    :width 300,
    :height 300,
@@ -202,18 +197,11 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
     {:name "color",
      :type "ordinal",
      :domain {:data "source_0", :field "Origin"},
-                                        ;   :range "category"
-     :range "category"}]}
+     :range "category"}]}))
 
-
-   )
-
- (notespace.v2.vega/vega->hiccup 
-  vega-data :vega
-  
-  )
- )
-
+(note-as-hiccup
+ (notespace.v2.vega/vega->svg
+  vega-spec :vega))
 
 (note-md :Tests "## Tests")
 

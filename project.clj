@@ -21,4 +21,4 @@
                  [com.akolov/mirador "0.2.1"]
                  [javax.servlet/servlet-api "2.5"]
                  [hickory "0.7.1"]
-                 [vg-cli "0.0.1"]])
+                 [metasoarous/darkstar "0.1.0"]])
