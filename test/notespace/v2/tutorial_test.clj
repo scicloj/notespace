@@ -147,6 +147,8 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md "Vega or Vega-lite plots can be converted to hiccup and then rendered.")
 
+(note-md "Currently we use [darkstar](https://github.com/applied-science/darkstar) for rendering vega/vega-lite to svg. This is work in progress. The API may change, and eventually we want to support interactive  plots using vega.js.")
+
 (note-void
  (defn play-data [& names]
   (for [n names
@@ -206,6 +208,8 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
 
 (note-md :Images "## Images")
 
+(note-md "Here is a basic example of how one can include image files in a notespace. In the future we want to provide some less verbose ways to do it.")
+
 (note-void
  (def target-path
    (notespace.v2.note/ns->out-dir *ns*)))
@@ -230,7 +234,6 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
        logo-path))
 
 (note-hiccup [:img {:src logo-filename}])
-
 
 
 (note-md :Tests "## Tests")
