@@ -203,6 +203,36 @@ Sometimes, the live-reload stops happening. A browser refresh sometimes fixes th
  (notespace.v2.vega/vega->svg
   vega-spec :vega))
 
+
+(note-md :Images "## Images")
+
+(note-void
+ (def target-path
+   (notespace.v2.note/ns->out-dir *ns*)))
+
+(note
+ (require '[clojure.java.io :as io])
+ (defn copy
+   "Download a file -- see https://stackoverflow.com/a/19297746/1723677"
+   [uri file]
+   (with-open [in  (io/input-stream uri)
+               out (io/output-stream file)]
+     (io/copy in out))))
+
+(note-void
+ (def logo-filename
+   "clojure-logo-120b.png")
+ (def logo-path
+   (str target-path "clojure-logo-120b.png")))
+
+(note
+ (copy "https://clojure.org/images/clojure-logo-120b.png"
+       logo-path))
+
+(note-hiccup [:img {:src logo-filename}])
+
+
+
 (note-md :Tests "## Tests")
 
 (note-md "One may use the `check` function to create tests using arbitrary functions.")
