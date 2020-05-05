@@ -4,55 +4,36 @@
             [hiccup.page :as page]
             [notespace.v2.reader :as reader]
             [notespace.v2.util :refer [fmap only-one]]
-            [notespace.v2.check :as check]
             [notespace.v2.view :as view]
             [notespace.v2.css :as css]
-            [notespace.v2.behaviours :refer [kind->behaviour]]
-            [clojure.pprint :as pp]
             [rewrite-clj.node]
-            [clojure.java.browse :refer [browse-url]]
             [notespace.v2.cdn :as cdn]
             [notespace.v2.js :as js]
             [cambium.core :as log]
             [notespace.v2.source :as source]
-            [notespace.v2.config :as config])
+            [notespace.v2.state :as state]
+            [notespace.v2.init :as init])
   (:import java.io.File
            clojure.lang.IDeref))
 
-;; 
-(def ^:dynamic *css* :basic)
+(defonce init
+  (init/init!))
 
-;; A note has a kind, possibly a label, a collection of forms, the reader metadata, a return value, a rendered result, and a status.
-(defrecord Note [kind label forms metadata value rendered status])
+;; A note has a kind, possibly a label, a collection of forms, and the reader metadata.
+(defrecord Note [kind label forms metadata])
 
-;; A note form begins with one of several note symbols,
-;; that have corresponding note kinds.
-;; E.g., a form of the form (note-md ...) is a note form
-;; of kind :md.
-(def note-symbol->kind (atom nil))
+;; A note's state has a return value, a rendered result, and a status.
+(defrecord NoteState [value rendered status])
 
-;; We have a catalogue of notes, holding a sequence of notes per namespace.
-(def ns->notes (atom nil))
+(def initial-note-state (->NoteState nil nil {:changed true}))
 
-;; We also keep, for every line of code,
-;; the index of the corresponding note in the sequence of notes,
-;; if that line happens to lie inside a note.
-(def ns->line->index (atom nil))
+(defn note->note-state [namespace anote]
+  (->> anote
+       :metadata
+       :line
+       (state/ns->line->index namespace)
+       (state/ns->note-state namespace)))
 
-;; We also keep the indices of every note's label appearances in the sequence.
-(def ns->label->indices (atom nil))
-
-;; We keep track of the last notespace rendered.
-(def last-ns-rendered (atom nil))
-
-(defn reset-state! []
-  (reset! note-symbol->kind {})
-  (reset! ns->notes {})
-  (reset! ns->line->index {})
-  (reset! ns->label->indices {})
-  (reset! last-ns-rendered nil))
-
-(reset-state!)
 
 ;; We can collect all toplevel forms in a namespace,
 ;; together with the reader metadata.
@@ -60,6 +41,8 @@
   (->> namespace
        source/ns->source-filename
        reader/file->topforms-with-metadata))
+
+
 
 ;; When the first form of a note is a keyword,
 ;; then it would be considered the form's label
@@ -72,20 +55,18 @@
   (->Note kind
           (forms->label forms)
           (vec forms)
-          metadata
-          nil
-          nil
-          {}))
+          metadata))
 
 (defn topform-with-metadata->Note
   ([topform-with-metadata]
    (when (sequential? topform-with-metadata)
-     (when-let [kind (-> topform-with-metadata first (@note-symbol->kind))]
+     (when-let [kind (-> topform-with-metadata first state/note-symbol->kind)]
        (let [[& forms] (rest topform-with-metadata)]
          (kind-forms-and-metadata->Note
           kind
           forms
           (meta topform-with-metadata)))))))
+
 
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
@@ -96,29 +77,39 @@
 
 ;; We can update our notes structures by reading the notes of a namespace.
 ;; We try not to update things that have not changed.
+
+;; TODO: Rethink
+(defn different-note? [old-note new-note]
+  (not
+   (and (->> [old-note new-note]
+             (map (comp :source :metadata))
+             (apply =))
+        (->> [old-note new-note]
+             (map (juxt :kind :forms))
+             (apply =)))))
+
+
 (defn read-notes-seq! [namespace]
-  (let [old-notes       (@ns->notes namespace)
-        source-modified (source/source-file-modified? namespace)
-        needs-update    (or (not old-notes)
-                            source-modified)
-        notes           (if (not needs-update)
-                          old-notes
-                          (let [new-notes (ns-notes namespace)]
-                            (mapv (fn [old-note new-note]
-                                    (let [change (and (->> [old-note new-note]
-                                                           (map (comp :source :metadata))
-                                                           (apply =)
-                                                           not)
-                                                      (->> [old-note new-note]
-                                                           (map (juxt :kind :forms))
-                                                           (apply =)
-                                                           not))]
-                                      (if change
-                                        (assoc new-note :status :changed)
-                                        (merge old-note
-                                               (select-keys new-note [:metadata])))))
-                                  (concat old-notes (repeat nil))
-                                  new-notes)))]
+  (let [old-notes            (state/ns->notes namespace)
+        old-notes-states     (state/ns->note-states namespace)
+        old-notes-and-states (map vector
+                                  old-notes
+                                  old-notes-states)
+        source-modified      (source/source-file-modified? namespace)
+        needs-update         (or (not old-notes)
+                                 source-modified)
+        notes-and-states     (if (not needs-update)
+                               old-notes-and-states
+                               (let [new-notes (ns-notes namespace)]
+                                 (mapv (fn [[old-note old-note-state] new-note]
+                                         (if (different-note? old-note new-note)
+                                           [new-note initial-note-state]
+                                           [(merge old-note
+                                                   (select-keys new-note [:metadata]))
+                                            old-note-state]))
+                                       (concat old-notes-and-states (repeat nil))
+                                       new-notes)))
+        notes                (map first notes-and-states)]
     (when needs-update
       (let [line->index    (->> notes
                                 (map-indexed (fn [idx {:keys [metadata]}]
@@ -133,85 +124,62 @@
                                 (group-by :line)
                                 (fmap (comp :idx only-one)))
             label->indices (->> notes
-                                (map-indexed (fn [idx note]
+                                (map-indexed (fn [idx anote]
                                                {:idx   idx
-                                                :label (:label note)}))
+                                                :label (:label anote)}))
                                 (filter :label)
                                 (group-by :label)
                                 (fmap (partial mapv :idx)))]
-        (swap! ns->notes assoc namespace notes)
-        (swap! ns->line->index assoc namespace line->index)
-        (swap! ns->label->indices assoc namespace label->indices)))
-    [:notes (count notes)]))
+        (state/assoc-in-state!
+         [:ns->notes namespace] (mapv first notes-and-states)
+         [:ns->note-states namespace] (mapv second notes-and-states)
+         [:ns->line->index namespace] line->index
+         [:ns->label->indices namespace] label->indices)))
+    [:notes
+     notes-and-states
+     (if needs-update :updated :not-updated)
+     (count notes)]))
 
-(defmacro defkind [note-symbol kind behaviour]
-  (swap! kind->behaviour assoc kind (eval behaviour))
-  (swap! note-symbol->kind assoc note-symbol kind)
-  `(defmacro ~note-symbol [& forms#]
-     nil))
 
-;; Now let us define several built-in kinds:
-(defkind note
-  :code {:render-src?    true
-         :value-renderer view/value->hiccup})
-
-(defkind note-md
-  :md   {:render-src?    false
-         :value-renderer view/md->hiccup})
-
-(defkind note-as-md
-  :as-md   {:render-src?    true
-            :value-renderer view/md->hiccup})
-
-(defkind note-hiccup
-  :hiccup {:render-src? false
-           :value-renderer (fn [h] (hiccup/html h))})
-
-(defkind note-as-hiccup
-  :as-hiccup {:render-src?    true
-              :value-renderer (fn [h] (hiccup/html h))})
-
-(defkind note-void
-  :void {:render-src?    true
-         :value-renderer (constantly nil)})
-
-;; We may need support various update transformations for notes.
-;; If it has reader metadata, then the catalogue of notes is updated
-;; with the resulting note-with-value.
-(defn update-note! [namespace transf anote]
-  (let [new-note (transf anote)]
-    (when-let [m (:metadata anote)]
-      (swap! ns->notes
-             assoc-in
-             [namespace
-              (-> m
-                  :line
-                  ((@ns->line->index namespace)))]
-             new-note))
-    new-note))
+;; We support various update transformations for notes' states.
+(defn update-note-state! [namespace transf anote]
+  (let [idx (->> anote
+                 :metadata
+                 :line
+                 (state/ns->line->index namespace))]
+    (state/update-in-state!
+     [:ns->note-states
+      namespace
+      idx]
+     transf)))
 
 ;; A note is computed by evaluating its form to compute its value.
-(defn compute-note [anote]
-  (let [value (try (->> anote
-                        :forms
-                        (cons 'do)
-                        eval)
-                   (catch Exception e
-                     (throw (ex-info "Note computation failed."
-                                     {:note anote
-                                      :exception e}))))
-        renderer (-> anote :kind (@kind->behaviour) :value-renderer)
+(defn evaluate-note [anote]
+  (try
+    (->> anote
+         :forms
+         (cons 'do)
+         eval)
+    (catch Exception e
+      (throw (ex-info "Note evaluation failed."
+                      {:note      anote
+                       :exception e}))) ))
+
+(defn compute-note [anote note-state]
+  (let [value    (evaluate-note anote)
+        renderer (-> anote :kind (state/kind->behaviour) :value-renderer)
         rendered (renderer value)]
-    (assoc anote
+    (assoc note-state
            :value value
            :rendered rendered)))
 
 (defn compute-note! [namespace anote]
-  (update-note! namespace compute-note anote))
-
+  (update-note-state! namespace
+                      (partial compute-note anote)
+                      anote))
 
 (defn ns->out-dir [namespace]
-  (let [dirname (str (:target-path @config/defaults)
+  (let [dirname (str (state/config [:target-path])
                      "/"
                      (-> namespace str (string/replace "." "/"))
                      "/")
@@ -231,8 +199,13 @@
     (log/info [::wrote path-to-use])
     html))
 
+(defn notes->hiccup [namespace notes]
+  (->> notes
+       (map (partial note->note-state namespace))
+       (view/notes-and-states->hiccup namespace notes)))
+
 (defn render-notes! [namespace notes & {:keys [file]}]
-  (render-to-file! (partial view/notes->hiccup namespace notes)
+  (render-to-file! (partial notes->hiccup namespace notes)
                    file))
 
 (defn render-ns [namespace]
@@ -240,21 +213,21 @@
    [:html
     (into [:head
            (js/mirador-setup)
-           (css/include-css *css*)]
+           (css/include-css (state/config [:css]))]
           (mapcat cdn/header [:prettify :datatables :fonts]))
     [:body
      (if (not namespace)
        "Waiting for a first notespace to appear ..."
        (do (read-notes-seq! namespace)
-           (view/notes->hiccup
+           (notes->hiccup
             namespace
-            (@ns->notes namespace))))]]))
+            (state/ns->notes namespace))))]]))
 
 (defn render-ns! [namespace]
-  (let [html (render-to-file! (partial render-ns namespace)
-                              (ns->out-filename namespace))]
-    (reset! last-ns-rendered namespace)
-    [:rendered {:ns namespace}]))
+  (render-to-file! (partial render-ns namespace)
+                   (ns->out-filename namespace))
+  (state/assoc-in-state! [:last-ns-rendered] namespace)
+  [:rendered {:ns namespace}])
 
 (defn render-this-ns []
   (render-ns *ns*))
@@ -271,8 +244,8 @@
 (defn compute-note-at-line! [line]
   (read-notes-seq! *ns*)
   (some->> line
-           ((@ns->line->index *ns*))
-           ((@ns->notes *ns*))
+           (state/ns->line->index *ns*)
+           (state/ns->note *ns*)
            (compute-note! *ns*))
   [[:computed {:ns   *ns*
                :line line}]
@@ -281,7 +254,7 @@
 (defn compute-this-notespace! []
   (read-notes-seq! *ns*)
   (->> *ns*
-       (@ns->notes)
+       (state/ns->notes)
        (run! (partial compute-note! *ns*)))
   [[:computed {:ns *ns*}]
    (render-this-ns!)])

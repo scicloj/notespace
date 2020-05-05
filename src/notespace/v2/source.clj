@@ -1,10 +1,7 @@
 (ns notespace.v2.source
   (:require [clojure.string :as string]
-            [notespace.v2.config :refer [ns->config]]
-            [clojure.java.io :as io]))
-
-;; We keep track of changes in source files corresponding to namespaces.
-(def ns->last-modification (atom {}))
+            [clojure.java.io :as io]
+            [notespace.v2.state :as state]))
 
 ;; For a given namespace, we can find the location of the corresponding source file.
 (defn src-or-test [namespace]
@@ -18,7 +15,7 @@
 
 (defn ns->source-filename [namespace]
   (let [base-path (-> namespace
-                      (@ns->config)
+                      state/ns->config
                       :base-path
                       (or (str (src-or-test namespace)
                                "/")))]
@@ -30,7 +27,10 @@
          ".clj")))
 
 (defn source-file-modified? [namespace]
-  (let [previous-modifiction-time (@ns->last-modification namespace)
+  (let [previous-modifiction-time (state/get-in-state
+                                   [:ns->last-modification namespace])
         modification-time (-> namespace ns->source-filename io/file (.lastModified))]
-    (swap! ns->last-modification assoc namespace modification-time)
+    (state/assoc-in-state!
+     [:ns->last-modification namespace]
+     modification-time)
     (not= previous-modifiction-time modification-time)))

@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [2.0.0-alpha6-SNAPSHOT]
+- major refactoring, nonbreaking, mainly making state management more systematic
+
 ## [2.0.0-alpha5] - 2020-04-30
 - bugfix: using static files on live-reload mode
 - basic support for vega static rendering (through svg)

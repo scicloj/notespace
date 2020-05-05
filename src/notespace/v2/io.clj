@@ -7,3 +7,6 @@
     (spit f h)
     (future (browse/browse-url f))))
 
+(defn make-path [path]
+  (.mkdirs ^File (File. path))
+  path)

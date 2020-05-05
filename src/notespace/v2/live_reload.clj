@@ -9,7 +9,7 @@
             [cambium.core :as log]
             [clojure.java.browse :as browse]
             [notespace.v2.note :as note]
-            [notespace.v2.config :as config]))
+            [notespace.v2.state :as state]))
 
 (defn html-response [body]
       {:status  200
@@ -24,7 +24,7 @@
     (slurp path)))
 
 (defn notespace-html []
-  (or (some-> @note/last-ns-rendered
+  (or (some-> (state/last-ns-rendered)
               note/ns->out-filename
               slurp)
       (note/render-ns nil)))
@@ -36,7 +36,7 @@
 ;; where output files are loaded directly in the browser.
 (defn wrap-add-ns-path-prefix [handler]
   (fn [request]
-    (let [curr-ns-path (note/ns->out-dir @note/last-ns-rendered)
+    (let [curr-ns-path (note/ns->out-dir (state/last-ns-rendered))
           new-uri (-> (str "/" curr-ns-path (:uri request))
                       (clojure.string/replace #"//" "/"))]
       (handler (assoc request :uri new-uri)))))
@@ -52,7 +52,7 @@
 
 (def app (-> routes
              (ring.middleware.reload/wrap-reload)
-             (watch-reload {:watcher (watcher-folder (:target-path @config/defaults))
+             (watch-reload {:watcher (watcher-folder (state/config [:target-path]))
                             :uri     "/watch-reload"})
              handler/site))
 
@@ -66,7 +66,7 @@
     (reset! server nil)))
 
 (defn port []
-  (:live-reload-port @config/defaults))
+  (state/config [:live-reload-port]))
 
 (defn start! []
   (let [p (port)]

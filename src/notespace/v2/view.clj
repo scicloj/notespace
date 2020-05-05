@@ -5,10 +5,10 @@
             [hiccup.core :as hiccup]
             [markdown.core :refer [md-to-html-string]]
             [notespace.v2.util :refer [careful-zprint]]
-            [notespace.v2.behaviours :refer [kind->behaviour]]
             [notespace.v2.repo :as repo]
             [notespace.v2.check :as check]
-            [cambium.core :as log]))
+            [cambium.core :as log]
+            [notespace.v2.state :as state]))
 
 (defn htmlify-whitespace [s]
   (-> s
@@ -64,12 +64,14 @@
 
 
 ;; We can render the notes of a namespace to the file.
-(defn note->hiccup [{:keys [forms label rendered kind]
-                     :as   anote}]
+(defn note-and-state->hiccup [{:keys [forms label kind]
+                               :as   anote}
+                              {:keys [rendered]
+                               :as   note-state}]
   [:div {:class "nspbox"}
    (when label
      (label->anchor label))
-   (when (-> kind (@kind->behaviour) :render-src?)
+   (when (-> kind (state/kind->behaviour) :render-src?)
      (->> (or [(some-> anote
                        :metadata
                        :source
@@ -114,7 +116,7 @@
           (into [:ul]))
      [:hr]]))
 
-(defn notes->hiccup [namespace notes]
+(defn notes-and-states->hiccup [namespace notes note-states]
   (let [checks-freqs   (check/->checks-freqs notes)
         checks-summary (check/->checks-summary checks-freqs)
         reference      (->reference namespace)]
@@ -125,8 +127,9 @@
      reference
      checks-summary
      (toc notes)
-     (->> notes
-          (map note->hiccup))
+     (map note-and-state->hiccup
+          notes
+          note-states)
      [:hr]
      checks-summary
      reference]))

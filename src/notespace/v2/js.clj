@@ -1,8 +1,10 @@
 (ns notespace.v2.js
-  (:require [notespace.v2.config :as config]))
+  (:require [notespace.v2.config :as config]
+            [notespace.v2.state :as state]))
 
 (defn mirador-setup []
-  (->> (:live-reload-port @config/defaults)
+  (->> [:live-reload-port]
+       (state/config)
        (format
         "<script language=\"JavaScript\">
   socket= new WebSocket('ws://localhost:%s/watch-reload');
