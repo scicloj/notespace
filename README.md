@@ -2,6 +2,8 @@
 
 Notebook experience in your Clojure namespace
 
+**Note: breaking changes are coming soon. **
+
 [![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
 
 ## What is it?
