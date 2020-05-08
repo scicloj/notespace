@@ -121,13 +121,14 @@
 
 ;; TODO: Rethink
 (defn different-note? [old-note new-note]
-  (not
-   (and (->> [old-note new-note]
-             (map (comp :source :metadata))
-             (apply =))
-        (->> [old-note new-note]
-             (map (juxt :kind :forms))
-             (apply =)))))
+  (or (->> [old-note new-note]
+           (map (comp :source :metadata))
+           (apply not=))
+      (->> [old-note new-note]
+           (map (juxt :kind :forms))
+           (apply not=))))
+
+
 (defn evaluate-note [anote]
   (try
     (->> anote
