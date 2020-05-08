@@ -4,7 +4,7 @@
             [clojure.pprint :as pp]
             [hiccup.core :as hiccup]
             [markdown.core :refer [md-to-html-string]]
-            [notespace.v2.util :refer [careful-zprint]]
+            [notespace.v2.util :refer [careful-zprint fresh?]]
             [notespace.v2.repo :as repo]
             [notespace.v2.check :as check]
             [cambium.core :as log]
@@ -21,7 +21,6 @@
        (zprint/zprint 72 {:parse-string? true})
        with-out-str
        htmlify-whitespace)])
-
 
 (defn form->hiccup [form print-fn]
   [:code {:class "prettyprint lang-clj"}
@@ -57,7 +56,7 @@
 ;; We can render the notes of a namespace to the file.
 (defn note-and-state->hiccup [{:keys [forms label kind]
                                :as   anote}
-                              {:keys [rendered]
+                              {:keys [value rendered]
                                :as   note-state}]
   [:div {:class "nspbox"}
    (when label
@@ -76,8 +75,11 @@
                            (-> form
                                (form->hiccup #(careful-zprint % 80)))]))))
           (into [:div {:class "nspin"}])))
-   rendered])
-
+   (if (fresh? value)
+     rendered
+     [:div
+      "--"
+      [:img {:src "./waiting.gif"}]])])
 
 (defn ->reference [namespace]
   [:div
