@@ -35,8 +35,6 @@
 (defn get-in-state [path]
   (get-in @state path))
 
-(get-in @state (concat [:config] [:target-path]))
-
 (defn assoc-in-state! [& paths-and-values]
   (swap! state
          (fn [s0]
