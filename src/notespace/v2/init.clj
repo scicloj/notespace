@@ -12,12 +12,12 @@
   (let [this-loop-id @current-loop-id]
     (async/go-loop []
       (let [state-change (async/<! state/state-changes)]
-        (doseq [l (state/get-in-state [:state-listeners])]
+        (doseq [l (state/get-in-state [:state-effects])]
           (l state-change)))
       (if (= this-loop-id @current-loop-id)
         (recur)))))
 
-(defn logging-state-listener [[change-type paths-and-_]]
+(defn logging-state-effect [[change-type paths-and-_]]
   (->> paths-and-_
        (partition 2)
        (mapv first)
@@ -30,7 +30,7 @@
   (config/set-default-config!)
   (kinds/define-base-kinds!)
   (state/assoc-in-state!
-   [:state-listeners] [#'logging-state-listener])
+   [:state-effects] [#'logging-state-effect])
   (run-state-change-loop!))
 
 (comment
