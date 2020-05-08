@@ -18,17 +18,8 @@
 (defn code->hiccup [code & {:keys [remove-label?]}]
   [:code {:class "prettyprint lang-clj"}
    (-> code
-       (string/replace #"^[(]([a-z-]*)" "")
-       (string/replace #"[)]$" "")
-       (#(format "[%s]" %))
        (zprint/zprint 72 {:parse-string? true})
        with-out-str
-       (string/replace #"\]\n$" "")
-       (string/replace #"^\[" "")
-       ((if remove-label?
-          (fn [^String s]
-            (subs s (inc (.indexOf s " "))))
-          identity))
        htmlify-whitespace)])
 
 
