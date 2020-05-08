@@ -59,15 +59,54 @@
           (vec forms)
           metadata))
 
+(defn note-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           state/note-symbol->kind)))
+
+(defn strings-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           string?)))
+
+(defn ns-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           (= 'ns))))
+
+(defn metadata->kind [metadata]
+  (->> (state/kind->behaviour)
+       keys
+       (drop-while (complement metadata))
+       first))
+
 (defn topform-with-metadata->Note
-  ([topform-with-metadata]
-   (when (sequential? topform-with-metadata)
-     (when-let [kind (-> topform-with-metadata first state/note-symbol->kind)]
-       (let [[& forms] (rest topform-with-metadata)]
-         (kind-forms-and-metadata->Note
-          kind
-          forms
-          (meta topform-with-metadata)))))))
+  [topform-with-metadata]
+  (let [metadata (meta topform-with-metadata)]
+    (cond
+      ;;
+      (ns-topform? topform-with-metadata)
+      nil
+      ;;
+      (note-topform? topform-with-metadata)
+      (when-let [kind (-> topform-with-metadata first state/note-symbol->kind)]
+        (let [[& forms] (rest topform-with-metadata)]
+          (kind-forms-and-metadata->Note kind
+                                         forms
+                                         metadata)))
+      ;;
+      (strings-topform? topform-with-metadata)
+      (kind-forms-and-metadata->Note (-> metadata metadata->kind (or :md))
+                                     topform-with-metadata
+                                     metadata)
+      ;;
+      :else
+      (kind-forms-and-metadata->Note (-> metadata metadata->kind (or :code))
+                                     [topform-with-metadata]
+                                     metadata))))
 
 
 ;; Thus we can collect all notes in a namespace.
