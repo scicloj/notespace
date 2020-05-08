@@ -1,7 +1,39 @@
-(ns notespace.v2.state)
+(ns notespace.v2.state
+  (:require [clojure.core.async :as async]))
 
 (def state
   (atom {}))
+
+(defn get-in-state [path]
+  (get-in @state path))
+
+(defn swap-state! [f]
+  (swap! state f))
+
+(def state-changes
+  (async/chan 1))
+
+(defn assoc-in-state! [& paths-and-values]
+  (swap-state!
+         (fn [s0]
+           (reduce (fn [s1 [path value]]
+                     (assoc-in s1 path value))
+                   s0
+                   (partition 2 paths-and-values))))
+  (async/go
+    (async/>! state-changes [:assoc paths-and-values]))
+  @state)
+
+(defn update-in-state! [& paths-and-fns]
+  (swap-state!
+         (fn [s0]
+           (reduce (fn [s1 [path f]]
+                     (update-in s1 path f))
+                   s0
+                   (partition 2 paths-and-fns))))
+  (async/go
+    (async/>! state-changes [:update paths-and-fns]))
+  @state)
 
 (defn reset-state! []
   (swap!
@@ -30,26 +62,9 @@
    ;; the last notespace rendered:
    :last-ns-rendered nil
    ;; We keep track of changes in source files corresponding to namespaces.
-   :ns->last-modification {}))
-
-(defn get-in-state [path]
-  (get-in @state path))
-
-(defn assoc-in-state! [& paths-and-values]
-  (swap! state
-         (fn [s0]
-           (reduce (fn [s1 [path value]]
-                     (assoc-in s1 path value))
-                   s0
-                   (partition 2 paths-and-values)))))
-
-(defn update-in-state! [& paths-and-fns]
-  (swap! state
-         (fn [s0]
-           (reduce (fn [s1 [path f]]
-                     (update-in s1 path f))
-                   s0
-                   (partition 2 paths-and-fns)))))
+   :ns->last-modification {}
+   ;; We can have multiple functions reacting to state.
+   :state-listeners []))
 
 (defn config
   ([]
