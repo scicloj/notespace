@@ -205,21 +205,11 @@
      transf)))
 
 ;; A note is computed by evaluating its form to compute its value.
-(defn evaluate-note [anote]
-  (try
-    (->> anote
-         :forms
-         (cons 'do)
-         eval)
-    (catch Exception e
-      (throw (ex-info "Note evaluation failed."
-                      {:note      anote
-                       :exception e}))) ))
-
 (defn compute-note [anote note-state]
   (let [value    (evaluate-note anote)
         renderer (-> anote :kind (state/kind->behaviour) :value-renderer)
-        rendered (renderer value)]
+        rendered (-> value realize renderer)]
+    (pp/pprint [:value value])
     (assoc note-state
            :value value
            :rendered rendered)))
