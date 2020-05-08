@@ -17,7 +17,7 @@
       (if (= this-loop-id @current-loop-id)
         (recur)))))
 
-(defn logging-state-effect [[change-type paths-and-_]]
+(defn logging-state-effect! [[change-type paths-and-_]]
   (->> paths-and-_
        (partition 2)
        (mapv first)
@@ -30,7 +30,7 @@
   (config/set-default-config!)
   (kinds/define-base-kinds!)
   (state/assoc-in-state!
-   [:state-effects] [#'logging-state-effect])
+   [:state-effects] [#'logging-state-effect!])
   (run-state-change-loop!))
 
 (comment
