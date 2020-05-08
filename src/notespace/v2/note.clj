@@ -128,6 +128,16 @@
         (->> [old-note new-note]
              (map (juxt :kind :forms))
              (apply =)))))
+(defn evaluate-note [anote]
+  (try
+    (->> anote
+         :forms
+         (cons 'do)
+         eval)
+    (catch Exception e
+      (throw (ex-info "Note evaluation failed."
+                      {:note      anote
+                       :exception e}))) ))
 
 
 (defn read-notes-seq! [namespace]
