@@ -89,8 +89,11 @@
        :line
        (ns->line->index namespace)))
 
-(defn kind->behaviour [kind]
-  (get-in-state [:kind->behaviour kind]))
+(defn kind->behaviour
+  ([]
+   (get-in-state [:kind->behaviour]))
+  ([kind]
+   (get-in-state [:kind->behaviour kind])))
 
 (defn last-ns-rendered []
   (get-in-state [:last-ns-rendered]))
