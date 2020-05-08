@@ -3,7 +3,7 @@
             [hiccup.core :as hiccup]
             [hiccup.page :as page]
             [notespace.v2.reader :as reader]
-            [notespace.v2.util :refer [fmap only-one]]
+            [notespace.v2.util :refer [fmap only-one realize]]
             [notespace.v2.view :as view]
             [notespace.v2.css :as css]
             [rewrite-clj.node]
@@ -12,7 +12,9 @@
             [cambium.core :as log]
             [notespace.v2.source :as source]
             [notespace.v2.state :as state]
-            [notespace.v2.init :as init])
+            [notespace.v2.init :as init]
+            [clojure.pprint :as pp]
+            [notespace.v2.io :as io])
   (:import java.io.File
            clojure.lang.IDeref))
 
