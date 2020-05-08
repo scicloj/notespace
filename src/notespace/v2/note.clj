@@ -27,8 +27,6 @@
 ;; A note's state has a return value, a rendered result, and a status.
 (defrecord NoteState [value rendered status])
 
-(def initial-note-state (->NoteState nil nil {:changed true}))
-
 (defn note->note-state [namespace anote]
   (->> anote
        :metadata
@@ -43,7 +41,6 @@
   (->> namespace
        source/ns->source-filename
        reader/file->topforms-with-metadata))
-
 
 
 ;; When the first form of a note is a keyword,
@@ -140,6 +137,11 @@
                       {:note      anote
                        :exception e}))) ))
 
+(defn initial-note-state [anote]
+  (->NoteState
+   (evaluate-note anote)
+   nil
+   {}))
 
 (defn read-notes-seq! [namespace]
   (let [old-notes            (state/ns->notes namespace)
@@ -155,10 +157,11 @@
                                (let [new-notes (ns-notes namespace)]
                                  (mapv (fn [[old-note old-note-state] new-note]
                                          (if (different-note? old-note new-note)
-                                           [new-note initial-note-state]
+                                           [new-note (initial-note-state new-note)]
                                            [(merge old-note
                                                    (select-keys new-note [:metadata]))
-                                            old-note-state]))
+                                            #_old-note-state
+                                            (initial-note-state old-note)]))
                                        (concat old-notes-and-states (repeat nil))
                                        new-notes)))
         notes                (map first notes-and-states)]
@@ -256,6 +259,7 @@
   (->> notes
        (map (partial note->note-state namespace))
        (view/notes-and-states->hiccup namespace notes)))
+
 
 (defn render-notes! [namespace notes & {:keys [file]}]
   (render-to-file! (partial notes->hiccup namespace notes)
