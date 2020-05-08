@@ -264,3 +264,5 @@
        (run! (partial compute-note! *ns*)))
   [[:computed {:ns *ns*}]
    (render-this-ns!)])
+(defmacro D [& forms]
+  (cons 'delay forms))
