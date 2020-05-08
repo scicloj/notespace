@@ -32,7 +32,15 @@
       with-out-str
       (zprint.core/zprint width {:parse-string? true})))
 
-(defn deref-if-ideref [v]
-  (if (instance? IDeref v)
+
+(defn fresh? [v]
+  (if (instance? clojure.lang.IPending v)
+    (realized? v)
+    true))
+
+(defn realize [v]
+  (if (instance? clojure.lang.IDeref v)
     @v
     v))
+
+
