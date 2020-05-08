@@ -188,6 +188,12 @@
       (.mkdirs dir))
     dirname))
 
+(defn copy-to-ns-target-path [source-uri target-filename]
+  (io/copy source-uri
+           (str (ns->out-dir *ns*)
+                "/"
+                target-filename)))
+
 ;; Any namespace has a corresponding output html file.
 (defn ns->out-filename [namespace]
   (format "%s/index.html" (ns->out-dir namespace)))
