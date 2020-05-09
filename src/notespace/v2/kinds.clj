@@ -8,7 +8,9 @@
         [:kind->behaviour ~kind] ~behaviour
         [:note-symbol->kind (quote ~note-symbol)] ~kind)
        (defmacro ~note-symbol [& forms#]
-         nil)
+         (->> forms#
+              (cons 'do)
+              eval))
        ;; https://stackoverflow.com/questions/20831029/how-is-it-possible-to-intern-macros-in-clojure
        (intern (quote notespace.v2.note)
                (with-meta (quote ~note-symbol)
