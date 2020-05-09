@@ -3,7 +3,8 @@
             [notespace.v2.state :as state]
             [notespace.v2.kinds :as kinds]
             [clojure.core.async :as async]
-            [cambium.core :as log]))
+            [cambium.core :as log]
+            [notespace.v2.basic-renderer :as basic-renderer]))
 
 (def current-loop-id (atom nil))
 
@@ -30,7 +31,8 @@
   (config/set-default-config!)
   (kinds/define-base-kinds!)
   (state/assoc-in-state!
-   [:state-effects] [#'logging-state-effect!])
+   [:state-effects] [#'logging-state-effect!
+                     #'basic-renderer/effect!])
   (run-state-change-loop!))
 
 (comment
