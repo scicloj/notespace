@@ -1,25 +1,12 @@
 (ns notespace.v2.note
-  (:require [clojure.string :as string]
-            [hiccup.core :as hiccup]
-            [hiccup.page :as page]
-            [notespace.v2.reader :as reader]
+  (:require [notespace.v2.reader :as reader]
             [notespace.v2.util :refer [fmap only-one realize]]
-            [notespace.v2.view :as view]
-            [notespace.v2.css :as css]
             [rewrite-clj.node]
-            [notespace.v2.cdn :as cdn]
-            [notespace.v2.js :as js]
-            [cambium.core :as log]
             [notespace.v2.source :as source]
             [notespace.v2.state :as state]
-            [notespace.v2.init :as init]
-            [clojure.pprint :as pp]
-            [notespace.v2.io :as io])
+            [clojure.pprint :as pp])
   (:import java.io.File
            clojure.lang.IDeref))
-
-(defonce init
-  (init/init!))
 
 ;; A note has a kind, possibly a label, a collection of forms, and the reader metadata.
 (defrecord Note [kind label forms metadata])
@@ -40,8 +27,8 @@
 (defn ->ns-topforms-with-metadata [namespace]
   (->> namespace
        source/ns->source-filename
-       reader/file->topforms-with-metadata))
-
+       reader/file->topforms-with-metadata
+       (filter (comp :line meta))))
 
 ;; When the first form of a note is a keyword,
 ;; then it would be considered the form's label
@@ -75,10 +62,11 @@
            (= 'ns))))
 
 (defn metadata->kind [metadata]
-  (->> (state/kind->behaviour)
-       keys
-       (drop-while (complement metadata))
-       first))
+  (when metadata
+    (->> (state/kind->behaviour)
+         keys
+         (drop-while (complement metadata))
+         first)))
 
 (defn topform-with-metadata->Note
   [topform-with-metadata]
@@ -105,7 +93,6 @@
                                      [topform-with-metadata]
                                      metadata))))
 
-
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
   (->> namespace
@@ -124,7 +111,6 @@
       (->> [old-note new-note]
            (map (juxt :kind :forms))
            (apply not=))))
-
 
 (defn evaluate-note [anote]
   (try
@@ -195,7 +181,6 @@
      (if needs-update :updated :not-updated)
      (count notes)]))
 
-
 ;; We support various update transformations for notes' states.
 (defn update-note-state! [namespace transf anote]
   (let [idx (->> anote
@@ -208,112 +193,16 @@
       idx]
      transf)))
 
-;; A note is computed by evaluating its form to compute its value.
-(defn compute-note [anote note-state]
+;; A note is realized by realizing all its pending values and rendering them.
+(defn realize-note [anote note-state]
   (let [value    (evaluate-note anote)
         renderer (-> anote :kind (state/kind->behaviour) :value-renderer)
         rendered (-> value realize renderer)]
-    (pp/pprint [:value value])
     (assoc note-state
            :value value
            :rendered rendered)))
 
-(defn compute-note! [namespace anote]
+(defn realize-note! [namespace anote]
   (update-note-state! namespace
-                      (partial compute-note anote)
+                      (partial realize-note anote)
                       anote))
-
-(defn ns->out-dir [namespace]
-  (let [dirname (str (state/config [:target-path])
-                     "/"
-                     (-> namespace str (string/replace "." "/"))
-                     "/")
-        dir (File. dirname)]
-    (when-not (.exists dir)
-      (.mkdirs dir))
-    dirname))
-
-(defn copy-to-ns-target-path [source-uri target-filename]
-  (io/copy source-uri
-           (str (ns->out-dir *ns*)
-                "/"
-                target-filename)))
-
-;; Any namespace has a corresponding output html file.
-(defn ns->out-filename [namespace]
-  (format "%s/index.html" (ns->out-dir namespace)))
-
-(defn copy-waiting-gif! []
-  (copy-to-ns-target-path (clojure.java.io/resource "images/Ball-1s-24px.gif")
-                          "waiting.gif"))
-
-(defn render-to-file! [render-fn path]
-  (let [path-to-use (or path (str (File/createTempFile "rendered" ".html")))
-        html (page/html5 (render-fn))]
-    (copy-waiting-gif!)
-    (spit path-to-use html)
-    (log/info [::wrote path-to-use])
-    html))
-
-(defn notes->hiccup [namespace notes]
-  (->> notes
-       (map (partial note->note-state namespace))
-       (view/notes-and-states->hiccup namespace notes)))
-
-
-(defn render-notes! [namespace notes & {:keys [file]}]
-  (render-to-file! (partial notes->hiccup namespace notes)
-                   file))
-
-(defn render-ns [namespace]
-  (hiccup.core/html
-   [:html
-    (into [:head
-           (js/mirador-setup)
-           (css/include-css (state/config [:css]))]
-          (mapcat cdn/header [:prettify :datatables :fonts]))
-    [:body
-     (if (not namespace)
-       "Waiting for a first notespace to appear ..."
-       (do (read-notes-seq! namespace)
-           (notes->hiccup
-            namespace
-            (state/ns->notes namespace))))]]))
-
-(defn render-ns! [namespace]
-  (render-to-file! (partial render-ns namespace)
-                   (ns->out-filename namespace))
-  (state/assoc-in-state! [:last-ns-rendered] namespace)
-  [:rendered {:ns namespace}])
-
-(defn render-this-ns []
-  (render-ns *ns*))
-
-(defn render-this-ns! []
-  (render-ns! *ns*))
-
-(defn check [pred & args]
-  [(if (apply pred args)
-     :PASSED
-     :FAILED)
-   (last args)])
-
-(defn compute-note-at-line! [line]
-  (read-notes-seq! *ns*)
-  (some->> line
-           (state/ns->line->index *ns*)
-           (state/ns->note *ns*)
-           (compute-note! *ns*))
-  [[:computed {:ns   *ns*
-               :line line}]
-   (render-this-ns!)])
-
-(defn compute-this-notespace! []
-  (read-notes-seq! *ns*)
-  (->> *ns*
-       (state/ns->notes)
-       (run! (partial compute-note! *ns*)))
-  [[:computed {:ns *ns*}]
-   (render-this-ns!)])
-(defmacro D [& forms]
-  (cons 'delay forms))

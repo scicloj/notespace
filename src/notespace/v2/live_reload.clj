@@ -8,8 +8,9 @@
             [com.akolov.mirador.core :refer [watch-reload watcher-folder]]
             [cambium.core :as log]
             [clojure.java.browse :as browse]
-            [notespace.v2.note :as note]
-            [notespace.v2.state :as state]))
+            [notespace.v2.state :as state]
+            [notespace.v2.paths :as paths]
+            [notespace.v2.basic-renderer :as basic-renderer]))
 
 (defn html-response [body]
       {:status  200
@@ -25,9 +26,9 @@
 
 (defn notespace-html []
   (or (some-> (state/last-ns-rendered)
-              note/ns->out-filename
+              paths/ns->out-filename
               slurp)
-      (note/render-ns nil)))
+      (basic-renderer/render-ns nil)))
 
 ;; Use to add current ns path prefix to URI so we can load
 ;; static files directly from the ns output directory. This way
@@ -36,7 +37,7 @@
 ;; where output files are loaded directly in the browser.
 (defn wrap-add-ns-path-prefix [handler]
   (fn [request]
-    (let [curr-ns-path (note/ns->out-dir (state/last-ns-rendered))
+    (let [curr-ns-path (paths/ns->target-path (state/last-ns-rendered))
           new-uri (-> (str "/" curr-ns-path (:uri request))
                       (clojure.string/replace #"//" "/"))]
       (handler (assoc request :uri new-uri)))))
