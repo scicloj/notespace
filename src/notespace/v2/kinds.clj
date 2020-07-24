@@ -3,38 +3,28 @@
             [notespace.v2.view :as view]
             [hiccup.core :as hiccup]))
 
-(defmacro defkind [note-symbol kind behaviour]
-  `(do (state/assoc-in-state!
-        [:kind->behaviour ~kind] ~behaviour
-        [:note-symbol->kind (quote ~note-symbol)] ~kind)
-       (defmacro ~note-symbol [& forms#]
-         (->> forms#
-              (cons 'do)
-              eval))
-       ;; https://stackoverflow.com/questions/20831029/how-is-it-possible-to-intern-macros-in-clojure
-       (intern (quote notespace.v2.note)
-               (with-meta (quote ~note-symbol)
-                 {:macro true})
-               (deref (var ~note-symbol)))))
-
+(defn define-kind! [kind behaviour]
+  (state/assoc-in-state!
+   [:kind->behaviour ~kind] ~behaviour
+   [:note-symbol->kind (quote ~note-symbol)] ~kind))
 
 (defn define-base-kinds! []
-  (defkind note
+  (define-kind!
     :code {:render-src?    true
            :value-renderer view/value->hiccup})
-  (defkind note-md
+  (define-kind!
     :md   {:render-src?    false
            :value-renderer view/md->hiccup})
-  (defkind note-as-md
+  (define-kind!
     :as-md   {:render-src?    true
               :value-renderer view/md->hiccup})
-  (defkind note-hiccup
+  (define-kind!
     :hiccup {:render-src?    false
              :value-renderer (fn [h] (hiccup/html h))})
-  (defkind note-as-hiccup
+  (define-kind!
     :as-hiccup {:render-src?    true
                 :value-renderer (fn [h] (hiccup/html h))})
-  (defkind note-void
+  (define-kind!
     :void {:render-src?    true
            :value-renderer (constantly nil)}))
 
