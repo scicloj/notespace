@@ -5,8 +5,7 @@
 
 (defn define-kind! [kind behaviour]
   (state/assoc-in-state!
-   [:kind->behaviour ~kind] ~behaviour
-   [:note-symbol->kind (quote ~note-symbol)] ~kind))
+   [:kind->behaviour ~kind] ~behaviour))
 
 (defn define-base-kinds! []
   (define-kind!
