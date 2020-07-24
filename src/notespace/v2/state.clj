@@ -1,5 +1,6 @@
 (ns notespace.v2.state
-  (:require [clojure.core.async :as async]))
+  (:require [clojure.core.async :as async]
+            [cambium.core :as log]))
 
 (def state
   (atom {}))
@@ -22,7 +23,7 @@
                    (partition 2 paths-and-values))))
   (async/go
     (async/>! state-changes [:assoc paths-and-values]))
-  @state)
+  :ok)
 
 (defn update-in-state! [& paths-and-fns]
   (swap-state!
@@ -33,7 +34,7 @@
                    (partition 2 paths-and-fns))))
   (async/go
     (async/>! state-changes [:update paths-and-fns]))
-  @state)
+  :ok)
 
 (defn reset-state! []
   (swap!
