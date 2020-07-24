@@ -4,7 +4,8 @@
             [rewrite-clj.node]
             [notespace.v2.source :as source]
             [notespace.v2.state :as state]
-            [clojure.pprint :as pp])
+            [clojure.pprint :as pp]
+            [cambium.core :as log])
   (:import java.io.File
            clojure.lang.IDeref))
 
@@ -136,13 +137,13 @@
                                   old-notes
                                   old-notes-states)
         source-modified      (source/source-file-modified? namespace)
-        needs-update         (or (not old-notes)
-                                 source-modified)
+        needs-update         true #_(or (not old-notes)
+                                      source-modified)
         notes-and-states     (if (not needs-update)
                                old-notes-and-states
                                (let [new-notes (ns-notes namespace)]
                                  (mapv (fn [[old-note old-note-state] new-note]
-                                         (if (different-note? old-note new-note)
+                                         (if true #_(different-note? old-note new-note)
                                            [new-note (initial-note-state new-note)]
                                            [(merge old-note
                                                    (select-keys new-note [:metadata]))
@@ -196,11 +197,18 @@
 ;; A note is realized by realizing all its pending values and rendering them.
 (defn realize-note [anote note-state]
   (let [value    (evaluate-note anote)
-        renderer (-> anote :kind (state/kind->behaviour) :value-renderer)
+        renderer (-> anote :kind state/kind->behaviour :value-renderer)
+        _ (log/info {:renderer renderer
+                     :dbg [(-> anote :kind state/kind->behaviour :value-renderer)
+                           (-> anote :kind state/kind->behaviour)
+                           (-> anote :kind)
+                           (-> anote)
+                           (state/kind->behaviour)]})
         rendered (-> value realize renderer)]
     (assoc note-state
            :value value
            :rendered rendered)))
+
 
 (defn realize-note! [namespace anote]
   (update-note-state! namespace
