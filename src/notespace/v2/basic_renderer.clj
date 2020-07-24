@@ -62,11 +62,13 @@
   (render-ns! *ns*))
 
 (defn effect! [[change-type paths-and-_]]
-  (log/info change-type)
+  (log/info {:change-type change-type
+             :paths (mapv first paths-and-_)
+             :state-size (count @state/state)})
   (when (and (= change-type :update)
              (->> paths-and-_
+                  (partition 2)
                   (map (comp first first))
                   (= [:ns->note-states])))
     (render-this-ns!)))
-
 
