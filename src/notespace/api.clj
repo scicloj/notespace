@@ -1,9 +1,15 @@
 (ns notespace.v2.api
   (:require [notespace.v2.note :as note]
             [notespace.v2.state :as state]
-            [notespace.v2.init :as init]))
+            [notespace.v2.init :as init]
+            [notespace.v2.live-reload :as live-reload]))
 
-(init/init!)
+(defn init! []
+  (init/init!))
+
+(defn init-live-reload! []
+  (live-reload/restart!)
+  (live-reload/open-browser))
 
 (defn check [pred & args]
   [(if (apply pred args)
@@ -31,3 +37,4 @@
 
 (defmacro D [& forms]
   (cons 'delay forms))
+

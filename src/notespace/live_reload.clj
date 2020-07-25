@@ -51,11 +51,12 @@
   (wrap-add-ns-path-prefix
    (route/files "" {:root (System/getProperty "user.dir")})))
 
-(def app (-> routes
-             (ring.middleware.reload/wrap-reload)
-             (watch-reload {:watcher (watcher-folder (state/config [:target-path]))
-                            :uri     "/watch-reload"})
-             handler/site))
+(defn ->app []
+  (-> routes
+      (ring.middleware.reload/wrap-reload)
+      (watch-reload {:watcher (watcher-folder (state/config [:target-path]))
+                     :uri     "/watch-reload"})
+      handler/site))
 
 (defonce server (atom nil))
 
@@ -74,7 +75,7 @@
     (println "Server starting...")
     (reset! server
             (try (httpkit-server/run-server
-                  #'app
+                  (->app)
                   {:port p
                    :join? false})
                  (catch Exception e
@@ -92,9 +93,3 @@
        browse/browse-url
        future))
 
-
-;; automatic init
-
-(restart!)
-
-(defonce opened (open-browser))

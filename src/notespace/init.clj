@@ -6,9 +6,9 @@
             [cambium.core :as log]
             [notespace.v2.basic-renderer :as basic-renderer]))
 
-#_(def current-loop-id (atom nil))
+(def current-loop-id (atom nil))
 
-#_(defn run-state-change-loop! []
+(defn run-state-change-loop! []
   (reset! current-loop-id (rand-int 999999))
   (let [this-loop-id @current-loop-id]
     (when (= this-loop-id @current-loop-id)
@@ -18,7 +18,7 @@
             (l state-change)))
         (recur)))))
 
-#_(defn logging-state-effect! [[change-type paths-and-_]]
+(defn logging-state-effect! [[change-type paths-and-_]]
   (->> paths-and-_
        (partition 2)
        (mapv first)
@@ -26,15 +26,13 @@
        log/debug))
 
 (defn init! []
-  (require 'notespace.v2.note)
   (state/reset-state!)
   (config/set-default-config!)
   (kinds/define-base-kinds!)
-  ;; (state/assoc-in-state!
-  ;;  [:state-effects] [#'logging-state-effect!
-  ;;                    #'basic-renderer/effect!])
-  ;; (run-state-change-loop!)
-  )
+  (state/assoc-in-state!
+   [:state-effects] [#'logging-state-effect!
+                     #'basic-renderer/effect!])
+  (run-state-change-loop!))
 
 (comment
   (init!)
