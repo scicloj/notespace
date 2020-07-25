@@ -1,9 +1,9 @@
-(ns notespace.v2.note
-  (:require [notespace.v2.reader :as reader]
-            [notespace.v2.util :refer [fmap only-one realize]]
+(ns notespace.note
+  (:require [notespace.reader :as reader]
+            [notespace.util :refer [fmap only-one realize]]
             [rewrite-clj.node]
-            [notespace.v2.source :as source]
-            [notespace.v2.state :as state]
+            [notespace.source :as source]
+            [notespace.state :as state]
             [clojure.pprint :as pp]
             [cambium.core :as log])
   (:import java.io.File

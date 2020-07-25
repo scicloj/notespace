@@ -1,4 +1,4 @@
-(ns notespace.v2.state
+(ns notespace.state
   (:require [clojure.core.async :as async]
             [cambium.core :as log]))
 

@@ -1,4 +1,4 @@
-(ns notespace.v2.check)
+(ns notespace.check)
 
 (defn ->checks-freqs [notes]
   (when-let [checks-results (->> notes

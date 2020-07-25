@@ -1,4 +1,4 @@
-(ns notespace.v2.reader
+(ns notespace.reader
   (:require [clojure.tools.reader :as tr]
             [clojure.tools.reader.reader-types :as rts]))
 

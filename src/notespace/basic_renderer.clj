@@ -1,14 +1,14 @@
-(ns notespace.v2.basic-renderer
-  (:require [notespace.v2.paths :as paths]
+(ns notespace.basic-renderer
+  (:require [notespace.paths :as paths]
             [clojure.java.io :refer [resource]]
             [hiccup.page :as page]
             [cambium.core :as log]
-            [notespace.v2.view :as view]
-            [notespace.v2.note :as note]
-            [notespace.v2.js :as js]
-            [notespace.v2.css :as css]
-            [notespace.v2.state :as state]
-            [notespace.v2.cdn :as cdn])
+            [notespace.view :as view]
+            [notespace.note :as note]
+            [notespace.js :as js]
+            [notespace.css :as css]
+            [notespace.state :as state]
+            [notespace.cdn :as cdn])
   (:import java.io.File))
 
 (defn copy-waiting-gif! []

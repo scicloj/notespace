@@ -1,7 +1,7 @@
-(ns notespace.v2.paths
-  (:require [notespace.v2.state :as state]
+(ns notespace.paths
+  (:require [notespace.state :as state]
             [clojure.string :as string]
-            [notespace.v2.io :as io])
+            [notespace.io :as io])
   (:import java.io.File))
 
 (defn ns->target-path [namespace]

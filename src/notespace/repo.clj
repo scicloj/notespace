@@ -1,9 +1,9 @@
-(ns notespace.v2.repo
+(ns notespace.repo
   "Figuring out details related to the github repo holding a given notespace."
   (:require [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.string :as string]
-            [notespace.v2.source :as source])
+            [notespace.source :as source])
   (:import (java.io File)
            (java.nio.file Files)))
 

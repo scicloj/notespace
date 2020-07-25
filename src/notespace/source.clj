@@ -1,7 +1,7 @@
-(ns notespace.v2.source
+(ns notespace.source
   (:require [clojure.string :as string]
             [clojure.java.io :as io]
-            [notespace.v2.state :as state]))
+            [notespace.state :as state]))
 
 ;; For a given namespace, we can find the location of the corresponding source file.
 (defn src-or-test [namespace]

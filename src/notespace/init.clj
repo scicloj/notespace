@@ -1,10 +1,10 @@
-(ns notespace.v2.init
-  (:require [notespace.v2.config :as config]
-            [notespace.v2.state :as state]
-            [notespace.v2.kinds :as kinds]
+(ns notespace.init
+  (:require [notespace.config :as config]
+            [notespace.state :as state]
+            [notespace.kinds :as kinds]
             [clojure.core.async :as async]
             [cambium.core :as log]
-            [notespace.v2.basic-renderer :as basic-renderer]))
+            [notespace.basic-renderer :as basic-renderer]))
 
 (def current-loop-id (atom nil))
 

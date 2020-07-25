@@ -1,8 +1,8 @@
-(ns notespace.v2.api
-  (:require [notespace.v2.note :as note]
-            [notespace.v2.state :as state]
-            [notespace.v2.init :as init]
-            [notespace.v2.live-reload :as live-reload]))
+(ns notespace.api
+  (:require [notespace.note :as note]
+            [notespace.state :as state]
+            [notespace.init :as init]
+            [notespace.live-reload :as live-reload]))
 
 (defn init! []
   (init/init!))

@@ -1,14 +1,14 @@
-(ns notespace.v2.view
+(ns notespace.view
   (:require [clojure.string :as string]
             [zprint.core :as zprint]
             [clojure.pprint :as pp]
             [hiccup.core :as hiccup]
             [markdown.core :refer [md-to-html-string]]
-            [notespace.v2.util :refer [careful-zprint fresh?]]
-            [notespace.v2.repo :as repo]
-            [notespace.v2.check :as check]
+            [notespace.util :refer [careful-zprint fresh?]]
+            [notespace.repo :as repo]
+            [notespace.check :as check]
             [cambium.core :as log]
-            [notespace.v2.state :as state]))
+            [notespace.state :as state]))
 
 (defn htmlify-whitespace [s]
   (-> s

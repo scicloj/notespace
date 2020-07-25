@@ -1,6 +1,6 @@
-(ns notespace.v2.js
-  (:require [notespace.v2.config :as config]
-            [notespace.v2.state :as state]))
+(ns notespace.js
+  (:require [notespace.config :as config]
+            [notespace.state :as state]))
 
 (defn mirador-setup []
   (->> [:live-reload-port]

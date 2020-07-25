@@ -1,6 +1,6 @@
-(ns notespace.v2.kinds
-  (:require [notespace.v2.state :as state]
-            [notespace.v2.view :as view]
+(ns notespace.kinds
+  (:require [notespace.state :as state]
+            [notespace.view :as view]
             [hiccup.core :as hiccup]))
 
 (defn define-kind! [kind behaviour]
