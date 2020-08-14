@@ -4,19 +4,23 @@
             [notespace.events :as events]
             [notespace.effects :as effects]))
 
-(def *state
-  (atom (fx/create-context {:notes []}
-                           cache/lru-cache-factory)))
+(def the-context
+  (atom
+   (fx/create-context {} cache/lru-cache-factory)))
 
 (def handle
   (-> events/handle
       (fx/wrap-co-effects
-       {:fx/context (fx/make-deref-co-effect *state)})
+       {:fx/context (fx/make-deref-co-effect the-context)})
       (fx/wrap-effects
-       {:context     (fx/make-reset-effect *state)
+       {:context     (fx/make-reset-effect the-context)
         :dispatch    fx/dispatch-effect
         :realization effects/realization})
       (fx/wrap-async)))
 
 (defn mount-renderer [renderer]
-  (fx/mount-renderer *state renderer))
+  (fx/mount-renderer the-context renderer))
+
+(defn sub-get-in [& path]
+  (fx/sub-val @the-context get-in path))
+

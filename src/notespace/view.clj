@@ -8,7 +8,7 @@
             [notespace.repo :as repo]
             [notespace.check :as check]
             [cambium.core :as log]
-            [notespace.state :as state]))
+            [notespace.context :as ctx]))
 
 (defn htmlify-whitespace [s]
   (-> s
@@ -44,6 +44,11 @@
   [:div
    (md-to-html-string md)])
 
+(defn mds->hiccup [mds]
+  (->> mds
+       (map md-to-html-string)
+       (into [:div])))
+
 (defn label->anchor-id [label]
   (->> label name))
 
@@ -61,7 +66,7 @@
   [:div {:class "nspbox"}
    (when label
      (label->anchor label))
-   (when (-> kind (state/kind->behaviour) :render-src?)
+   (when (ctx/sub-get-in :kind->behaviour kind :render-src?)
      (->> (or [(some-> anote
                        :metadata
                        :source

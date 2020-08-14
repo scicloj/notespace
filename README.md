@@ -9,14 +9,21 @@ Notebook experience in your Clojure namespace
 ## What is it?
 
 This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving our favourite editor?
-
-See the [screencast](https://drive.google.com/file/d/1D0EBTA2Udt2vjEEetiHqjjk1blb79XcY/view?usp=sharing).
-
 ## Status
 
 Experimental
 
-## Usage
+## Version 3
+Currently in branch.
+
+Remarks:
+* At the moment, this version depends on [cljfx](https://github.com/cljfx/cljfx), merely for its [state management abstractions](https://github.com/cljfx/cljfx#subscriptions-and-contexts). This means it will run only on JDK 11.
+
+## Version 2
+
+See the [screencast](https://drive.google.com/file/d/1D0EBTA2Udt2vjEEetiHqjjk1blb79XcY/view?usp=sharing) for version 2.
+
+### Usage
 
 See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [rendered html](https://scicloj.github.io/notespace/doc/notespace/v2/tutorial-test/index.html).
 

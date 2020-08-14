@@ -1,12 +1,25 @@
 (ns notespace.scratch
   (:require [notespace.context :as ctx]
             [notespace.events :as events]
-            [notespace.renderers.pp :as pp-renderer]))
+            [notespace.init :as init]
+            [notespace.note :as note]))
+
+(->> (note/->ns-topforms-with-metadata *ns*)
+     (map note/topform-with-metadata->Note))
+
+^:void ^{:label :intro}
+[3]
+
+^:multi
+[3]
+
+["a" "b"]
+
+^:multi
+["a" "b"]
 
 (comment
-  (ctx/mount-renderer pp-renderer/renderer)
-
-  (ctx/unmount-renderer pp-renderer/renderer)
+  (init/init)
 
   (ctx/handle
    {:event/type ::events/add-note

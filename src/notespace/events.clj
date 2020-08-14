@@ -7,7 +7,7 @@
   (throw (ex-info "Unrecognized event"
                   {:event event})))
 
-(defmethod handle ::init [{:keys [fx/context initial-state]}]
+(defmethod handle ::reset [{:keys [fx/context initial-state]}]
   {:context (fx/reset-context context initial-state)})
 
 (defmethod handle ::add-note [{:keys [fx/context note]}]
@@ -30,3 +30,8 @@
   {:context (fx/swap-context context
                              assoc-in [:notes idx :value]
                              value)})
+
+(defmethod handle ::file-modified [{:keys [fx/context namespace modification-time]}]
+  {:context (fx/swap-context context
+                             assoc-in [:ns->last-modification namespace]
+                             modification-time)})
