@@ -8,15 +8,19 @@
                   {:event event})))
 
 (defmethod handle ::reset [{:keys [fx/context initial-state]}]
-  {:context (fx/reset-context context initial-state)})
+  {:context (fx/reset-context
+             context
+             initial-state)})
 
 (defmethod handle ::add-note [{:keys [fx/context note]}]
-  {:context (fx/swap-context context update :notes #(conj % note))})
+  {:context (fx/swap-context
+             context update
+             :notes #(conj % note))})
 
 (defmethod handle ::realize-note [{:keys [fx/context idx]}]
-  {:context     (fx/swap-context context
-                                 update-in [:notes idx]
-                                 #(assoc % :started-realizing true))
+  {:context     (fx/swap-context
+                 context update-in
+                 [:notes idx] #(assoc % :started-realizing true))
    :realization {:idx          idx
                  :note         (fx/sub context
                                        (fn [ctx]
@@ -27,11 +31,25 @@
                  :on-exception {:event/type ::on-exception}}})
 
 (defmethod handle ::on-result [{:keys [fx/context idx value]}]
-  {:context (fx/swap-context context
-                             assoc-in [:notes idx :value]
-                             value)})
+  {:context (fx/swap-context
+             context assoc-in
+             [:notes idx :value] value)})
 
 (defmethod handle ::file-modified [{:keys [fx/context namespace modification-time]}]
-  {:context (fx/swap-context context
-                             assoc-in [:ns->last-modification namespace]
-                             modification-time)})
+  {:context (fx/swap-context
+             context assoc-in
+             [:ns->last-modification namespace] modification-time)})
+
+(defmethod handle ::assoc-notes [{:keys [fx/context namespace notes note-states line->index label->indices]}]
+  {:context (fx/swap-context
+             context assoc-in
+             [:ns->notes namespace] notes
+             [:ns->note-states namespace] note-states
+             [:ns->line->index namespace] line->index
+             [:ns->label->indices namespace] label->indices)})
+
+(defmethod handle ::update-note-state [{:keys [fx/context namespace idx f]}]
+  {:context (fx/swap-context
+             context update-in
+             [:ns->note-states namespace idx]
+             f)})

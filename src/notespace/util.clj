@@ -1,9 +1,7 @@
 (ns notespace.util
   (:require [clojure.pprint :as pp]
             [com.rpl.specter :refer [MAP-VALS transform]]
-            [zprint.core :as zp]
-            [clojure.java.io :as io])
-  (:import clojure.lang.IDeref))
+            [zprint.core :as zp]))
 
 (defn pprint-and-return [x]
   (pp/pprint x)
@@ -42,5 +40,4 @@
   (if (instance? clojure.lang.IDeref v)
     @v
     v))
-
 

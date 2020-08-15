@@ -21,6 +21,11 @@
 (defn mount-renderer [renderer]
   (fx/mount-renderer the-context renderer))
 
+(defn unmount-renderer [renderer]
+  (fx/unmount-renderer the-context renderer))
+
+;; A conveniene function for subscribing to the value
+;; at a given path inside the context.
 (defn sub-get-in [& path]
   (fx/sub-val @the-context get-in path))
 

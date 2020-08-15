@@ -1,10 +1,10 @@
 (ns notespace.note
   (:require [notespace.reader :as reader]
-            [notespace.util :refer [fmap only-one realize]]
+            [notespace.util :as u]
             [rewrite-clj.node]
             [notespace.source :as source]
-            [cambium.core :as log]
-            [notespace.context :as ctx]))
+            [notespace.context :as ctx]
+            [notespace.events :as events]))
 
 ;; A note has a kind, possibly a label, a collection of forms, and the reader metadata.
 (defrecord Note [kind label forms metadata])
@@ -77,15 +77,6 @@
 ;; We can update our notes structures by reading the notes of a namespace.
 ;; We try not to update things that have not changed.
 
-;; TODO: Rethink
-(defn different-note? [old-note new-note]
-  (or (->> [old-note new-note]
-           (map (comp :source :metadata))
-           (apply not=))
-      (->> [old-note new-note]
-           (map (juxt :kind :forms))
-           (apply not=))))
-
 (defn evaluate-note [anote]
   (try
     (->> anote
@@ -103,87 +94,96 @@
    nil
    {}))
 
-;; (defn read-notes-seq! [namespace]
-;;   (let [old-notes            (state/ns->notes namespace)
-;;         old-notes-states     (state/ns->note-states namespace)
-;;         old-notes-and-states (map vector
-;;                                   old-notes
-;;                                   old-notes-states)
-;;         source-modified      (source/source-file-modified? namespace)
-;;         needs-update         true #_(or (not old-notes)
-;;                                       source-modified)
-;;         notes-and-states     (if (not needs-update)
-;;                                old-notes-and-states
-;;                                (let [new-notes (ns-notes namespace)]
-;;                                  (mapv (fn [[old-note old-note-state] new-note]
-;;                                          (if true #_(different-note? old-note new-note)
-;;                                            [new-note (initial-note-state new-note)]
-;;                                            [(merge old-note
-;;                                                    (select-keys new-note [:metadata]))
-;;                                             #_old-note-state
-;;                                             (initial-note-state old-note)]))
-;;                                        (concat old-notes-and-states (repeat nil))
-;;                                        new-notes)))
-;;         notes                (map first notes-and-states)]
-;;     (when needs-update
-;;       (let [line->index    (->> notes
-;;                                 (map-indexed (fn [idx {:keys [metadata]}]
-;;                                                {:idx   idx
-;;                                                 :lines (range (:line metadata)
-;;                                                               (-> metadata :end-line inc))}))
-;;                                 (mapcat (fn [{:keys [idx lines]}]
-;;                                           (->> lines
-;;                                                (map (fn [line]
-;;                                                       {:idx  idx
-;;                                                        :line line})))))
-;;                                 (group-by :line)
-;;                                 (fmap (comp :idx only-one)))
-;;             label->indices (->> notes
-;;                                 (map-indexed (fn [idx anote]
-;;                                                {:idx   idx
-;;                                                 :label (:label anote)}))
-;;                                 (filter :label)
-;;                                 (group-by :label)
-;;                                 (fmap (partial mapv :idx)))]
-;;         (state/assoc-in-state!
-;;          [:ns->notes namespace] (mapv first notes-and-states)
-;;          [:ns->note-states namespace] (mapv second notes-and-states)
-;;          [:ns->line->index namespace] line->index
-;;          [:ns->label->indices namespace] label->indices)))
-;;     [:notes
-;;      notes-and-states
-;;      (if needs-update :updated :not-updated)
-;;      (count notes)]))
+;; TODO: Rethink
+(defn different-note? [old-note new-note]
+  (or (->> [old-note new-note]
+           (map (comp :source :metadata))
+           (apply not=))
+      (->> [old-note new-note]
+           (map (juxt :kind :forms))
+           (apply not=))))
 
-;; ;; We support various update transformations for notes' states.
-;; (defn update-note-state! [namespace transf anote]
-;;   (let [idx (->> anote
-;;                  :metadata
-;;                  :line
-;;                  (state/ns->line->index namespace))]
-;;     (state/update-in-state!
-;;      [:ns->note-states
-;;       namespace
-;;       idx]
-;;      transf)))
+(defn merge-note [[old-note old-note-state]
+                   new-note]
+  (if (different-note? old-note new-note)
+    [new-note (initial-note-state new-note)]
+    [(merge old-note
+            (select-keys new-note [:metadata]))
+     old-note-state]))
 
-;; ;; A note is realized by realizing all its pending values and rendering them.
-;; (defn realize-note [anote note-state]
-;;   (let [value    (evaluate-note anote)
-;;         renderer (-> anote :kind state/kind->behaviour :value-renderer)
-;;         _ (log/info {:renderer renderer
-;;                      :dbg [(-> anote :kind state/kind->behaviour :value-renderer)
-;;                            (-> anote :kind state/kind->behaviour)
-;;                            (-> anote :kind)
-;;                            (-> anote)
-;;                            (state/kind->behaviour)]})
-;;         rendered (-> value realize renderer)]
-;;     (assoc note-state
-;;            :value value
-;;            :rendered rendered)))
+(defn merge-notes [old-notes-and-states
+                   new-notes]
+  (mapv merge-note
+        (concat old-notes-and-states (repeat nil))
+        new-notes))
+
+(defn reread-notes! [namespace]
+  (let [old-notes            (ctx/sub-get-in :ns->notes namespace)
+        old-notes-states     (ctx/sub-get-in :ns->note-states namespace)
+        old-notes-and-states (map vector
+                                  old-notes
+                                  old-notes-states)
+        needs-update         (or (not old-notes)
+                                 (source/source-file-modified? namespace))
+        notes-and-states     (if (not needs-update)
+                               old-notes-and-states
+                               (merge-notes old-notes-and-states
+                                            (ns-notes namespace)))
+        notes                (map first notes-and-states)]
+    (when needs-update
+      (let [line->index    (->> notes
+                                (map-indexed (fn [idx {:keys [metadata]}]
+                                               {:idx   idx
+                                                :lines (range (:line metadata)
+                                                              (-> metadata :end-line inc))}))
+                                (mapcat (fn [{:keys [idx lines]}]
+                                          (->> lines
+                                               (map (fn [line]
+                                                      {:idx  idx
+                                                       :line line})))))
+                                (group-by :line)
+                                (u/fmap (comp :idx u/only-one)))
+            label->indices (->> notes
+                                (map-indexed (fn [idx anote]
+                                               {:idx   idx
+                                                :label (:label anote)}))
+                                (filter :label)
+                                (group-by :label)
+                                (u/fmap (partial mapv :idx)))]
+        (ctx/handle {:event/type ::events/assoc-notes
+                     :fx/sync    true
+                     :namespace namespace
+                     :notes (mapv first notes-and-states)
+                     :note-states (mapv second notes-and-states)
+                     :line->index line->index
+                     :label->indices label->indices})))
+     {:notes-and-states notes-and-states
+      :updated needs-update
+      :n (count notes)}))
+
+;; We support various update transformations for notes' states.
+(defn update-note-state! [namespace f anote]
+  (let [idx (->> anote
+                 :metadata
+                 :line
+                 (ctx/sub-get-in :ns->line->index namespace))]
+    (ctx/handle {:event/type     ::events/assoc-notes
+                 :fx/sync        true
+                 :namespace      namespace
+                 :idx idx
+                 :f f})))
+
+;; A note is realized by realizing all its pending values and rendering them.
+(defn realize-note [anote note-state]
+  (let [value    (evaluate-note anote)
+        renderer (ctx/sub-get-in :kind->behaviour (:kind anote) :value-renderer)
+        rendered (-> value u/realize renderer)]
+    (assoc note-state
+           :value value
+           :rendered rendered)))
 
 
-;; (defn realize-note! [namespace anote]
-;;   (update-note-state! namespace
-;;                       (partial realize-note anote)
-;;                       anote))
+(defn realize-note! [namespace anote]
+  (update-note-state! namespace
+                      (partial realize-note anote)
+                      anote))
