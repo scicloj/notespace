@@ -1,13 +1,12 @@
-(ns notespace.init
+(ns notespace.lifecycle
   (:require [notespace.context :as ctx]
-            [notespace.defaults :as defaults]
             [notespace.events :as events]
-            [clojure.pprint :as pp]
+            [notespace.defaults :as defaults]
             [notespace.renderers.pp :as pp-renderer]))
 
 (defn init []
   (ctx/handle
-   {:event/type ::events/reset
-    :fx/sync    true
+   {:event/type    ::events/reset
+    :fx/sync       true
     :initial-state defaults/initial-state})
   (ctx/mount-renderer pp-renderer/renderer))

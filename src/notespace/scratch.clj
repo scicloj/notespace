@@ -1,7 +1,7 @@
 (ns notespace.scratch
   (:require [notespace.context :as ctx]
             [notespace.events :as events]
-            [notespace.init :as init]
+            [notespace.lifecycle :as lifecycle]
             [notespace.note :as note]))
 
 (->> (note/->ns-topforms-with-metadata *ns*)
@@ -19,7 +19,7 @@
 ["a" "b"]
 
 (comment
-  (init/init)
+  (lifecycle/init)
 
   (ctx/handle
    {:event/type ::events/add-note
