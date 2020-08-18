@@ -1,20 +1,5 @@
 (ns notespace.defaults
-  (:require [hiccup.core :as hiccup]
-            [notespace.view :as view]))
-
-(def kind->behaviour
-  {:code      {:render-src?    true
-               :value->hiccup view/value->hiccup}
-   :md        {:render-src?    false
-               :value->hiccup view/mds->hiccup}
-   :as-md     {:render-src?    true
-               :value->hiccup view/mds->hiccup}
-   :hiccup    {:render-src?    false
-               :value->hiccup (fn [h] (hiccup/html h))}
-   :as-hiccup {:render-src?    true
-               :value->hiccup (fn [h] (hiccup/html h))}
-   :void      {:render-src?    true
-               :value->hiccup (constantly nil)}})
+  (:require [notespace.kinds :as kinds]))
 
 (def initial-state
   {;; global configuration:
@@ -27,7 +12,7 @@
    ;; This matching note-symbol->kind is configurable:
    :note-symbol->kind     {}
    ;; A note's kind determintes controls various parameters of its evaluation and rendering.
-   :kind->behaviour       kind->behaviour
+   :kind->behaviour       kinds/kind->behaviour
    ;; a catalogue of notes, holding a vector of notes per namespace:
    :ns->notes             {}
    ;; a catalogue of note states, holding a vector of note-states per namespace:
@@ -38,8 +23,7 @@
    :ns->line->index       {}
    ;; the indices of every note's label appearances in the sequence:
    :ns->label->indices    {}
-   ;; the last notespace rendered:
-   :last-ns-rendered      nil
+   ;; the last notespace handled:
+   :last-ns-handled       nil
    ;; We keep track of changes in source files corresponding to namespaces.
    :ns->last-modification {}})
-

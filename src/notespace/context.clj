@@ -19,13 +19,16 @@
       (fx/wrap-async)))
 
 (defn mount-renderer [renderer]
-  (fx/mount-renderer the-context renderer))
+  (add-watch the-context
+             [`mount renderer]
+             (fn [_ _ old-context new-context]
+               (renderer old-context new-context))))
 
 (defn unmount-renderer [renderer]
-  (fx/unmount-renderer the-context renderer))
+  (remove-watch the-context
+                [`mount renderer]))
 
 ;; A conveniene function for subscribing to the value
 ;; at a given path inside the context.
 (defn sub-get-in [& path]
   (fx/sub-val @the-context get-in path))
-

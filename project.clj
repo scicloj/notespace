@@ -24,4 +24,5 @@
                  [metasoarous/darkstar "0.1.0"]
                  [org.clojure/core.async "1.1.587"]
                  [cljfx "1.7.5"]
-                 [org.clojure/core.cache "1.0.207"]])
+                 [org.clojure/core.cache "1.0.207"]
+                 [scicloj/gorilla-notes "0.3.0-SNAPSHOT"]])
