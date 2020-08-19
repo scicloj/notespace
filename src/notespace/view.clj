@@ -1,10 +1,7 @@
 (ns notespace.view
   (:require [notespace.context :as ctx]
-            [markdown.core :as md]
             [clojure.string :as string]
             [clojure.pprint :as pp]))
-
-
 
 (defn note->hiccup [note value]
   (when-let [{:keys [render-src? value->hiccup]} (ctx/sub-get-in
