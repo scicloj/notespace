@@ -1,7 +1,10 @@
 (ns notespace.view
   (:require [notespace.context :as ctx]
             [markdown.core :as md]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.pprint :as pp]))
+
+
 
 (defn note->hiccup [note value]
   (when-let [{:keys [render-src? value->hiccup]} (ctx/sub-get-in
@@ -10,19 +13,19 @@
     [:div
      (when render-src?
        [:p/code {:code (-> note :metadata :source)
-                 :bg-class "bg-light"}])
+                 :bg-class "bg-light"
+                 ;; :zprint {:width 60}
+                 }])
      [:p (value->hiccup value)]]))
 
 (defn value->naive-hiccup [value]
-  [:p/code {:code (pr-str value)}])
+  [:p/code {:code (-> value
+                      pp/pprint
+                      with-out-str)}])
 
 (defn markdowns->hiccup [mds]
   [:p/markdown (string/join "\n" mds)])
 
-;; (defn htmlify-whitespace [s]
-;;   (-> s
-;;       (string/replace #"\n" "</br>")
-;;       (string/replace #" " "&nbsp;")))
 
 ;; (defn code->hiccup [code & {:keys [remove-label?]}]
 ;;   [:code {:class "prettyprint lang-clj"}

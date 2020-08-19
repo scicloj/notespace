@@ -1,9 +1,5 @@
 (ns notespace.scratch
-  (:require [notespace.lifecycle :as lifecycle]
-            [notespace.note :as note]
-            [notespace.api :as api]
-            [notespace.renderers.gorilla-notes :as rgn]
-            [gorilla-notes.core :as gn]))
+  (:require [notespace.api :as api]))
 
 ;; how to avoid shadow-cljs websockets on prod
 ;; clear newness notes
@@ -11,18 +7,14 @@
 
 ^{:hidden true}
 (comment
-  (lifecycle/init :open-browser? true)
-  (lifecycle/init :open-browser? false)
-
-  (api/reread-this-notespace!)
-
-  (gn/reset-notes!)
-  (gn/add-note! ".")
-  (gn/add-note! [:p/code {:code "(+ 1 2)"}]))
+  (api/init :open-browser? true)
+  (api/init :open-browser? false)
+  (api/reread-this-notespace!))
 
 ["Notes with no specified kind render by printing their return value."]
 
-(+ 1 2)
+(+ 1 2
+   3 4)
 
 (repeat 9 (range 4))
 
@@ -38,7 +30,7 @@ Note that `gorilla-ui` tags are allowed here, as well as some additional tags su
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
 
 ^{:as-hiccup true}
-(into [:ul] 
+(into [:ul]
       (for [i (range 9)]
         [:li
          i " "

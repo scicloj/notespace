@@ -2,8 +2,7 @@
   (:require [notespace.note :as note]
             [notespace.lifecycle :as lifecycle]))
 
-(defn init! []
-  (lifecycle/init))
+(def init lifecycle/init)
 
 (defn check [pred & args]
   [(if (apply pred args)

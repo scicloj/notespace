@@ -37,14 +37,11 @@
                   new-note-states)
              (run!
               (fn [[idx old-note old-note-state new-note new-note-state]]
-                (println [:dbg idx new-note])
                 (when-not
                     (and (= old-note new-note)
                          (= old-note-state new-note-state))
-                  (println [:adding! idx new-note])
                   (gn/assoc-note!
                    idx
                    (:rendered new-note-state))))))
         (Thread/sleep 100)
-        (gorilla-notes.communication/broadcast-content-ids!)))))
-
+        (gn/broadcast!)))))
