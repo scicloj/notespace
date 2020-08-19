@@ -2,7 +2,7 @@
   (:require [notespace.view :as view]))
 
 (def kind->behaviour
-  {:code      {:render-src?   true
+  {:naive     {:render-src?   true
                :value->hiccup #'view/value->naive-hiccup}
    :md        {:render-src?   false
                :value->hiccup #'view/markdowns->hiccup}

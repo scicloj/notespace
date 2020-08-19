@@ -52,7 +52,7 @@
   (or (-> tfwm meta metadata->kind)
       (if (strings-topform? tfwm)
         :md
-        :code)))
+        :naive)))
 
 (defn topform-with-metadata->forms [tfwm]
   (if (-> tfwm meta :multi)

@@ -11,23 +11,60 @@
   (api/init :open-browser? false)
   (api/reread-this-notespace!))
 
-["Notes with no specified kind render by printing their return value."]
+["Notes have kinds."]
+
+
+["Most notes are assigned the kind `:naive` automatically. This kind of note means rendering the value by pretty printing it."]
 
 (+ 1 2
-   3 4)
+   3 4
+   5 6)
 
-(repeat 9 (range 4))
+["Note kinds can be assigned explicitly through metadata."]
 
-["Notes of kind `:as-void` does not render their value."]
+^{:naive true}
+(repeat 6 (range 6))
+
+["Notes of kind `:void` do not render their values."]
 
 ^{:void true}
 (+ 1 2)
 
-["Notes of kind `:as-hiccup` render as Hiccup.
-Note that `gorilla-ui` tags are allowed here, as well as some additional tags such as `:p/code`."]
+["Notes of kind `:as-md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
+
+^{:as-md true}
+(concat ["##### numbers:"]
+        (for [i (range 1 4)]
+          (apply str "* " (repeat i i)))
+        ["
+##### text:
+* **bold**
+* *italic*
+* [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"])
+
+["Notes of kind `:md` are rendered as Markdown too, but without showing the code. Here is an example:"]
+
+^{:md true}
+(concat ["##### numbers:"]
+        (for [i (range 1 4)]
+          (apply str "* " (repeat i i)))
+        ["
+##### text:
+* **bold**
+* *italic*
+* [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"])
+
+["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are automatically assigned the kind `:md`. "
+ "This very note is an example of that."]
+
+["Notes of kind `:as-hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed. Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
 
 ^{:as-hiccup true}
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
+
+^{:as-hiccup true}
+[:p/sparklinespot
+ {:data [5, 10, 5, 20, 10] :limit 5 :svgWidth 100 :svgHeight 20 :margin 5}]
 
 ^{:as-hiccup true}
 (into [:ul]
@@ -42,9 +79,16 @@ Note that `gorilla-ui` tags are allowed here, as well as some additional tags su
            :svgWidth  100
            :svgHeight 20}]]))
 
-["Notes of kind `:as-md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
+^{:as-hiccup true}
+[:p/player
+ {:width  "100%"
+  :height "100%"
+  :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
-^{:as-md true}
-(concat ["#### numbers:"]
-        (for [i (range 4)]
-          (str "* " i)))
+["Notes of kind `:hiccup` are rendered as Hiccup too, but without showing the code. Here is an example:"]
+
+^{:hiccup true}
+[:img {:src "http://www.poorlydrawnlines.com/wp-content/uploads/2018/02/yourself.png"
+       :alt "Yourself"}]
+
+

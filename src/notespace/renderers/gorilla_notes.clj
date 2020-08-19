@@ -10,7 +10,7 @@
     (gn/start-server!))
   (gn/reset-notes!)
   (gn/merge-new-options! {:notes-in-cards? false
-                          :header?         true
+                          :header?         false
                           :reverse-notes?  false}))
 
 (defn browse []

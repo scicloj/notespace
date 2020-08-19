@@ -13,9 +13,7 @@
     [:div
      (when render-src?
        [:p/code {:code (-> note :metadata :source)
-                 :bg-class "bg-light"
-                 ;; :zprint {:width 60}
-                 }])
+                 :bg-class "bg-light"}])
      [:p (value->hiccup value)]]))
 
 (defn value->naive-hiccup [value]
