@@ -11,8 +11,9 @@
   (api/init :open-browser? false)
   (api/reread-this-notespace!))
 
-["Notes have kinds."]
+[:hi]
 
+["Notes have kinds."]
 
 ["Most notes are assigned the kind `:naive` automatically. This kind of note means rendering the value by pretty printing it."]
 
@@ -23,7 +24,9 @@
 ["Note kinds can be assigned explicitly through metadata."]
 
 ^{:naive true}
-(repeat 6 (range 6))
+(->> (partial rand-int 6)
+     (partial repeatedly 6)
+     (repeatedly 6))
 
 ["Notes of kind `:void` do not render their values."]
 
@@ -55,12 +58,9 @@
 * [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"])
 
 ["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are automatically assigned the kind `:md`. "
- "This very note is an example of that."]
+ "This very text you are reading is an example of a note of this kind."]
 
-["Notes of kind `:as-hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed. Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
-
-^{:as-hiccup true}
-[:p/code {:code "(defn abcd [x] (+ x 9))"}]
+["Notes of kind `:as-hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed."]
 
 ^{:as-hiccup true}
 [:p/sparklinespot
@@ -85,10 +85,20 @@
   :height "100%"
   :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
+[" Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
+
+^{:as-hiccup true}
+[:p/code {:code "(defn abcd [x] (+ x 9))"}]
+
 ["Notes of kind `:hiccup` are rendered as Hiccup too, but without showing the code. Here is an example:"]
 
 ^{:hiccup true}
-[:img {:src "http://www.poorlydrawnlines.com/wp-content/uploads/2018/02/yourself.png"
-       :alt "Yourself"}]
+[:p/sparklinespot
+ {:data (->> #(- (rand) 0.5)
+             (repeatedly 999)
+             (reductions +))
+  :svgHeight 20}]
+
+[:bye]
 
 
