@@ -1,4 +1,4 @@
-(ns notespace.scratch
+(ns notespace.scratch-test
   (:require [notespace.api :as api]))
 
 ;; how to avoid shadow-cljs websockets on prod
@@ -15,7 +15,7 @@
 
 ["Notes have kinds."]
 
-["Most notes are assigned the kind `:naive` automatically. This kind of note means rendering the value by pretty printing it."]
+["Most notes are assigned the default kind `:naive` automatically. This kind of note means rendering the value by pretty printing it:"]
 
 (+ 1 2
    3 4
@@ -36,35 +36,34 @@
 ["Notes of kind `:as-md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
 
 ^{:as-md true}
-(concat ["##### numbers:"]
-        (for [i (range 1 4)]
-          (apply str "* " (repeat i i)))
-        ["
-##### text:
-* **bold**
+["##### text:"
+ "* **bold**
 * *italic*
-* [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"])
+* [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"]
+
+^{:as-md true}
+(cons
+ "##### numbers:"
+ (for [i (range 1 4)]
+  (apply str "* " (repeat i i))))
 
 ["Notes of kind `:md` are rendered as Markdown too, but without showing the code. Here is an example:"]
 
 ^{:md true}
-(concat ["##### numbers:"]
-        (for [i (range 1 4)]
-          (apply str "* " (repeat i i)))
-        ["
-##### text:
-* **bold**
-* *italic*
-* [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"])
+(->> "abcd"
+     (map (fn [ch]
+            (str "* " ch))))
 
-["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are automatically assigned the kind `:md`. "
- "This very text you are reading is an example of a note of this kind."]
+["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md`  automatically."
+ "This very text you are reading is an example of a note of that kind."]
 
 ["Notes of kind `:as-hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed."]
 
 ^{:as-hiccup true}
-[:p/sparklinespot
- {:data [5, 10, 5, 20, 10] :limit 5 :svgWidth 100 :svgHeight 20 :margin 5}]
+[:div
+ [:h5 "Plot:"]
+ [:p/sparklinespot
+  {:data [5, 10, 5, 20, 10] :limit 5 :svgWidth 100 :svgHeight 20 :margin 5}]]
 
 ^{:as-hiccup true}
 (into [:ul]
