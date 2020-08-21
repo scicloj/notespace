@@ -2,67 +2,47 @@
 
 Notebook experience in your Clojure namespace
 
-**Note: breaking changes are coming soon. **
-
-[![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
-
 ## What is it?
 
 This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving our favourite editor?
 
-See the [screencast](https://drive.google.com/file/d/1D0EBTA2Udt2vjEEetiHqjjk1blb79XcY/view?usp=sharing).
-
 ## Status
 
-Experimental
+Everything here is considered experimental.
 
-## Usage
+## Version 3
+Version 3, under active development, is an attempt to rethink the user experience and internals of Notespace 2.
+
+It follows some ideas at the discussions of [alternative notation](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/alternative.20notation) and of [evaluation semantics](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/evaluation.20semantics.20--.20suggested.20breaking.20change).
+
+You can see the evolving draft under the [v3 branch](https://github.com/scicloj/notespace/tree/v3).
+
+## Version 2
+The current version at the master branch and at Clojars is Version 2.
+[![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
+
+At the moment, it is used for documentation and testing at [ClojisR](https://github.com/scicloj/clojisr) and [ClojisR-examples](https://github.com/scicloj/clojisr-examples).
+
+### Usage
+
+See the [screencast](https://drive.google.com/file/d/1D0EBTA2Udt2vjEEetiHqjjk1blb79XcY/view?usp=sharing) to have an idea about it.
 
 See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [rendered html](https://scicloj.github.io/notespace/doc/notespace/v2/tutorial-test/index.html).
 
-## Goals
+### Known issues
+* Links to external resources (e.g., images in separate files) will appear at the rendered static html, but are currently invisible at the live-reload view.
 
-* Use any Clojure namespace, in any Clojure editor, as a notebook
-  * [x] editing is done in your beloved editor
-  * [x] rendering is shown at the browser
-  * [x] a typical workflow has zero latency in namespace evaluation
-* A nootebook is a sequence of notes
-  * [x] a note represents a piece of computation and its output
-  * [x] the notebook's rendering is the concatenation of its notes' renderings
-  * [x] a notes' rendering can depend on its code and its output
-  * [x] the precise way it depends on them varies across different kinds of nodes
-  * [ ] a notes' rendering can depend on the stdout and stderr of its computation
-  * [x] we remember notes' last rendering
-  * [ ] we know if notes need a refresh (after code change)
-* Everything can be a note
-  * [x] function definitions
-  * [x] tests
-  * [x] code examples
-  * [x] data analysis
-* Support for tests
-  * [x] summary of checks passed/failed
-* Live reload experience
-  * [x] refreshing the browser view after a note's computation has been refreshed
-  * [ ] re-rendering of relevant notebook part(s)
-* Different modes of computation-refresh
-  * [x] compute-this-note
-  * [x] compute-the-whole-namespace
-  * [ ] Oz-like refresh-downwards-from-this-note
-* Composing with classical Clojure documentation practices.
-  * [ ] Think how that should work.
-  * [ ] Can we somehow automatically generate docstrings (like `hara.test` does) ?
-  * [ ] Can we automatically generate API docs ?
-  * [ ] Can we integrate with cljdocs ?
-  
-  
+## Discussion
+
+Hearing your comments, opinions and wishes will help!
+
+[#notespace-dev at the Clojurians Zulip](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev).
+
 ## Relation to other projects
 
 There are several magnificent existing options for literate programming in Clojure: Marginalia, Org-Babel, Gorilla REPL, Pink Gorilla, Clojuopyter, Nextjournal, Saite, Oz. Most of them are actively developed.
 
 Creating a separate alternative would be the least desired outcome of the current project. Rather, the hope is to compose and integrate well with some of the other projects. There has been some thoughts and experiments in that direction, and it seems promising.
-
-## Known issues
-* Links to external resources (e.g., images in separate files) will appear at the rendered static html, but are currently invisible at the live-reload view.
 
 ## License
 
