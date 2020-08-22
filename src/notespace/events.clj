@@ -42,16 +42,10 @@
                              f)
                   (assoc :last-ns-handled namespace)))})
 
-(defmethod handle ::realize-note [{:keys [fx/context idx]}]
-  {:context     (fx/swap-context
-                 context update-in
-                 [:notes idx]
-                 #(assoc-in % [:status :stage] :started-realizing))
-   :realization {:idx          idx
-                 :note         (fx/sub context
-                                       (fn [ctx]
-                                         (-> ctx
-                                             (fx/sub :notes)
-                                             (get idx))))
-                 :on-result    {:event/type ::on-result}
-                 :on-exception {:event/type ::on-exception}}})
+(defmethod handle ::update-note [{:keys [fx/context namespace idx f]}]
+  {:context (fx/swap-context
+             context
+             #(-> %
+                  (update-in [:ns->notes namespace idx]
+                             f)
+                  (assoc :last-ns-handled namespace)))})

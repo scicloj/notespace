@@ -65,17 +65,27 @@
                     reread-notes!
                     :n)]
     (update-note! namespace
-                  note/evaluate-note
+                  (partial note/evaluated-note idx)
                   idx
                   true)))
 
 (defn realize-note! [namespace idx]
   (update-note! namespace
-                note/realize-note
+                note/realizing-note
+                idx
+                true)
+  (update-note! namespace
+                note/realized-note
+                idx
+                false))
+
+(defn rerender-note! [namespace idx]
+  (update-note! namespace
+                note/note-with-updated-rendering
                 idx
                 false))
 
 (defn realize-note-at-line! [namespace line]
   (some->> line
-           (state/sub-get-in :ns->line->index namespace line)
+           (state/sub-get-in :ns->line->index namespace)
            (realize-note! namespace)))

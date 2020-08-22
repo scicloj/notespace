@@ -1,6 +1,7 @@
 (ns notespace.util
   (:require [clojure.pprint :as pp]
-            [com.rpl.specter :refer [MAP-VALS transform]]))
+            [com.rpl.specter :refer [MAP-VALS transform]]
+            [clojure.java.shell :as sh]))
 
 (defn pprint-and-return [x]
   (pp/pprint x)
@@ -24,6 +25,8 @@
 (defn pending? [v]
   (instance? clojure.lang.IPending v))
 
+(def abcd (atom 3))
+
 (defn ready? [v]
   (cond (= v :value/not-ready) false
         (pending? v)           (realized? v)
@@ -33,3 +36,9 @@
   (if (instance? clojure.lang.IDeref v)
     @v
     v))
+
+(defn notify [msg]
+  (sh/sh "notify-send" msg))
+
+
+

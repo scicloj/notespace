@@ -1,15 +1,5 @@
 (ns notespace.scratch-test
-  (:require [notespace.api :as api]))
-
-;; how to avoid shadow-cljs websockets on prod
-;; clear newness notes
-;; understand gn dirty state after some cljs errors
-
-^{:hidden true}
-(comment
-  (api/init :open-browser? true)
-  (api/init :open-browser? false)
-  (api/eval-this-notespace!))
+  (:require [notespace.api :refer [D F]]))
 
 ["# Notespace v3 intro
 
@@ -98,10 +88,34 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 ^{:hiccup true}
 [:p/sparklinespot
  {:data (->> #(- (rand) 0.5)
-             (repeatedly 999)
+             (repeatedly 9)
              (reductions +))
   :svgHeight 20}]
 
-[:bye]
+["Pending refs, such as delays, futures and promises, are rendered in a special way, taking account whether they have been realized or not."]
 
+^{:void true}
+(def x
+  (F
+   (Thread/sleep 2000)
+   (->> #(- (rand) 0.5)
+        (repeatedly 999)
+        (reductions +))))
+
+(F (take 9 @x))
+
+^{:as-hiccup true}
+(F
+ (let [y @x]
+   (Thread/sleep 2000)
+   [:p/sparklinespot
+    {:data      y
+     :svgHeight 20}]))
+
+^{:as-hiccup true}
+(D
+ (Thread/sleep 1000)
+ [:h5 (+ 1 2)])
+
+[:bye]
 

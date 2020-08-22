@@ -14,4 +14,5 @@
   (when open-browser?
     (gn/browse))
   (ctx/unmount-renderer #'gn/renderer)
-  (ctx/mount-renderer #'gn/renderer))
+  (ctx/mount-renderer #'gn/renderer)
+  :ok)

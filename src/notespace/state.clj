@@ -10,3 +10,9 @@
 ;; at a given path inside the context.
 (defn sub-get-in [& path]
   (fx/sub-val @the-context get-in path))
+
+(-> @the-context
+    (fx/sub-val :ns->line->index)
+    vals
+    first
+    (->> (sort-by first)))

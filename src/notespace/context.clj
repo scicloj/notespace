@@ -1,8 +1,7 @@
 (ns notespace.context
   (:require [cljfx.api :as fx]
             [notespace.state :as state]
-            [notespace.events :as events]
-            [notespace.effects :as effects]))
+            [notespace.events :as events]))
 
 (def handle
   (-> events/handle
@@ -10,8 +9,7 @@
        {:fx/context (fx/make-deref-co-effect state/the-context)})
       (fx/wrap-effects
        {:context     (fx/make-reset-effect state/the-context)
-        :dispatch    fx/dispatch-effect
-        :realization effects/realization})
+        :dispatch    fx/dispatch-effect})
       (fx/wrap-async)))
 
 (defn mount-renderer [renderer]

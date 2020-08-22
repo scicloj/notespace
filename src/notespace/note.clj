@@ -1,17 +1,15 @@
 (ns notespace.note
   (:require [notespace.reader :as reader]
-            [notespace.util :as u]
             [rewrite-clj.node]
             [notespace.source :as source]
-            [notespace.context :as ctx]
-            [notespace.events :as events]
             [notespace.view :as view]
             [notespace.state :as state]))
 
+
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
-;; and a dynamic part: a value, a rendering and a status.
+;; and a dynamic part: a value, a value-override-for-rendering, a rendering and a status.
 (defrecord Note [kind label forms metadata
-                 value rendering status])
+                 value value-override-for-rendering rendering status])
 
 ;; TODO: Where is is used?
 (defn note->index [namespace note]
@@ -59,9 +57,13 @@
     tfwm
     [tfwm]))
 
+(defn value-to-render [note]
+  (or (:value-override-for-rendering note)
+      (:value note)))
+
 (defn note-with-updated-rendering [note]
   (assoc note
-         :rendering (view/note->hiccup note (:value note))))
+         :rendering (view/note->hiccup note (value-to-render note))))
 
 ;; Each toplevel form can be converted to a Note.
 (defn topform-with-metadata->Note [tfwm]
@@ -73,6 +75,7 @@
                   m
                   :value/not-ready
                   nil
+                  nil
                   {:stage :initial})
           note-with-updated-rendering))))
 
@@ -83,43 +86,37 @@
        (map topform-with-metadata->Note)
        (filter some?)))
 
-(defn note-evaluation [note]
-  (try
-    (->> note
-         :forms
-         (cons 'do)
-         eval)
-    (catch Exception e
-      (throw (ex-info "Note evaluation failed."
-                      {:note      note
-                       :exception e}))) ))
+(def ^:dynamic *notespace-idx* nil)
 
-(defn evaluate-note [note]
+(defn note-evaluation [idx note]
+  (binding [*notespace-idx* idx]
+    (try
+      (->> note
+           :forms
+           (cons 'do)
+           eval)
+      (catch Exception e
+        (throw (ex-info "Note evaluation failed."
+                        {:note      note
+                         :exception e}))) )))
+
+(defn evaluated-note [idx note]
   (-> note
-      (assoc :value (note-evaluation note)
+      (assoc :value (note-evaluation idx note)
              :rendering nil
              :status {:stage :evaluated})
       note-with-updated-rendering))
 
-;; A note is realized by realizing all its pending values and rendering them.
-(defn realize-note [note]
-  (let [value     (note-evaluation note)
-        renderer  (state/sub-get-in :kind->behaviour (:kind note) :value->hiccup)
-        rendering (-> value u/realize renderer)]
-    (assoc note
-           :value value
-           :rendering rendering)))
-
 (defn realizing-note [note]
-  (assoc note
-         :status {:stage :realizing}))
+  (-> note
+      (assoc :status {:stage :realizing})
+      note-with-updated-rendering))
 
 (defn realized-note [note]
-  (assoc note
-         :status {:rendered (view/note->hiccup
-                             note
-                             (-> note :value deref))
-                  :stage :realized}))
+  (-> note
+      (assoc :value-override-for-rendering (-> note :value deref)
+             :status {:stage :realized})
+      note-with-updated-rendering))
 
 ;; TODO: Rethink
 (defn different-note? [old-note new-note]

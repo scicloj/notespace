@@ -1,6 +1,8 @@
 (ns notespace.api
   (:require [notespace.actions :as actions]
-            [notespace.lifecycle :as lifecycle]))
+            [notespace.lifecycle :as lifecycle]
+            [notespace.context :as ctx]
+            [notespace.note :as note]))
 
 (def init lifecycle/init)
 
@@ -20,5 +22,18 @@
   (actions/realize-note-at-line! *ns* line))
 
 (defmacro D [& forms]
-  (cons 'delay forms))
+  `(let [idx# ~note/*notespace-idx*
+         ns# *ns*]
+     (delay
+       (let [result# (do ~@forms)]
+         (actions/rerender-note! ns# idx#)
+         result#))))
+
+(defmacro F [& forms]
+  `(let [idx# ~note/*notespace-idx*
+         ns#  *ns*]
+     (future
+       (let [result# (do ~@forms)]
+         (actions/rerender-note! ns# idx#)
+         result#))))
 
