@@ -11,7 +11,9 @@
   (gn/reset-notes!)
   (gn/merge-new-options! {:notes-in-cards? false
                           :header?         false
-                          :reverse-notes?  false}))
+                          :reverse-notes?  false
+                          :custom-header [:div [:big "Notespace"] [:hr]]
+                          :custom-footer [:div [:hr]]}))
 
 (defn browse []
   (gn/browse-default-url))
