@@ -17,9 +17,11 @@
      (when render-src?
        [:p/code {:code     (:source metadata)
                  :bg-class "bg-light"}])
+     ;; TODO Simplify the logic here.
      [:p (if (u/ready? value)
            (if (var? value)
-             (pr-str value)
+             (-> value
+                 value->hiccup)
              (-> value
                  u/realize
                  value->hiccup))
