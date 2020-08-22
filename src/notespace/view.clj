@@ -8,19 +8,19 @@
   [:div
    [:big [:big "..."]]])
 
-(defn note->hiccup [note value-to-render]
+(defn note->hiccup [{:keys [value metadata kind]}]
   (when-let [{:keys [render-src? value->hiccup]}
              (state/sub-get-in
               :kind->behaviour
-              (:kind note))]
+              kind)]
     [:div
      (when render-src?
-       [:p/code {:code     (-> note :metadata :source)
+       [:p/code {:code     (:source metadata)
                  :bg-class "bg-light"}])
-     [:p (if (u/ready? value-to-render)
-           (if (var? value-to-render)
-             (pr-str value-to-render)
-             (-> value-to-render
+     [:p (if (u/ready? value)
+           (if (var? value)
+             (pr-str value)
+             (-> value
                  u/realize
                  value->hiccup))
            waiting)]]))

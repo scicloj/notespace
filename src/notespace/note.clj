@@ -3,13 +3,14 @@
             [rewrite-clj.node]
             [notespace.source :as source]
             [notespace.view :as view]
-            [notespace.state :as state]))
+            [notespace.state :as state]
+            [notespace.util :as u]))
 
 
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
-;; and a dynamic part: a value, a value-override-for-rendering, a rendering and a status.
+;; and a dynamic part: a value, a rendering and a status.
 (defrecord Note [kind label forms metadata
-                 value value-override-for-rendering rendering status])
+                 value rendering status])
 
 ;; TODO: Where is is used?
 (defn note->index [namespace note]
@@ -57,13 +58,9 @@
     tfwm
     [tfwm]))
 
-(defn value-to-render [note]
-  (or (:value-override-for-rendering note)
-      (:value note)))
-
 (defn note-with-updated-rendering [note]
   (assoc note
-         :rendering (view/note->hiccup note (value-to-render note))))
+         :rendering (view/note->hiccup note)))
 
 ;; Each toplevel form can be converted to a Note.
 (defn topform-with-metadata->Note [tfwm]
@@ -74,7 +71,6 @@
                   (topform-with-metadata->forms tfwm)
                   m
                   :value/not-ready
-                  nil
                   nil
                   {:stage :initial})
           note-with-updated-rendering))))
@@ -112,11 +108,11 @@
       (assoc :status {:stage :realizing})
       note-with-updated-rendering))
 
+
+
 (defn realized-note [note]
-  (-> note
-      (assoc :value-override-for-rendering (-> note :value deref)
-             :status {:stage :realized})
-      note-with-updated-rendering))
+  (-> note :value u/realize)
+  (note-with-updated-rendering note))
 
 ;; TODO: Rethink
 (defn different-note? [old-note new-note]
