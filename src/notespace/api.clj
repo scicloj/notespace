@@ -1,5 +1,5 @@
 (ns notespace.api
-  (:require [notespace.note :as note]
+  (:require [notespace.actions :as actions]
             [notespace.lifecycle :as lifecycle]))
 
 (def init lifecycle/init)
@@ -11,25 +11,13 @@
    (last args)])
 
 (defn reread-this-notespace! []
-  (note/reread-notes! *ns*))
+  (actions/reread-notes! *ns*))
 
-;; (defn realize-note-at-line! [line]
-;;   (note/reread-notes! *ns*)
-;;   (some->> line
-;;            (state/ns->line->index *ns*)
-;;            (state/ns->note *ns*)
-;;            (note/realize-note! *ns*))
-;;   [[:realized {:ns   *ns*
-;;                :line line}]
-;;    #_(render-this-ns!)])
+(defn eval-this-notespace! []
+  (actions/evaluate-notes! *ns*))
 
-;; (defn realize-this-notespace! []
-;;   (note/reread-notes! *ns*)
-;;   (->> *ns*
-;;        (state/ns->notes)
-;;        (run! (partial note/realize-note! *ns*)))
-;;   [[:realized {:ns *ns*}]
-;;    #_(render-this-ns!)])
+(defn realize-note-at-line! [line]
+  (actions/realize-note-at-line! *ns* line))
 
 (defmacro D [& forms]
   (cons 'delay forms))

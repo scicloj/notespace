@@ -15,8 +15,6 @@
    :kind->behaviour       kinds/kind->behaviour
    ;; a catalogue of notes, holding a vector of notes per namespace:
    :ns->notes             {}
-   ;; a catalogue of note states, holding a vector of note-states per namespace:
-   :ns->note-states       {}
    ;; for every line of code,
    ;; the index of the corresponding note in the sequence of notes,
    ;; if that line happens to lie inside a note:

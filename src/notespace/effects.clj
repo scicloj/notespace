@@ -5,7 +5,8 @@
   (try
     (dispatch! (assoc on-result
                       :idx idx
-                      :value (-> note :code eval)))
+                      :value
+                      (-> note :code eval)))
     (catch Exception e
       (dispatch! (assoc on-exception
                         :exception e)))))

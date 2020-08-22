@@ -1,7 +1,6 @@
 (ns notespace.util
   (:require [clojure.pprint :as pp]
-            [com.rpl.specter :refer [MAP-VALS transform]]
-            [zprint.core :as zp]))
+            [com.rpl.specter :refer [MAP-VALS transform]]))
 
 (defn pprint-and-return [x]
   (pp/pprint x)
@@ -22,22 +21,15 @@
   (when (-> elements count (= 1))
     (first elements)))
 
-;; https://stackoverflow.com/questions/58308404/configure-symbol-quote-expansion-in-clojure-zprint
-;; https://github.com/kkinnear/zprint/issues/121
-(defn careful-zprint [form width]
-  (-> form
-      clojure.pprint/pprint
-      with-out-str
-      (zprint.core/zprint width {:parse-string? true})))
+(defn pending? [v]
+  (instance? clojure.lang.IPending v))
 
-
-(defn fresh? [v]
-  (if (instance? clojure.lang.IPending v)
-    (realized? v)
-    true))
+(defn ready? [v]
+  (cond (= v :value/not-ready) false
+        (pending? v)           (realized? v)
+        :else                  true))
 
 (defn realize [v]
   (if (instance? clojure.lang.IDeref v)
     @v
     v))
-

@@ -9,7 +9,11 @@
 (comment
   (api/init :open-browser? true)
   (api/init :open-browser? false)
-  (api/reread-this-notespace!))
+  (api/eval-this-notespace!))
+
+["# Notespace v3 intro
+
+This is an experimantal incomplete draft. It should serve as a basis for discussion on our way to v3."]
 
 [:hi]
 
