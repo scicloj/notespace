@@ -1,4 +1,4 @@
-(ns notespace.scratch-test
+(ns notespace.v3-experiment1-test
   (:require [notespace.api :refer [D F]]))
 
 ["# Notespace v3 intro
