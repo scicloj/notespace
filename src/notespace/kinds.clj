@@ -2,17 +2,25 @@
   (:require [notespace.view :as view]))
 
 (def kind->behaviour
-  {:naive     {:render-src?   true
+  {::naive     {:render-src?   true
                :value->hiccup #'view/value->naive-hiccup}
-   :md        {:render-src?   false
+   ::md        {:render-src?   false
                :value->hiccup #'view/markdowns->hiccup}
-   :as-md     {:render-src?   true
+   ::as-md     {:render-src?   true
                :value->hiccup #'view/markdowns->hiccup}
-   :hiccup    {:render-src?   false
+   ::hiccup    {:render-src?   false
                :value->hiccup identity}
-   :as-hiccup {:render-src?   true
+   ::as-hiccup {:render-src?   true
                :value->hiccup identity}
-   :void      {:render-src?   true
+   ::void      {:render-src?   true
                :value->hiccup (constantly nil)}
-   :hidden    {:render-src?   false
+   ::hidden    {:render-src?   false
                :value->hiccup (constantly nil)}})
+
+(def naive ::naive)
+(def md ::md)
+(def as-md ::as-md)
+(def hiccup ::hiccup)
+(def as-hiccup ::as-hiccup)
+(def void ::void)
+(def hidden ::hidden)

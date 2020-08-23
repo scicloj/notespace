@@ -40,18 +40,23 @@
            string?)))
 
 (defn kinds-set []
-  (keys (state/sub-get-in :kind->behaviour)))
+  (-> :kind->behaviour
+      state/sub-get-in
+      keys
+      set))
 
 (defn metadata->kind [m]
-  (->> (kinds-set)
-       (filter m)
-       first))
+  (some->> m
+           :tag
+           resolve
+           deref
+           ((kinds-set))))
 
 (defn topform-with-metadata->kind [tfwm]
   (or (-> tfwm meta metadata->kind)
       (if (strings-topform? tfwm)
-        :md
-        :naive)))
+        :notespace.kinds/md
+        :notespace.kinds/naive)))
 
 (defn topform-with-metadata->forms [tfwm]
   (if (-> tfwm meta :multi)
