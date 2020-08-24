@@ -26,9 +26,7 @@ See [this screencast](https://tinyurl.com/y5vg5qfe) for a first experimental con
 
 The concepts and idioms here may change. They are presented just as a basis for further discussion.
 
-### Emacs config
-
-See [emacs-config.el](./emacs-config.el) as a recommended way to connect the 
+See [emacs-config.el](./emacs-config.el) as a recommended way to connect editor keybindings to the main api functions.
 
 ### Implementation
 For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts).
