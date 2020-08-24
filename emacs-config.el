@@ -1,3 +1,16 @@
+(defun notify-send (msg)
+  (interactive)
+  (shell-command (concat "notify-send '" msg "'")))
+
+(defun cider-interactive-notify-and-eval (code)
+  (interactive)
+  (notify-send code)
+  (cider-interactive-eval
+   code
+   (cider-interactive-eval-handler nil (point))
+   nil
+   nil))
+
 (defun notespace/init-with-browser ()
   (interactive)
   (save-buffer)
