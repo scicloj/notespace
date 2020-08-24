@@ -31,7 +31,7 @@ See [emacs-config.el](./emacs-config.el) as a recommended way to connect editor 
 ### Implementation
 For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts).
 
-The rendering engine is based on [gorilla-notes](https://github.com/scicloj/gorilla-notes), which is a thin wrappre of [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui).
+The rendering engine is based on [gorilla-notes](https://github.com/scicloj/gorilla-notes), which is a thin wrapper of [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui).
 
 The client side stack is based on [shadow-cljs](https://github.com/thheller/shadow-cljs) and [reagent](https://reagent-project.github.io).
 
