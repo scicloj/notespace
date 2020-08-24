@@ -20,8 +20,29 @@ Several people's ideas and comments have affected this version.
 
 You can see the evolving draft under the [v3 branch](https://github.com/scicloj/notespace/tree/v3).
 
-### Remarks
-* At the moment, this version depends on [cljfx](https://github.com/cljfx/cljfx), merely for its [state management abstractions](https://github.com/cljfx/cljfx#subscriptions-and-contexts). This means it will run only on JDK 11.
+### Usage
+
+See [this screencast](https://tinyurl.com/y5vg5qfe) for a first experimental concept. See [this namespace](./tests/notespace/v3_experiment1_test.clj) for some more examples.
+
+The concepts and idioms here may change. They are presented just as a basis for further discussion.
+
+### Emacs config
+
+See [emacs-config.el](./emacs-config.el) as a recommended way to connect the 
+
+### Implementation
+For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts).
+
+The rendering engine is based on [gorilla-notes](https://github.com/scicloj/gorilla-notes), which is a thin wrappre of [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui).
+
+The client side stack is based on [shadow-cljs](https://github.com/thheller/shadow-cljs) and [reagent](https://reagent-project.github.io).
+
+As with Version 2, we use [tools.reader](https://github.com/clojure/tools.reader) to read the code of the namespace.
+
+### Known issues
+* Rendering as static html is not supported yet.
+* Many of the notions, ideas and behaviours of Version 2 are not supported by Version 3 at the moment. Most of them are enabled in a different way. We need to discuss whether to create some backwards compatibility layer.
+* At the moment, this version brings [cljfx](https://github.com/cljfx/cljfx) as a dependency, merely for its state management logic. This means it will run only on JDK 11.
 
 ## Version 2
 The current version at the master branch and at Clojars is Version 2.
@@ -30,6 +51,8 @@ The current version at the master branch and at Clojars is Version 2.
 At the moment, it is used for documentation and testing at [ClojisR](https://github.com/scicloj/clojisr) and [ClojisR-examples](https://github.com/scicloj/clojisr-examples).
 
 ### Usage
+
+See the [screencast](https://drive.google.com/file/d/1D0EBTA2Udt2vjEEetiHqjjk1blb79XcY/view?usp=sharing) to have an idea about it.
 
 See this [example namespace](./test/notespace/v2/tutorial_test.clj) and its [rendered html](https://scicloj.github.io/notespace/doc/notespace/v2/tutorial-test/index.html).
 
