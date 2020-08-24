@@ -18,7 +18,7 @@ You can see the evolving draft under the [v3 branch](https://github.com/scicloj/
 It follows some ideas from our discussions of [alternative notation](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/alternative.20notation) and of [evaluation semantics](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/evaluation.20semantics.20--.20suggested.20breaking.20change).
 
 Several people's ideas and comments have affected this version.
-`@awb99` `@behrica` `@daslu` `@genmeblog` `@jsa-aerial` `@metasoarous` `@nickstares` `@vlaaad` 
+`@awb99` `@behrica` `@daslu` `@ezmiller` `@genmeblog` `@jsa-aerial` `@metasoarous` `@nickstares` `@vlaaad` 
 
 ### Usage
 
