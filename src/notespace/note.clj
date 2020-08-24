@@ -113,8 +113,6 @@
       (assoc :status {:stage :realizing})
       note-with-updated-rendering))
 
-
-
 (defn realized-note [note]
   (-> note :value u/realize)
   (note-with-updated-rendering note))

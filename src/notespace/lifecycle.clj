@@ -5,7 +5,7 @@
             [notespace.renderers.gorilla-notes :as gn]))
 
 (defn init [& {:keys [open-browser?]
-               :or   {open-browser? true}}]
+               :or   {open-browser? false}}]
   (ctx/handle
    {:event/type    ::events/reset
     :fx/sync       true

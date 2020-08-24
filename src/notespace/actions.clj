@@ -15,7 +15,7 @@
         notes        (if (not needs-update)
                        old-notes
                        (note/merge-notes old-notes
-                                    (note/ns-notes namespace)))]
+                                         (note/ns-notes namespace)))]
     (when needs-update
       (let [line->index    (->> notes
                                 (map-indexed (fn [idx {:keys [metadata]}]
@@ -39,7 +39,7 @@
         (ctx/handle {:event/type     ::events/assoc-notes
                      :fx/sync        true
                      :namespace      namespace
-                     :notes notes
+                     :notes          notes
                      :line->index    line->index
                      :label->indices label->indices})))
     {:updated needs-update
@@ -60,14 +60,17 @@
                :idx        idx
                :f          f}))
 
-(defn evaluate-notes! [namespace]
+(defn eval-note! [namespace idx]
+  (update-note! namespace
+                (partial note/evaluated-note idx)
+                idx
+                true))
+
+(defn eval-notes! [namespace]
   (dotimes [idx (-> namespace
                     reread-notes!
                     :n)]
-    (update-note! namespace
-                  (partial note/evaluated-note idx)
-                  idx
-                  true)))
+    (eval-note! namespace idx)))
 
 (defn realize-note! [namespace idx]
   (update-note! namespace
@@ -85,7 +88,20 @@
                 idx
                 false))
 
+(defn eval-note-at-line! [namespace line]
+  (reread-notes! namespace)
+  (some->> line
+           (state/sub-get-in :ns->line->index namespace)
+           (eval-note! namespace)))
+
 (defn realize-note-at-line! [namespace line]
+  (reread-notes! namespace)
   (some->> line
            (state/sub-get-in :ns->line->index namespace)
            (realize-note! namespace)))
+
+(defn eval-and-realize-note-at-line! [namespace line]
+  (reread-notes! namespace)
+  (when-let [idx (state/sub-get-in :ns->line->index namespace line)]
+    (eval-note! namespace idx)
+    (realize-note! namespace idx)))

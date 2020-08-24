@@ -6,6 +6,9 @@
 
 (def init lifecycle/init)
 
+(defn init-with-browser []
+  (init :open-browser? true))
+
 (defn check [pred & args]
   [(if (apply pred args)
      :PASSED
@@ -16,10 +19,16 @@
   (actions/reread-notes! *ns*))
 
 (defn eval-this-notespace! []
-  (actions/evaluate-notes! *ns*))
+  (actions/eval-notes! *ns*))
+
+(defn eval-note-at-line! [line]
+  (actions/eval-note-at-line! *ns* line))
 
 (defn realize-note-at-line! [line]
   (actions/realize-note-at-line! *ns* line))
+
+(defn eval-and-realize-note-at-line! [line]
+  (actions/eval-and-realize-note-at-line! *ns* line))
 
 (defmacro D [& forms]
   `(let [idx# ~note/*notespace-idx*
