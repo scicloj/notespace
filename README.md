@@ -31,11 +31,15 @@ See [emacs-config.el](./emacs-config.el) as a recommended way to connect editor 
 ### Implementation
 For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts).
 
-The rendering engine is based on [gorilla-notes](https://github.com/scicloj/gorilla-notes), which is a thin wrapper of [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui).
+The current rendering engine is based on [gorilla-notes](https://github.com/scicloj/gorilla-notes), which is a thin wrapper of [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui).
 
 The client side stack is based on [shadow-cljs](https://github.com/thheller/shadow-cljs) and [reagent](https://reagent-project.github.io).
 
 As with Version 2, we use [tools.reader](https://github.com/clojure/tools.reader) to read the code of the namespace.
+
+#### Renderers
+
+Rendering is now an abstract notion, and thus Notespace can be extended with different ways of rendering. At least one of them will create static-htmls, based on gorilla-notes. Other potential renderers may rely on [Oz](https://github.com/metasoarous/oz) or [rmarkdown-clojure](https://github.com/genmeblog/rmarkdown-clojure), or generate and update [Pink Gorilla](https://pink-gorilla.github.io) notebooks on the fly.
 
 ### Known issues
 * Rendering as static html is not supported yet.
