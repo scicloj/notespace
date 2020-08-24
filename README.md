@@ -28,6 +28,15 @@ The concepts and idioms here may change. They are presented just as a basis for 
 
 See [emacs-config.el](./emacs-config.el) as a recommended way to connect editor keybindings to the main api functions.
 
+### Main changes
+Here are the main thingss that are changing here, comparing to Version 2:
+* Version 3 offers a different notion of what notespaces and ntoes are. Arguably, this notion is less strange to the usual Clojure concepts and idioms.
+* Very little extra notation is necessary, and it is just some tiny amount of metadata that determines how things should be rendered.
+* A small set of API functions allows to evaluate code in a way that informs the browser notebook about changes.
+* Time-related Clojure semantics such as futures and delays can be handled in a way that respects and informs the notebook too when values are realized.
+* The new implementation makes things more flexible and easier to extend and experiment with.
+* Data visualizations based on [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) Hiccup extensions are supported.
+
 ### Implementation
 For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts).
 
