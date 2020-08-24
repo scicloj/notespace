@@ -26,7 +26,7 @@ See [this screencast](https://youtu.be/_GcTnkhn9g0) for a first experimental con
 
 The concepts and idioms here may change. They are presented just as a basis for further discussion.
 
-See [emacs-config.el](./emacs-config.el) as a recommended way to connect editor keybindings to the main api functions.
+See [emacs-config.el](https://github.com/scicloj/notespace/blob/v3/emacs-config.el) as a recommended way to connect editor keybindings to the main api functions.
 
 ### Main changes
 Here are the main thingss that are changing here, comparing to Version 2:
