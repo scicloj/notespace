@@ -4,7 +4,7 @@ Notebook experience in your Clojure namespace
 
 ## What is it?
 
-This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving our favourite editor?
+This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
 
 ## Status
 
