@@ -22,7 +22,7 @@ Several people's ideas and comments have affected this version.
 
 ### Usage
 
-See [this screencast](https://tinyurl.com/y5vg5qfe) for a first experimental concept. See [this namespace](./test/notespace/v3_experiment1_test.clj) for some more examples.
+See [this screencast](https://youtu.be/_GcTnkhn9g0) for a first experimental concept. See [this namespace](./test/notespace/v3_experiment1_test.clj) for some more examples.
 
 The concepts and idioms here may change. They are presented just as a basis for further discussion.
 
