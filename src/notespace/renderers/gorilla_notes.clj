@@ -30,7 +30,7 @@
                                                  (map (fn [ctx]
                                                         (fx/sub-val
                                                          ctx
-                                                         #(get-in % [:ns->notes namespace])))))
+                                                         get-in [:ns->notes namespace]))))
           new-things                        (->> (map vector
                                                       (range)
                                                       (concat old-notes (repeat nil))
