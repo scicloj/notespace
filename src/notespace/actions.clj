@@ -74,17 +74,17 @@
 
 (defn realize-note! [namespace idx]
   (update-note! namespace
-                note/realizing-note
+                #'note/realizing-note
                 idx
                 true)
   (update-note! namespace
-                note/realized-note
+                #'note/realized-note
                 idx
                 false))
 
 (defn rerender-note! [namespace idx]
   (update-note! namespace
-                note/note-with-updated-rendering
+                #'note/realized-note
                 idx
                 false))
 

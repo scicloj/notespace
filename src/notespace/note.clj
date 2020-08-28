@@ -8,9 +8,9 @@
 
 
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
-;; and a dynamic part: a value, a rendering and a status.
+;; and a dynamic part: a value, a realized-value and a status.
 (defrecord Note [kind label forms metadata
-                 value rendering status])
+                 value realized-value status])
 
 ;; TODO: Where is is used?
 (defn note->index [namespace note]
@@ -63,22 +63,17 @@
     tfwm
     [tfwm]))
 
-(defn note-with-updated-rendering [note]
-  (assoc note
-         :rendering (view/note->hiccup note)))
-
 ;; Each toplevel form can be converted to a Note.
 (defn topform-with-metadata->Note [tfwm]
   (let [m (meta tfwm)]
     (when-not (ns-topform? tfwm)
-      (-> (->Note (topform-with-metadata->kind tfwm)
-                  (:label m)
-                  (topform-with-metadata->forms tfwm)
-                  m
-                  :value/not-ready
-                  nil
-                  {:stage :initial})
-          note-with-updated-rendering))))
+      (->Note (topform-with-metadata->kind tfwm)
+              (:label m)
+              (topform-with-metadata->forms tfwm)
+              m
+              :value/not-ready
+              nil
+              {:stage :initial}))))
 
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
@@ -102,20 +97,21 @@
                          :exception e}))) )))
 
 (defn evaluated-note [idx note]
-  (-> note
-      (assoc :value (note-evaluation idx note)
-             :rendering nil
-             :status {:stage :evaluated})
-      note-with-updated-rendering))
+  (assoc
+   note
+   :value (note-evaluation idx note)
+   :status {:stage :evaluated}))
 
 (defn realizing-note [note]
-  (-> note
-      (assoc :status {:stage :realizing})
-      note-with-updated-rendering))
+  (assoc
+   note
+   :status {:stage :realizing}))
 
 (defn realized-note [note]
-  (-> note :value u/realize)
-  (note-with-updated-rendering note))
+  (assoc
+   note
+   :status {:stage :realized}
+   :realized-value (-> note :value u/realize)))
 
 ;; TODO: Rethink
 (defn different-note? [old-note new-note]
