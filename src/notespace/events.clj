@@ -13,9 +13,7 @@
              initial-state)})
 
 (defmethod handle ::on-result [{:keys [fx/context idx value]}]
-  {:context (fx/swap-context
-             context assoc-in
-             [:notes idx :value] value)})
+  {:context context})
 
 (defmethod handle ::file-modified [{:keys [fx/context namespace modification-time]}]
   {:context (fx/swap-context
@@ -32,14 +30,6 @@
                   (assoc-in [:ns->notes namespace] notes)
                   (assoc-in [:ns->line->index namespace] line->index)
                   (assoc-in [:ns->label->indices namespace] label->indices)
-                  (assoc :last-ns-handled namespace)))})
-
-(defmethod handle ::update-note [{:keys [fx/context namespace idx f]}]
-  {:context (fx/swap-context
-             context
-             #(-> %
-                  (update-in [:ns->notes namespace idx]
-                             f)
                   (assoc :last-ns-handled namespace)))})
 
 (defmethod handle ::update-note [{:keys [fx/context namespace idx f]}]
