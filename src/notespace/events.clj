@@ -43,9 +43,11 @@
                   (assoc :last-ns-handled namespace)))})
 
 (defmethod handle ::update-note [{:keys [fx/context namespace idx f]}]
-  {:context (fx/swap-context
-             context
-             #(-> %
-                  (update-in [:ns->notes namespace idx]
-                             f)
-                  (assoc :last-ns-handled namespace)))})
+  {:context (if idx
+              (fx/swap-context
+               context
+               #(-> %
+                    (update-in [:ns->notes namespace idx]
+                               f)
+                    (assoc :last-ns-handled namespace)))
+              context)})
