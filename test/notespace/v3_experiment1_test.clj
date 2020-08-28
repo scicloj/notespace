@@ -1,5 +1,5 @@
 (ns notespace.v3-experiment1-test
-  (:require [notespace.api :refer [D F]]
+  (:require [notespace.api :refer [A D F]]
             [notespace.kinds :as k]))
 
 ["# Notespace v3 intro
@@ -117,6 +117,14 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 (D
  (Thread/sleep 1000)
  [:h3 (+ 1 2)])
+
+(def a
+  (atom {:x 3}))
+
+(A a)
+
+(comment
+  (swap! a update :x inc))
 
 [:bye]
 
