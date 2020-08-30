@@ -2,7 +2,9 @@
   (:require [notespace.actions :as actions]
             [notespace.lifecycle :as lifecycle]
             [notespace.note :as note]
-            [gorilla-notes.util]))
+            [gorilla-notes.util]
+            [cljfx.api :as fx]
+            [notespace.state :as state]))
 
 (def init lifecycle/init)
 
@@ -57,3 +59,9 @@
      (fn [_ _ _ _]
        (actions/rerender-note! namespace idx)))
     an-atom))
+
+(defmacro R [symbols & forms]
+  `(reify clojure.lang.IDeref
+     (deref [~'_]
+       (let [{:keys [~@symbols]} (state/sub-get-in :inputs)]
+         ~@forms))))
