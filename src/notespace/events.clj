@@ -46,5 +46,5 @@
   {:context (fx/swap-context
              context
              #(-> %
-                  (assoc-in [:ns->inputs symbol]
+                  (assoc-in [:inputs symbol]
                             value)))})
