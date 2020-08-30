@@ -105,3 +105,9 @@
   (when-let [idx (state/sub-get-in :ns->line->index namespace line)]
     (eval-note! namespace idx)
     (realize-note! namespace idx)))
+
+(defn assoc-input! [symbol value]
+  (ctx/handle {:event/type ::events/assoc-input
+               :fx/sync    true
+               :symbol     symbol
+               :value      value}))

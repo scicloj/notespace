@@ -2,7 +2,9 @@
   (:require [gorilla-notes.core :as gn]
             [cljfx.api :as fx]
             [notespace.view :as view]
-            [notespace.note :as note]))
+            [notespace.note :as note]
+            [notespace.actions :as actions]
+            [notespace.util :as u]))
 
 (defonce server (atom nil))
 
@@ -15,7 +17,8 @@
                           :header?         false
                           :reverse-notes?  false
                           :custom-header [:div [:big "Notespace"] [:hr]]
-                          :custom-footer [:div [:hr]]}))
+                          :custom-footer [:div [:hr]]})
+  (gn/watch-inputs! actions/assoc-input!))
 
 (defn browse []
   (gn/browse-default-url))

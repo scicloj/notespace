@@ -41,3 +41,10 @@
                                f)
                     (assoc :last-ns-handled namespace)))
               context)})
+
+(defmethod handle ::assoc-input [{:keys [fx/context symbol value]}]
+  {:context (fx/swap-context
+             context
+             #(-> %
+                  (assoc-in [:ns->inputs symbol]
+                            value)))})

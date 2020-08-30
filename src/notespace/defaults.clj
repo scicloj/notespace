@@ -24,4 +24,6 @@
    ;; the last notespace handled:
    :last-ns-handled       nil
    ;; We keep track of changes in source files corresponding to namespaces.
-   :ns->last-modification {}})
+   :ns->last-modification {}
+   ;; We keep track of UI inputs per namespace.
+   :ns->inputs {}})
