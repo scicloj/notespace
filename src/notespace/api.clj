@@ -47,13 +47,13 @@
          (actions/rerender-note! ns# idx#)
          result#))))
 
-(defmacro A [an-atom]
-  `(let [idx# ~note/*notespace-idx*
-         ns#  *ns*
-         k#   (str "k" (gorilla-notes.util/uuid))]
-     (add-watch
-      ~an-atom
-      k#
-      (fn [key# ref# old-state# new-state#]
-        (actions/rerender-note! ns# idx#)))
-     ~an-atom))
+(defn A [an-atom]
+  (let [idx       note/*notespace-idx*
+        namespace *ns*
+        k         (str "k" (gorilla-notes.util/uuid))]
+    (add-watch
+     an-atom
+     k
+     (fn [_ _ _ _]
+       (actions/rerender-note! namespace idx)))
+    an-atom))
