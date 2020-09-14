@@ -39,6 +39,12 @@
            first
            string?)))
 
+(defn vector-beginning-with-keyword-topform? [topform]
+  (and (vector? topform)
+       (-> topform
+           first
+           keyword?)))
+
 (defn kinds-set []
   (-> :kind->behaviour
       state/sub-get-in
@@ -53,10 +59,17 @@
            ((kinds-set))))
 
 (defn topform-with-metadata->kind [tfwm]
-  (or (-> tfwm meta metadata->kind)
-      (if (strings-topform? tfwm)
-        :notespace.kinds/md
-        :notespace.kinds/naive)))
+  (or
+   (-> tfwm meta metadata->kind)
+   (cond
+     ;;
+     (strings-topform? tfwm)
+     :notespace.kinds/md
+     ;;
+     (vector-beginning-with-keyword-topform? tfwm)
+     (->> tfwm first name (keyword "notespace.kinds"))
+     ;;
+     :else :notespace.kinds/naive)))
 
 (defn topform-with-metadata->forms [tfwm]
   (if (-> tfwm meta :multi)
