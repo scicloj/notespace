@@ -18,7 +18,7 @@
        [:p/code {:code     (:source metadata)
                  :bg-class "bg-light"}])
      ;; TODO Simplify the logic here.
-     [:p (if (u/ready? value)
+     [:div (if (u/ready? value)
            (if (var? value)
              (-> value
                  value->hiccup)
