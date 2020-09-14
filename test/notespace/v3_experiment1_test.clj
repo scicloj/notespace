@@ -9,8 +9,7 @@
 
   (api/init)
 
-  (api/eval-this-notespace!
-   "doc/notespace/v3-experiment1-test/index.html")
+  (api/eval-this-notespace!)
 
   (browse/browse-url
    "doc/notespace/v3-experiment1-test/index.html"))
@@ -136,4 +135,3 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 
 (comment
   (swap! a update :x inc))
-
