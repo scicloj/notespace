@@ -19,8 +19,6 @@
 
 This is an experimantal incomplete draft. It should serve as a basis for discussion on our way to v3."]
 
-[:hi]
-
 ["Notes have kinds."]
 
 ["Most notes are assigned the default kind `:naive` automatically. This kind of note means rendering the value by pretty printing it:"]
@@ -41,39 +39,39 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 ^k/void
 (+ 1 2)
 
-["Notes of kind `:as-md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
+["Notes of kind `:md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
 
-^k/as-md
+^k/md
 ["##### text:"
  "* **bold**
 * *italic*
 * [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"]
 
-^k/as-md
+^k/md
 (cons
  "##### numbers:"
  (for [i (range 1 4)]
   (apply str "* " (repeat i i))))
 
-["Notes of kind `:md` are rendered as Markdown too, but without showing the code. Here is an example:"]
+["Notes of kind `:md-nocode` are rendered as Markdown too, but without showing the code. Here is an example:"]
 
-^k/as-md
+^k/md-nocode
 (->> "abcd"
      (map (fn [ch]
             (str "* " ch))))
 
-["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md`  automatically."
+["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md-nocode`  automatically."
  "This very text you are reading is an example of a note of that kind."]
 
-["Notes of kind `:as-hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed."]
+["Notes of kind `:hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed."]
 
-^k/as-hiccup
+^k/hiccup
 [:div
  [:h5 "Plot:"]
  [:p/sparklinespot
   {:data [5, 10, 5, 20, 10] :limit 5 :svgWidth 100 :svgHeight 20 :margin 5}]]
 
-^k/as-hiccup
+^k/hiccup
 (into [:ul]
       (for [i (range 9)]
         [:li
@@ -86,7 +84,7 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
            :svgWidth  100
            :svgHeight 20}]]))
 
-^k/as-hiccup
+^k/hiccup
 [:p/player
  {:width  "100%"
   :height "100%"
@@ -94,19 +92,19 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 
 [" Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
 
-^k/as-hiccup
+^k/hiccup
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
 
-["Notes of kind `:hiccup` are rendered as Hiccup too, but without showing the code. Here is an example:"]
+["Notes of kind `:hiccup-nocode` are rendered as Hiccup too, but without showing the code. Here is an example:"]
 
-^k/as-hiccup
+^k/hiccup-nocode
 [:p/sparklinespot
  {:data (->> #(- (rand) 0.5)
              (repeatedly 9)
              (reductions +))
   :svgHeight 20}]
 
-["Pending refs, such as delays, futures and promises, are rendered in a special way, taking account whether they have been realized or not."]
+["Pending refs, such as delays, futures and promises, are rendered in a special way, taking into account whether they have been realized or not."]
 
 ^k/void
 (def x
@@ -118,7 +116,7 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 
 (F (take 9 @x))
 
-^k/as-hiccup
+^k/hiccup
 (F
  (let [y @x]
    (Thread/sleep 2000)
@@ -126,7 +124,7 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
     {:data      y
      :svgHeight 20}]))
 
-^k/as-hiccup
+^k/hiccup
 (D
  (Thread/sleep 1000)
  [:h3 (+ 1 2)])
@@ -138,7 +136,4 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 
 (comment
   (swap! a update :x inc))
-
-[:bye]
-
 

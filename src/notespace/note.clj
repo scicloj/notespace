@@ -64,7 +64,7 @@
    (cond
      ;;
      (strings-topform? tfwm)
-     :notespace.kinds/md
+     :notespace.kinds/md-nocode
      ;;
      (vector-beginning-with-keyword-topform? tfwm)
      (->> tfwm first name (keyword "notespace.kinds"))
