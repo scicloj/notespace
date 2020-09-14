@@ -3,7 +3,7 @@
 
 (def initial-state
   {;; global configuration:
-   :config                {}
+   :config                {:target-base-path "doc"}
    ;; namespace specific configuration:
    :ns->config            {}
    ;; one way to write a form is using one of several note symbols,

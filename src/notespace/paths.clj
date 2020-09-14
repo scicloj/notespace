@@ -1,26 +1,15 @@
 (ns notespace.paths
   (:require [notespace.state :as state]
-            [clojure.string :as string]
-            [notespace.io :as io])
+            [clojure.string :as string])
   (:import java.io.File))
 
 (defn ns->target-path [namespace]
-  (let [dirname (str (state/config [:target-path])
+  (let [dirname (str (state/sub-get-in :config :target-base-path)
                      "/"
                      (-> namespace str (string/replace "." "/"))
                      "/")
         dir     (File. dirname)]
     (when-not (.exists dir)
       (.mkdirs dir))
-    dirname))
+    (format "%s/index.html" dirname)))
 
-
-;; Any namespace has a corresponding output html file.
-(defn ns->out-filename [namespace]
-  (format "%s/index.html" (ns->target-path namespace)))
-
-(defn copy-to-ns-target-path [source-uri target-filename]
-  (io/copy source-uri
-           (str (ns->target-path *ns*)
-                "/"
-                target-filename)))

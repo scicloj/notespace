@@ -1,6 +1,19 @@
 (ns notespace.v3-experiment1-test
-  (:require [notespace.api :refer [A D F]]
-            [notespace.kinds :as k]))
+  (:require [notespace.api :as api :refer [A D F]]
+            [notespace.kinds :as k]
+            [clojure.java.browse :as browse]))
+
+^k/hidden
+(comment
+  (api/init-with-browser)
+
+  (api/init)
+
+  (api/eval-this-notespace!
+   "doc/notespace/v3-experiment1-test/index.html")
+
+  (browse/browse-url
+   "doc/notespace/v3-experiment1-test/index.html"))
 
 ["# Notespace v3 intro
 
@@ -127,4 +140,5 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
   (swap! a update :x inc))
 
 [:bye]
+
 

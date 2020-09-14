@@ -36,3 +36,8 @@
   (save-buffer)
   (cider-interactive-notify-and-eval
    "(notespace.api/eval-this-notespace!)"))
+
+(defun notespace/render-static-html ()
+  (interactive)
+  (cider-interactive-notify-and-eval
+   "(notespace.api/render-static-html!)"))

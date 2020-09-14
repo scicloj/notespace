@@ -40,5 +40,6 @@
 (defn notify [msg]
   (sh/sh "notify-send" msg))
 
-
+(defn uuid []
+  (java.util.UUID/randomUUID))
 
