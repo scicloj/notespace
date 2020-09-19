@@ -11,6 +11,8 @@
 
   (api/eval-this-notespace!)
 
+  (api/render-static-html!)
+
   (browse/browse-url
    "doc/notespace/v3-experiment1-test/index.html"))
 
