@@ -26,4 +26,6 @@
    ;; We keep track of changes in source files corresponding to namespaces.
    :ns->last-modification {}
    ;; We keep track of UI inputs per namespace.
-   :inputs {}})
+   :inputs {}
+   ;; Also, we have a map from request id to response, for managing effects.
+   :request-id->response {}})

@@ -40,6 +40,15 @@
 (defn notify [msg]
   (sh/sh "notify-send" msg))
 
-(defn uuid []
-  (java.util.UUID/randomUUID))
+(defonce *current-ids (atom {}))
 
+(defn next-id [topic]
+  (-> (swap! *current-ids
+             (fn [ids]
+               (assoc
+                ids
+                topic (-> ids
+                          (get topic)
+                          (or 0)
+                          inc))))
+      (get topic)))

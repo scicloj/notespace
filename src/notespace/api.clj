@@ -61,7 +61,7 @@
 (defn A [an-atom]
   (let [idx       note/*notespace-idx*
         namespace *ns*
-        k         (str "k" (u/uuid))]
+        k         (str "k" (u/next-id :atom))]
     (add-watch
      an-atom
      k

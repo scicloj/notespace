@@ -1,5 +1,6 @@
 (ns notespace.events
-  (:require [cljfx.api :as fx]))
+  (:require [cljfx.api :as fx]
+            [notespace.util :as u]))
 
 (defmulti handle :event/type)
 
@@ -11,9 +12,6 @@
   {:context (fx/reset-context
              context
              initial-state)})
-
-(defmethod handle ::on-result [{:keys [fx/context idx value]}]
-  {:context context})
 
 (defmethod handle ::file-modified [{:keys [fx/context namespace modification-time]}]
   {:context (fx/swap-context
@@ -33,14 +31,46 @@
                   (assoc :last-ns-handled namespace)))})
 
 (defmethod handle ::update-note [{:keys [fx/context namespace idx f]}]
-  {:context (if idx
-              (fx/swap-context
+  (if idx
+    (let [request-id (u/next-id :request)
+          request {:request-id request-id
+                   :f          f
+                   :namespace  namespace
+                   :idx        idx}]
+      {:context (fx/swap-context
+                 context
+                 #(-> %
+                      (assoc-in [:request-id->response request-id] {:result :pending
+                                                                    :request request})
+                      (assoc :last-ns-handled namespace)))
+       :update  {:request request
+                 :on-response {:event/type ::on-response
+                               :request request
+                               :result     :success}
+                 :on-exception {:event/type ::on-response
+                                :request request
+                                :result     :failure}}})
+    {:context context}))
+
+(defmethod handle ::on-response [{:keys [fx/context request result response exception]}]
+  (let [{:keys [request-id namespace idx]} request]
+    {:context (fx/swap-context
                context
                #(-> %
+                    (update-in [:request-id->response request-id]
+                               (fn [req-status]
+                                 (cond-> req-status
+                                   :always             (assoc :request request
+                                                              :result result)
+                                   (= :success result) (assoc :response response)
+                                   ;; Currently we never get here.
+                                   (= :failure result) (assoc :exception exception))))
                     (update-in [:ns->notes namespace idx]
-                               f)
-                    (assoc :last-ns-handled namespace)))
-              context)})
+                               (if (= :success result)
+                                 (constantly response)
+                                 identity))))
+     :throw (when (= :failure result)
+              exception)}))
 
 (defmethod handle ::assoc-input [{:keys [fx/context symbol value]}]
   {:context (fx/swap-context
