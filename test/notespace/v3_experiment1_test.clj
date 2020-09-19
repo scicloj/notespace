@@ -1,6 +1,5 @@
 (ns notespace.v3-experiment1-test
-  (:require [notespace.api :as api :refer [A D F]]
-            [notespace.kinds :as k]
+  (:require [notespace.api :as api]
             [clojure.java.browse :as browse]))
 
 ^k/hidden
@@ -18,29 +17,60 @@
 
 ["# Notespace v3 intro
 
-This is an experimantal incomplete draft. It should serve as a basis for discussion on our way to v3."]
+This is an experimantal incomplete draft. It should serve as a basis for discussion on our way to v3 of notespace."]
 
-["Notes have kinds."]
+(require '[notespace.api :as api :refer [A D F]]
+         '[notespace.kinds :as k])
 
-["Most notes are assigned the default kind `:naive` automatically. This kind of note means rendering the value by pretty printing it:"]
+["## Notes
+
+Here is a note:"]
 
 (+ 1 2
    3 4
    5 6)
 
-["Note kinds can be assigned explicitly through metadata."]
+["We see its code ant its return value rendered."]
+
+["## Note kinds
+
+Each note has a kind, that determines its rendering behaviour.
+
+One way to specify a note's kind is by metadata. For example, here is a note of kind `:hiccup`."]
+
+^k/hiccup
+[:big [:big 3]]
+
+["Let us see what kinds of notes we have.
+
+### naive
+
+A `:naive` note renders its value by pretty-printing it."]
 
 ^k/naive
 (->> (partial rand-int 6)
      (partial repeatedly 6)
      (repeatedly 6))
 
-["Notes of kind `:void` do not render their values."]
+["### void
+
+A `:void` note does not render its value."]
 
 ^k/void
 (+ 1 2)
 
-["Notes of kind `:md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
+["### hidden
+
+A `:hidden` note does not render its value, and also does not show its code.
+
+Here is a note that you cannot see:"]
+
+^k/hidden
+(+ 1 2)
+
+["### md
+
+Notes of kind `:md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
 
 ^k/md
 ["##### text:"
@@ -52,19 +82,40 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
 (cons
  "##### numbers:"
  (for [i (range 1 4)]
-  (apply str "* " (repeat i i))))
+   (apply str "* " (repeat i i))))
 
-["Notes of kind `:md-nocode` are rendered as Markdown too, but without showing the code. Here is an example:"]
+["### md-nocode
+
+Notes of kind `:md-nocode` are rendered as Markdown too, but without showing the code. Here is an example:"]
 
 ^k/md-nocode
 (->> "abcd"
      (map (fn [ch]
             (str "* " ch))))
 
-["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md-nocode`  automatically."
- "This very text you are reading is an example of a note of that kind."]
+["### hiccup
 
-["Notes of kind `:hiccup` are rendered as Hiccup. Actually it is an extended version of Hiccup, where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags are allowed."]
+A `:hiccup` note renders its value as Hiccup."]
+
+^k/hiccup
+[:big [:big 3]]
+
+["### hiccup-nocode
+
+Notes of kind `:hiccup-nocode` are rendered as Hiccup too, but without showing the code. Here is an example:"]
+
+^k/hiccup-nocode
+[:p/sparklinespot
+ {:data      (->> #(- (rand) 0.5)
+                  (repeatedly 9)
+                  (reductions +))
+  :svgHeight 20}]
+
+["### extended hiccup
+
+In fact, a `:hiccup` actually renders by an extended version of Hiccup. It supports where [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) tags.
+
+Here are some examples."]
 
 ^k/hiccup
 [:div
@@ -91,21 +142,27 @@ This is an experimantal incomplete draft. It should serve as a basis for discuss
   :height "100%"
   :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
-[" Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
+["Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
 
 ^k/hiccup
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
 
-["Notes of kind `:hiccup-nocode` are rendered as Hiccup too, but without showing the code. Here is an example:"]
+["## Other ways to specify note kinds.
 
-^k/hiccup-nocode
-[:p/sparklinespot
- {:data (->> #(- (rand) 0.5)
-             (repeatedly 9)
-             (reductions +))
-  :svgHeight 20}]
+Another way is to assign a kind to a note is to include it in a vector beginning with a keyword. This is compatible with the approach of [Oz](https://github.com/metasoarous/oz)."]
 
-["Pending refs, such as delays, futures and promises, are rendered in a special way, taking into account whether they have been realized or not."]
+[:hiccup [:big [:big 3]]]
+
+["Most notes are assigned the default kind `:naive` automatically."]
+
+(+ 1 2)
+
+["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md-nocode`  automatically."
+ "This very text you are reading is an example of a note of that kind."]
+
+["## References
+
+Pending refs, such as delays, futures and promises, are rendered in a special way, taking into account whether they have been realized or not."]
 
 ^k/void
 (def x
