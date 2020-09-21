@@ -32,7 +32,7 @@ See [emacs-config.el](https://github.com/scicloj/notespace/blob/v3/emacs-config.
 
 ### Main changes
 Here are the main thingss that are changing here, comparing to Version 2:
-* Version 3 offers a different notion of what notespaces and ntoes are. Arguably, this notion is less strange to the usual Clojure concepts and idioms.
+* Version 3 offers a different notion of what notespaces and notes are. Arguably, this notion is less strange to the usual Clojure concepts and idioms.
 * Very little extra notation is necessary, and it is just some tiny amount of metadata that determines how things should be rendered.
 * A small set of API functions allows to evaluate code in a way that informs the browser notebook about changes.
 * Time-related Clojure semantics such as futures and delays can be handled in a way that respects and informs the notebook too when values are realized.
