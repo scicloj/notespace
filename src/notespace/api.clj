@@ -18,24 +18,24 @@
      :FAILED)
    (last args)])
 
-(defn reread-this-notespace! []
+(defn reread-this-notespace []
   (actions/reread-notes! *ns*))
 
-(defn eval-this-notespace! []
+(defn eval-this-notespace []
   (actions/eval-notes! *ns*))
 
-(defn eval-note-at-line! [line]
+(defn eval-note-at-line [line]
   (actions/eval-note-at-line! *ns* line))
 
-(defn realize-note-at-line! [line]
+(defn realize-note-at-line [line]
   (actions/realize-note-at-line! *ns* line))
 
-(defn eval-and-realize-note-at-line! [line]
+(defn eval-and-realize-note-at-line [line]
   (actions/eval-and-realize-note-at-line! *ns* line))
 
-(defn render-static-html!
+(defn render-static-html
   ([]
-   (render-static-html! nil))
+   (render-static-html nil))
   ([path]
    (-> path
        (or (paths/ns->target-path *ns*))
