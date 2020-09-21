@@ -37,10 +37,9 @@
   ([]
    (render-static-html nil))
   ([path]
-   (-> path
-       (or (paths/ns->target-path *ns*))
-       gn/render-current-state!)
-   (println [:rendered path])))
+   (let [path-to-use (or path (paths/ns->target-path *ns*))]
+     (gn/render-current-state! path-to-use)
+     (println [:rendered path-to-use]))))
 
 (defmacro D [& forms]
   `(let [idx# ~note/*notespace-idx*
