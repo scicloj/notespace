@@ -33,7 +33,12 @@
                       with-out-str)}])
 
 (defn markdowns->hiccup [mds]
-  [:p/markdown (string/join "\n" mds)])
+  (if-not (sequential? mds)
+    (markdowns->hiccup [mds])
+    [:p/markdown
+     (->> mds
+          (map #(-> % print with-out-str))
+          (string/join "\n"))]))
 
 ;; (defn ->reference [namespace]
 ;;   [:div
