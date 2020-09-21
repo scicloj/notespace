@@ -17,7 +17,9 @@
    ::void          {:render-src?   true
                     :value->hiccup (constantly nil)}
    ::hidden        {:render-src?   false
-                    :value->hiccup (constantly nil)}})
+                    :value->hiccup (constantly nil)}
+   ::dataset       {:render-src?   true
+                    :value->hiccup #'view/dataset->hiccup}})
 
 (def naive ::naive)
 (def md-nocode ::md-nocode)
@@ -27,3 +29,4 @@
 (def vega ::vega)
 (def void ::void)
 (def hidden ::hidden)
+(def dataset ::dataset)

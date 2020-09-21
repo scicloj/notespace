@@ -208,7 +208,7 @@ Here is a note that you cannot see:"]
 
 ["### md
 
-Notes of kind `:md` are expected to return a seq of strings. These strings are concatenated and renderdered as Markdown."]
+Notes of kind `:md` are rendering their values as markdown. More precisely, the value is printed, and the captured printed string is expected to be of Markdown format. If the value is sequential, then its elements are printed and concantenated as lines of one multi-line string, that is then treated as Markdown."]
 
 ^k/md
 ["##### text:"
@@ -283,6 +283,19 @@ Here are some examples."]
 
 ^k/hiccup
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
+
+["### dataset
+
+Notes of kind `:dataset` are expecting a value that is a map, whose values are same-length sequentials. One example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries.
+
+The value is rendered in as an [ag-Grid](https://www.ag-grid.com/) component.
+
+For example:"]
+
+^k/dataset
+{:x (range 9)
+ :y (repeatedly 9 rand)
+ :z (cycle "abc")}
 
 ["## Other ways to specify note kinds
 

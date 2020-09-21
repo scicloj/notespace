@@ -40,6 +40,27 @@
           (map #(-> % print with-out-str))
           (string/join "\n"))]))
 
+(defn dataset->hiccup [ds]
+  (let [string-column-names (->> ds
+                                 keys
+                                 (map name))
+        column-defs         (->> string-column-names
+                                 (mapv (fn [k-str]
+                                        {:headerName k-str
+                                         :field      k-str})))
+        columns             (vals ds)
+        row-data            (apply
+                             mapv
+                             (fn [& row-values]
+                               (zipmap string-column-names row-values))
+                             columns)]
+    [:div {:class "ag-theme-balham"
+           :style {:height "150px"
+                   ;; :width  "100%"
+                   }}
+     [:p/aggrid {:columnDefs column-defs
+                 :rowData    row-data}]]))
+
 ;; (defn ->reference [namespace]
 ;;   [:div
 ;;    [:i
