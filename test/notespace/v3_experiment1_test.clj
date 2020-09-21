@@ -286,18 +286,20 @@ Here are some examples."]
 ^k/hiccup
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
 
-["### dataset
+;; Still buggy on the static html, due to the way CSS is consumed:
 
-Notes of kind `:dataset` are expecting a value that is a map, whose values are same-length sequentials. One example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries.
+;; ["### dataset
 
-The value is rendered in as an [ag-Grid](https://www.ag-grid.com/) component.
+;; Notes of kind `:dataset` are expecting a value that is a map, whose values are same-length sequentials. One example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries.
 
-For example:"]
+;; The value is rendered in as an [ag-Grid](https://www.ag-grid.com/) component.
 
-^k/dataset
-{:x (range 9)
- :y (repeatedly 9 rand)
- :z (cycle "abc")}
+;; For example:"]
+
+;; ^k/dataset
+;; {:x (range 9)
+;;  :y (repeatedly 9 rand)
+;;  :z (cycle "abc")}
 
 ["## Other ways to specify note kinds
 
