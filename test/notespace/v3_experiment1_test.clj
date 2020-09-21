@@ -1,5 +1,6 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as api]
+            [notespace.kinds :as k]
             [clojure.java.browse :as browse]))
 
 ^k/hidden
@@ -8,9 +9,9 @@
 
   (api/init)
 
-  (api/eval-this-notespace!)
+  (api/eval-this-notespace)
 
-  (api/render-static-html!)
+  (api/render-static-html)
 
   (browse/browse-url
    "doc/notespace/v3-experiment1-test/index.html"))
@@ -21,7 +22,9 @@
 
 So, `Notespace` with a capital `N` is the name of the tool, and `notespace` with a small `n` is the notion that we just presented.
 
-Here we describe an experimental incomplete draft of Notespace Version 3."]
+Here we describe an experimental incomplete draft of Notespace Version 3.
+
+It is still a bit buggy around handling concurrency, updating efficiently and connecting to the browser. But the current version should be enough to start a community discussion around where we should be taking this."]
 
 ["## Notes
 
@@ -61,25 +64,25 @@ In the beginning of your work, you can use it instead of `init`.
 
 You can always refersh the browser tab. That is useful if it runs out of sync with the system's state (yes, this may happen sometimes -- there may be some concurrency bugs)."
 
-"#### eval-this-notespace!
+"#### eval-this-notespace
 
-Use `notespace.api/eval-this-notespace!` to evaluate the current namespace, one note after another, and inform Notespace about the evaluation results, one after another.
+Use `notespace.api/eval-this-notespace` to evaluate the current namespace, one note after another, and inform Notespace about the evaluation results, one after another.
 
 If you have a browser view open, it should show the updated rendering of the state of the notespace last touched."
 
-"#### eval-note-at-line!
+"#### eval-note-at-line
 
-Use `notespace.api/eval-note-at-line!` to evaluate the note at a certain line and inform Noteapace about the evaluation result.
+Use `notespace.api/eval-note-at-line` to evaluate the note at a certain line and inform Noteapace about the evaluation result.
 
-For example, `(notespace.api/eval-note-at-line! 14)` applies that to the note at line 14.
+For example, `(notespace.api/eval-note-at-line 14)` applies that to the note at line 14.
 
 If you have a browser view open, it should show the updated rendering of the state of the notespace last touched.
 
 This is useful for re-evaluating parts of the notebook, whose evaluation result may have changed for some reason."
 
-"#### render-static-html!
+"#### render-static-html
 
-Use `notespace.api/render-static-html!` to render the Notespace state of the notespace last touched as a standalone html file. This html should look exactly as the dynamic browser view at the moment of rendering."]
+Use `notespace.api/render-static-html` to render the Notespace state of the notespace last touched as a standalone html file. This html should look exactly as the dynamic browser view at the moment of rendering."]
 
 ["### Editor integration
 
@@ -107,11 +110,11 @@ p2
 
 Notespace offers some more API functions that allow for a dynamic experience with Clojure references."]
 
-["#### eval-and-realize-note-at-line!
+["#### eval-and-realize-note-at-line
 
-Use `notespace.api/eval-and-realize-note-at-line!` to evaluate the note at a certain line, realize the value if it is an unrealized derefable value, and inform Noteapace about the result.
+Use `notespace.api/eval-and-realize-note-at-line` to evaluate the note at a certain line, realize the value if it is an unrealized derefable value, and inform Noteapace about the result.
 
-For example, `(notespace.api/eval-and-realize-note-at-line! 14)` applies that to the note at line 14."]
+For example, `(notespace.api/eval-and-realize-note-at-line 14)` applies that to the note at line 14."]
 
 ["### Futures"]
 
@@ -142,7 +145,7 @@ For example:"]
 
 (D (+ 1 2))
 
-["If you called `notespace.api/eval-and-realize-note-at-line!` with the line holding this note, then you should see the number 3 there. Otherwise, you should see a mark that says it is still pending."]
+["If you called `notespace.api/eval-and-realize-note-at-line` with the line holding this note, then you should see the number 3 there. Otherwise, you should see a mark that says it is still pending."]
 
 ["### Atoms"]
 
@@ -157,8 +160,9 @@ For example:"]
 
 (A a)
 
-["If when rendering this notespace the user evaluated the code in the comment below, then you should see `{:x 4}`. Otherwise, you should still see `{:x 3}`."]
+["If you evaluated the code in the comment below once, then you should see `{:x 4}`. Otherwise, you should still see `{:x 3}`."]
 
+^k/void
 (comment
   (swap! a update :x inc))
 
@@ -291,6 +295,20 @@ A note's kinds can also be specified by including it in a vector beginning with 
 
 (+ 1 2)
 
-["## Interactive input and reactive notes"]
+["## Interactive input and reactive notes
 
-["Coming soon."]
+Coming soon."]
+
+;; ^k/hiccup
+;; [:p/slider :x {:min 0 :max 100 :initial-value 0}]
+
+;; ^k/void
+;; (require '[notespace.api :refer [R]])
+
+;; (R [x]
+;;    (* x 100))
+
+["## Unit tests
+
+Coming soon."]
+
