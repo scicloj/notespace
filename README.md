@@ -13,8 +13,6 @@ Everything here is considered experimental.
 ## Version 3
 Version 3, under active development, is an attempt to rethink the user experience and internals of Version 2.
 
-You can see the evolving draft under the [v3 branch](https://github.com/scicloj/notespace/tree/v3).
-
 It follows some ideas from our discussions of [alternative notation](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/alternative.20notation) and of [evaluation semantics](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/evaluation.20semantics.20--.20suggested.20breaking.20change).
 
 Several people's ideas and comments have affected this version.
