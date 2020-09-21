@@ -94,6 +94,8 @@ You can see how to do this in Emacs in [this Elisp code](https://github.com/scic
 
 Clojure references such as delays, futures, promises and atoms are handled by Notespace in a special way. Below we will see how Notespace offers ways to bring the dynamic REPL experience of such constructs to the dynamic browser view.
 
+**Note:** Below we present some specialized macros/functions `F`, `D`, `A`, that are currently used for wrapping futures, delays and atoms so that they would notify Notespace about their state. We are checking the option of avoiding the need of these constructs and getting along with plain futures, delays and atoms.
+
 ### The rule of rendering
 
 Assume that a note's evaluation result `x` is a reference. If `x` is already realized, then Notespace renders `@x` (dereferenced `x`) instead of `x`. Otherwise, you should see a mark that says it is still pending.
