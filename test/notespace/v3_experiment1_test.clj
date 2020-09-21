@@ -42,11 +42,11 @@ All your namespace is seen as a sequence of toplevel forms, which are considered
 
 Typically, you may like to edit one or more namespaces, that may be about function definitions, tests, data exploration, etc., and have Notespace update its notebook view while these namespaces evolve. At some point, you may like to render the view as a standalone html file for documentation.
 
-See [this screencast](https://www.youtube.com/watch?v=_GcTnkhn9g0) for a recorded session. Note, however, that the note kinds defined in the screencast are a bit different from those of the current version.
+See [this screencast](https://www.youtube.com/watch?v=_GcTnkhn9g0) for a recorded session. Note, however, that the note kinds defined in the screencast are a bit different from those of the current version."
 
-Let us see how to do this with the Notespace API."
+"### The main API functions
 
-"### The main API functions"
+Let us see how to get along with notespaces using the Notespace API."
 
 "#### init
 
@@ -187,6 +187,8 @@ A `:naive` note renders its value by pretty-printing it."]
 (->> (partial rand-int 6)
      (partial repeatedly 6)
      (repeatedly 6))
+
+["This is the default kind, so usually there is no need to mention it."]
 
 ["### void
 
