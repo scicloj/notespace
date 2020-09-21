@@ -2,6 +2,8 @@
 
 Notebook experience in your Clojure namespace
 
+[![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
+
 ## What is it?
 
 This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
@@ -98,10 +100,8 @@ Rendering is now an abstract notion, and thus Notespace can be extended with dif
 * Currently things tend to break when moving across several namespaces. For now, calling `(notespace.api/init)` is a good habit for such cases.
 
 ## Version 2
-The current version at the master branch and at Clojars is Version 2.
-[![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
 
-At the moment, it is used for documentation and testing at [ClojisR](https://github.com/scicloj/clojisr) and [ClojisR-examples](https://github.com/scicloj/clojisr-examples).
+At the moment, Version 2 is used for documentation and testing at [ClojisR](https://github.com/scicloj/clojisr) and [ClojisR-examples](https://github.com/scicloj/clojisr-examples).
 
 ### Usage
 
