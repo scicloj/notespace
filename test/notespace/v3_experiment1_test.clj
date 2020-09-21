@@ -284,7 +284,7 @@ Here are some examples."]
 ^k/hiccup
 [:p/code {:code "(defn abcd [x] (+ x 9))"}]
 
-["## Other ways to specify note kinds.
+["## Other ways to specify note kinds
 
 A note's kinds can also be specified by including it in a vector beginning with a keyword. This is inspired by the approach of [Oz](https://github.com/metasoarous/oz), and should allow some partial compatibility with Oz notebooks."]
 
