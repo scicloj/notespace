@@ -22,7 +22,7 @@ Several people's ideas and comments have affected this version.
 
 See [this screencast](https://youtu.be/_GcTnkhn9g0) for a first experimental concept. It is a bit outdated in terms of the note kinds.
 
-See [this namespace](./test/notespace/v3_experiment1_test.clj) for some more examples.
+See [this namespace](./test/notespace/v3_experiment1_test.clj) for some more examples, or read it directly [as the corresponding rendered html](https://scicloj.github.io/notespace/doc/notespace/v3-experiment1-test/index.html).
 
 The concepts and idioms here may change. They are presented just as a basis for further discussion.
 
