@@ -1,8 +1,8 @@
-(ns notespace.v2.config
+(ns notespace.config
   (:import java.io.File)
   (:require [cambium.core :as log]
-            [notespace.v2.io :as io]
-            [notespace.v2.state :as state]))
+            [notespace.io :as io]
+            [notespace.state :as state]))
 
 (defn set-default-target-path! [target-path]
   (state/assoc-in-state! [:config :target-path] target-path)

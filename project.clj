@@ -1,4 +1,4 @@
-(defproject scicloj/notespace "2.0.0-alpha6-SNAPSHOT"
+(defproject scicloj/notespace "3-alpha2-SNAPSHOT"
   :description "Notebook experience in your Clojure namespace."
   :url "http://github.com/scicloj/notespace"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -21,4 +21,8 @@
                  [com.akolov/mirador "0.2.1"]
                  [javax.servlet/servlet-api "2.5"]
                  [hickory "0.7.1"]
-                 [metasoarous/darkstar "0.1.0"]])
+                 [metasoarous/darkstar "0.1.0"]
+                 [org.clojure/core.async "1.1.587"]
+                 [cljfx "1.7.5"]
+                 [org.clojure/core.cache "1.0.207"]
+                 [scicloj/gorilla-notes "0.4.0-SNAPSHOT"]])

@@ -1,4 +1,4 @@
-(ns notespace.v2.vega
+(ns notespace.vega
   (:require
    [hickory.core :as h]
    [applied-science.darkstar :as darkstar]

@@ -1,4 +1,4 @@
-(ns notespace.v2.css
+(ns notespace.css
   (:require [clojure.java.io :as io]))
 
 ;; read css from resource with name same as keyword or inline provided text
