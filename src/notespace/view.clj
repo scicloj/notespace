@@ -55,11 +55,9 @@
                                (zipmap string-column-names row-values))
                              columns)]
     [:div {:class "ag-theme-balham"
-           :style {:height "150px"
-                   ;; :width  "100%"
-                   }}
-     [:p/aggrid {:columnDefs column-defs
-                 :rowData    row-data}]]))
+           :style {:height "150px"}}
+     [:p/dataset {:columnDefs column-defs
+                  :rowData    row-data}]]))
 
 ;; (defn ->reference [namespace]
 ;;   [:div
