@@ -295,7 +295,7 @@ For example:"]
 ^k/dataset
 {:x (range 9)
  :y (repeatedly 9 rand)
- :z (cycle "abc")}
+ :z (take 9 (cycle "abc"))}
 
 ["The value is rendered as an [ag-Grid](https://www.ag-grid.com/) component."]
 
