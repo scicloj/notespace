@@ -52,7 +52,7 @@
                                        (map count))]
         (->> new-things
              (run!
-              (fn [[idx _ new-note]]
+              (fn [[idx _ _]]
                 (gn/assoc-note!
                  idx
                  (fx/sub-ctx new-ctx rendering namespace idx)
@@ -60,5 +60,5 @@
         (when (> old-n new-n)
           (gn/drop-tail! (- old-n new-n)
                          :broadcast? false))
-        (Thread/sleep 100)
+        (Thread/sleep 1)
         (gn/broadcast-content-ids!)))))
