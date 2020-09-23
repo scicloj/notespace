@@ -4,6 +4,7 @@
             [notespace.util :as u]
             [notespace.state :as state]))
 
+
 (def waiting
   [:div
    [:big [:big "..."]]])
@@ -50,7 +51,7 @@
                                          :field      k-str})))
         columns             (vals ds)
         row-data            (apply
-                             mapv
+                             map
                              (fn [& row-values]
                                (zipmap string-column-names row-values))
                              columns)]
@@ -58,6 +59,10 @@
            :style {:height "150px"}}
      [:p/dataset {:columnDefs column-defs
                   :rowData    row-data}]]))
+
+(defn md-dataset->hiccup [mds]
+  [:div {:class "table table-striped table-hover table-condensed table-responsive"}
+   (markdowns->hiccup mds)])
 
 ;; (defn ->reference [namespace]
 ;;   [:div
