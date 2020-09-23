@@ -4,7 +4,8 @@
             [notespace.view :as view]
             [notespace.note :as note]
             [notespace.actions :as actions]
-            [notespace.util :as u]))
+            [notespace.util :as u]
+            [clojure.core.async :as async]))
 
 (defonce server (atom nil))
 
@@ -60,5 +61,11 @@
         (when (> old-n new-n)
           (gn/drop-tail! (- old-n new-n)
                          :broadcast? false))
-        (Thread/sleep 1)
+        #_(Thread/sleep 1)
         (gn/broadcast-content-ids!)))))
+
+(defonce periodical-update
+  (async/go-loop []
+    (async/<! (async/timeout 1000))
+    (gn/broadcast-content-ids!)
+    (recur)))
