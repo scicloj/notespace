@@ -20,13 +20,13 @@
                  :bg-class "bg-light"}])
      ;; TODO Simplify the logic here.
      [:div (if (u/ready? value)
-           (if (var? value)
-             (-> value
-                 value->hiccup)
-             (-> value
-                 u/realize
-                 value->hiccup))
-           waiting)]]))
+             (if (var? value)
+               (-> value
+                   value->hiccup)
+               (-> value
+                   u/realize
+                   value->hiccup))
+             waiting)]]))
 
 (defn value->naive-hiccup [value]
   [:p/code {:code (-> value
@@ -41,27 +41,39 @@
           (map #(-> % print with-out-str))
           (string/join "\n"))]))
 
-(defn dataset->hiccup [ds]
-  (let [string-column-names (->> ds
+(defn safe-value [x]
+  (if (instance? java.time.LocalDateTime x)
+    (.toInstant ^java.time.LocalDateTime x)
+    x))
+
+(defn dataset->grid-hiccup [ds]
+  (let [max-n-rows          100
+        string-column-names (->> ds
                                  keys
                                  (map name))
         column-defs         (->> string-column-names
                                  (mapv (fn [k-str]
-                                        {:headerName k-str
-                                         :field      k-str})))
-        columns             (vals ds)
+                                         {:headerName k-str
+                                          :field      k-str})))
+        columns             (->> ds
+                                 vals
+                                 (map (partial take max-n-rows)))
         row-data            (apply
                              map
                              (fn [& row-values]
-                               (zipmap string-column-names row-values))
+                               (->> row-values
+                                    (map safe-value)
+                                    (zipmap string-column-names)))
                              columns)]
     [:div {:class "ag-theme-balham"
            :style {:height "150px"}}
+     [:p (format "(showing first %d rows)" max-n-rows)]
      [:p/dataset {:columnDefs column-defs
                   :rowData    row-data}]]))
 
-(defn md-dataset->hiccup [mds]
-  [:div {:class "table table-striped table-hover table-condensed table-responsive"}
+(defn dataset->md-hiccup [mds]
+  [:div {:class "table table-striped table-hover table-condensed table-responsive"
+         :style {:height "400px"}}
    (markdowns->hiccup mds)])
 
 ;; (defn ->reference [namespace]

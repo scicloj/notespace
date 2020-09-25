@@ -288,11 +288,19 @@ Here are some examples."]
 
 ["### dataset
 
-Notes of kind `:dataset` are expecting a value that is a map, whose values are same-length sequentials. One example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries.
+Notes of kind `:dataset` are expecting a dataset that prints nicely as a table in markdown (for exaple, a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries).
+
+It wraps the resulting markdown with nice Bootstrap CSS classes, so that the table is displayed nicely.
+
+We do not have an example here, since that would require depending on the above libraries."]
+
+["### dataset-grid
+
+Notes of kind `:dataset-grid` are expecting a value that is a map, whose values are same-length sequentials. One example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries.
 
 For example:"]
 
-^k/dataset
+^k/dataset-grid
 {:x (range 9)
  :y (repeatedly 9 rand)
  :z (take 9 (cycle "abc"))}
