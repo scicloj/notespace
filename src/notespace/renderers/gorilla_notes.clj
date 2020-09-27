@@ -17,7 +17,10 @@
   (gn/merge-new-options! {:notes-in-cards? false
                           :header?         false
                           :reverse-notes?  false
-                          :custom-header [:div [:big "Notespace"] [:hr]]
+                          :custom-header [:div {:style {:font-style "italic"
+                                                        :font-family "\"Lucida Console\", Courier, monospace"}}
+                                          "(notespace)"
+                                          [:hr]]
                           :custom-footer [:div [:hr]]})
   (gn/watch-inputs! actions/assoc-input!))
 
