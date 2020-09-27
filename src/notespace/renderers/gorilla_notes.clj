@@ -31,15 +31,25 @@
   (view/note->hiccup
    (fx/sub-val ctx get-in [:ns->notes namespace idx])))
 
+(defonce last-ns-rendered
+  (atom nil))
+
 (defn renderer [old-ctx new-ctx]
   (when-let [namespace (fx/sub-val new-ctx :last-ns-handled)]
+    ;; Checking if the actively handled namespace has changed.
+    (when (not= namespace @last-ns-rendered)
+      (gn/reset-notes!)
+      (reset! last-ns-rendered namespace))
+    ;;Checking if we are here due to a user input change.
     (if (not= (fx/sub-val old-ctx :inputs)
               (fx/sub-val new-ctx :inputs))
+      ;; React to a user input change.
       (do
         (dotimes [idx (-> new-ctx
                           (fx/sub-val get-in [:ns->notes namespace])
                           count)]
           (actions/rerender-note! namespace idx)))
+      ;; Check for a change in notes.
       (let [[old-notes new-notes] (->> [old-ctx new-ctx]
                                        (map (fn [ctx]
                                               (fx/sub-val
@@ -64,7 +74,6 @@
         (when (> old-n new-n)
           (gn/drop-tail! (- old-n new-n)
                          :broadcast? false))
-        #_(Thread/sleep 1)
         (gn/broadcast-content-ids!)))))
 
 (defonce periodical-update
