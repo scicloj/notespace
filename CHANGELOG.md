@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file. This change
 - added support for visualizing datasets as tables
 - extending markdown rendering to more types
 - bugfix in reporting the static rendering path
+- bugfix: switching namespaces correctly
+- changes in aesthetics
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
