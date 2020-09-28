@@ -78,6 +78,6 @@
 
 (defonce periodical-update
   (async/go-loop []
-    (async/<! (async/timeout 1000))
+    (async/<! (async/timeout 200))
     (gn/broadcast-content-ids!)
     (recur)))
