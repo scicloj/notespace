@@ -62,7 +62,7 @@
 
 (defn eval-note! [namespace idx]
   (update-note! namespace
-                (partial note/evaluated-note idx)
+                (partial note/evaluated-note namespace idx)
                 idx
                 true))
 
@@ -111,3 +111,24 @@
                :fx/sync    true
                :symbol     symbol
                :value      value}))
+
+
+(extend-protocol notespace.note/Acceptable
+  nil
+  (accept! [value namespace idx])
+
+  Object
+  (accept! [value namespace idx]
+    (when (future? value)
+      (future
+        @value
+        (rerender-note! namespace idx))))
+
+  clojure.lang.Atom
+  (accept! [value namespace idx]
+    (add-watch
+     value
+     (str "k" (u/next-id :atom))
+     (fn [_ _ _ _]
+       (rerender-note! namespace idx)))))
+

@@ -94,8 +94,6 @@ You can see how to do this in Emacs in [this Elisp code](https://github.com/scic
 
 Clojure references such as delays, futures, promises and atoms are handled by Notespace in a special way. Below we will see how Notespace offers ways to bring the dynamic REPL experience of such constructs to the dynamic browser view.
 
-**Note:** Below we present some specialized macros/functions `F`, `D`, `A`, that are currently used for wrapping futures, delays and atoms so that they would notify Notespace about their state. We are checking the option of avoiding the need of these constructs and getting along with plain futures, delays and atoms.
-
 ### The rule of rendering
 
 Assume that a note's evaluation result `x` is a reference. If `x` is already realized, then Notespace renders `@x` (dereferenced `x`) instead of `x`. Otherwise, you should see a mark that says it is still pending.
@@ -118,49 +116,38 @@ Use `notespace.api/eval-and-realize-note-at-line` to evaluate the note at a cert
 
 For example, `(notespace.api/eval-and-realize-note-at-line 14)` applies that to the note at line 14."]
 
-["### Futures"]
-
-(require '[notespace.api :refer [F]])
-
-["The `F` macro allows to define a Clojure future that informs Notespace when it is realized. This allows Notespace to update its state with the dereferenced value.
-
-For example:"]
-
-(def x
-  (future
-   (Thread/sleep 2000)
-   (->> #(- (rand) 0.5)
-        (repeatedly 999)
-        (reductions +))))
-
-["The following note should render after two seconds (of waiting for `x` to be realized)."]
-
-(F (take 9 @x))
-
 ["### Delays"]
 
-(require '[notespace.api :refer [D]])
-
-["The `D` macro allows to define a Clojure delay that informs Notespace when it is realized. This allows Notespace to update its state with the dereferenced value.
+["If a note's value is a delay, then you can call `notespace.api/eval-and-realize-note-at-line` to realize it. Notespace will update its state with the dereferenced value.
 
 For example:"]
 
-(D (+ 1 2))
+(delay (+ 1 2))
 
-["If you called `notespace.api/eval-and-realize-note-at-line` with the line holding this note, then you should see the number 3 there. Otherwise, you should see a mark that says it is still pending."]
+["If you have called `notespace.api/eval-and-realize-note-at-line` with the line holding this note, then you should see the number 3 there. Otherwise, you should see a mark that says it is still pending."]
+
+["### Futures"]
+
+["If a note's value is a future, then Notespace will be informed when that future is realized. This allows Notespace to update its state with the dereferenced value.
+
+For example, the following note should render after two seconds (of waiting for `x` to be realized)." ]
+
+(future
+  (Thread/sleep 2000)
+  (->> #(- (rand) 0.5)
+       (repeatedly 9)
+       (reductions +)))
 
 ["### Atoms"]
 
-(require '[notespace.api :refer [A]])
-
-["The `A` function allows to define a Clojure atom that informs Notespace when it changes. This allows Notespace to update its state with the dereferenced value.
+["If a note's value is an atom, then Notespace will be informed when its value changes. This allows Notespace to update its state with the dereferenced value.
 
 For example:"]
 
 (def a
   (atom {:x 3}))
 
-(A a)
+a
 
 ["If you evaluated the code in the comment below once, then you should see `{:x 4}`. Otherwise, you should still see `{:x 3}`."]
 

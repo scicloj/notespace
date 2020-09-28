@@ -6,7 +6,6 @@
             [notespace.state :as state]
             [notespace.util :as u]))
 
-
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
 ;; and a dynamic part: a value, a realized-value and a status.
 (defrecord Note [kind label forms metadata
@@ -95,24 +94,33 @@
        (map topform-with-metadata->Note)
        (filter some?)))
 
-(def ^:dynamic *notespace-idx* nil)
+(defprotocol Acceptable
+  (accept! [value namespace idx]))
 
-(defn note-evaluation [idx note]
-  (binding [*notespace-idx* idx]
-    (try
-      (->> note
-           :forms
-           (cons 'do)
-           eval)
-      (catch Exception e
-        (throw (ex-info "Note evaluation failed."
-                        {:note      note
-                         :exception e}))) )))
+(defn accept
+  "Accept a freshly evaluated note value,
+  possibly invoking some special actions
+  according to the nature of this value."
+ [value namespace idx]
+  (accept! value namespace idx)
+  value)
 
-(defn evaluated-note [idx note]
+(defn note-evaluation [namespace idx note]
+  (try
+    (-> note
+        :forms
+        (->> (cons 'do))
+        eval
+        (accept namespace idx))
+    (catch Exception e
+      (throw (ex-info "Note evaluation failed."
+                      {:note      note
+                       :exception e}))) ))
+
+(defn evaluated-note [namespace idx note]
   (assoc
    note
-   :value (note-evaluation idx note)
+   :value (note-evaluation namespace idx note)
    :status {:stage :evaluated}))
 
 (defn realizing-note [note]

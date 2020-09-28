@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This change
 - bugfix in reporting the static rendering path
 - bugfix: switching namespaces correctly
 - changes in aesthetics
+- handling delays, futures, atoms without needing the D,F,A special constructs
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds

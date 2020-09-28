@@ -41,33 +41,6 @@
      (gn/render-current-state! path-to-use)
      (println [:rendered path-to-use]))))
 
-(defmacro D [& forms]
-  `(let [idx# ~note/*notespace-idx*
-         ns#  *ns*]
-     (delay
-       (let [result# (do ~@forms)]
-         (actions/rerender-note! ns# idx#)
-         result#))))
-
-(defmacro F [& forms]
-  `(let [idx# ~note/*notespace-idx*
-         ns#  *ns*]
-     (future
-       (let [result# (do ~@forms)]
-         (actions/rerender-note! ns# idx#)
-         result#))))
-
-(defn A [an-atom]
-  (let [idx       note/*notespace-idx*
-        namespace *ns*
-        k         (str "k" (u/next-id :atom))]
-    (add-watch
-     an-atom
-     k
-     (fn [_ _ _ _]
-       (actions/rerender-note! namespace idx)))
-    an-atom))
-
 (defmacro R [symbols & forms]
   `(reify clojure.lang.IDeref
      (deref [~'_]
