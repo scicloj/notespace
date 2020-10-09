@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file. This change
 - bugfix: switching namespaces correctly
 - changes in aesthetics
 - handling delays, futures, atoms without needing the D,F,A special constructs
+- using a version of gorilla-notes with an up-to-date core.async dep
+- handling event broadcasting more carefully
+- explicitly marking dereferenced values in rendering by the `(@)` sign
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
