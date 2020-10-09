@@ -20,12 +20,17 @@
                  :bg-class "bg-light"}])
      ;; TODO Simplify the logic here.
      [:div (if (u/ready? value)
-             (if (var? value)
-               (-> value
-                   value->hiccup)
-               (-> value
-                   u/realize
-                   value->hiccup))
+             (cond ;;
+               (var? value)
+               (value->hiccup value)
+               ;;
+               (instance? clojure.lang.IDeref value)
+               [:div
+                [:p "(@)"]
+                (value->hiccup @value)]
+               ;;
+               :else
+               (value->hiccup value))
              waiting)]]))
 
 (defn value->naive-hiccup [value]

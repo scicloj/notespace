@@ -96,7 +96,12 @@ Clojure references such as delays, futures, promises and atoms are handled by No
 
 ### The rule of rendering
 
-Assume that a note's evaluation result `x` is a reference. If `x` is already realized, then Notespace renders `@x` (dereferenced `x`) instead of `x`. Otherwise, you should see a mark that says it is still pending.
+Assume that a note's evaluation result `x` is a reference.
+
+If `x` is already realized, then Notespace renders `@x` (dereferenced `x`) instead of `x`. In the rendering value, this is marked by `(@)`.
+
+Otherwise, you should see a mark that says it is still pending.
+
 
 For example:"]
 
