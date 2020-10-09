@@ -34,6 +34,9 @@
 (defonce last-ns-rendered
   (atom nil))
 
+(def change?
+  (atom false))
+
 (defn renderer [old-ctx new-ctx]
   (when-let [namespace (fx/sub-val new-ctx :last-ns-handled)]
     ;; Checking if the actively handled namespace has changed.
@@ -74,10 +77,12 @@
         (when (> old-n new-n)
           (gn/drop-tail! (- old-n new-n)
                          :broadcast? false))
-        (gn/broadcast-content-ids!)))))
+        (reset! change? true)))))
 
 (defonce periodical-update
   (async/go-loop []
     (async/<! (async/timeout 200))
-    (gn/broadcast-content-ids!)
+    (when @change?
+      (reset! change? false)
+      (gn/broadcast-content-ids!))
     (recur)))
