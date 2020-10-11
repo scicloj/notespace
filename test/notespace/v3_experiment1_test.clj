@@ -267,7 +267,59 @@ Here are some examples."]
            :svgWidth  100
            :svgHeight 20}]]))
 
-
+^k/hiccup
+[:p/leafletmap
+    {:tile-layer {:url         "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
+                  :attribution "Map tiles by <a href= \"http://stamen.com\" >Stamen Design</a>, <a href= \"http://creativecommons.org/licenses/by/3.0\" >CC BY 3.0</a> &mdash ; Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+                  :ext         "png"}}
+    [{:type   :view
+      :center [51.49, -0.08]
+      :zoom   12
+      :height 600
+      :width  700}
+     {:type   :rectangle
+      :bounds [[51.49, -0.08]
+               [51.5, -0.06]]}
+     {:type      :circle
+      :center    [51.505, -0.09]
+      :fillColor :blue
+      :radius    200}
+     {:type      :polygon
+      :positions [[51.515, -0.09]
+                  [51.52, -0.1]
+                  [51.52, -0.12]]
+      :color     :purple}
+     {:type      :polygon
+      :positions [[[51.51, -0.12]
+                   [51.51, -0.13]
+                   [51.53, -0.13]]
+                  [[51.51, -0.05]
+                   [51.51, -0.07]
+                   [51.53, -0.07]]]
+      :color     :purple}
+     {:type      :line
+      :positions [[51.505, -0.09]
+                  [51.51, -0.1]
+                  [51.51, -0.12]]
+      :color     :lime}
+     {:type      :line
+      :positions [[[51.5, -0.1]
+                   [51.5, -0.12]
+                   [51.52, -0.12]]
+                  [[51.5, -0.05]
+                   [51.5, -0.06]
+                   [51.52, -0.06]]]
+      :color     :lime}
+     {:type     :marker
+      :position [51.505, -0.09]}
+     {:type     :marker
+      :position [51.51, -0.12]
+      :popup    "wow"}
+     {:type      :circlemarker
+      :center    [51.52, -0.06]
+      :fillColor :blue
+      :radius    200
+      :popup     "square the circle"}]]
 
 ^k/hiccup
 [:p/player
