@@ -38,6 +38,18 @@
            first
            string?)))
 
+(defn def-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           (= 'def))))
+
+(defn defn-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           (= 'defn))))
+
 (defn vector-beginning-with-keyword-topform? [topform]
   (and (vector? topform)
        (-> topform
@@ -64,6 +76,10 @@
      ;;
      (strings-topform? tfwm)
      :notespace.kinds/md-nocode
+     ;;
+     (or (def-topform? tfwm)
+         (defn-topform? tfwm))
+     :notespace.kinds/void
      ;;
      (vector-beginning-with-keyword-topform? tfwm)
      (->> tfwm first name (keyword "notespace.kinds"))

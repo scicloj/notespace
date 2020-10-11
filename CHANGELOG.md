@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This change
 - using a version of gorilla-notes with an up-to-date core.async dep
 - handling event broadcasting more carefully
 - explicitly marking dereferenced values in rendering by the `(@)` sign
+- Notes which are forms like `(def ...)` or `(defn ...)` are assigned the kind `:void`.
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds

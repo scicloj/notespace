@@ -267,6 +267,8 @@ Here are some examples."]
            :svgWidth  100
            :svgHeight 20}]]))
 
+
+
 ^k/hiccup
 [:p/player
  {:width  "100%"
@@ -307,6 +309,8 @@ A note's kinds can also be specified by including it in a vector beginning with 
 
 ["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md-nocode`  automatically."
  "This very text you are reading is an example of a note of that kind."]
+
+["Notes which are forms like `(def ...)` or `(defn ...)` are assigned the kind `:void`."]
 
 ["All other notes witn no explicit metadata are assigned the kind `:naive` automatically."]
 
