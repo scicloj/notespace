@@ -47,3 +47,9 @@
        (when-let [inputs# (state/sub-get-in :inputs)]
          (let [{:keys [~@symbols]} inputs#]
            ~@forms)))))
+
+(defn check [pred & args]
+  [(if (apply pred args)
+     :PASSED
+     :FAILED)
+   (last args)])
