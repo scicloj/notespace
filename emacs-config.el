@@ -51,3 +51,12 @@
   (interactive)
   (cider-interactive-notify-and-eval
    "(notespace.api/render-static-html)"))
+
+;; suggested spacemacs key bindings:
+(spacemacs/set-leader-keys-for-major-mode 'clojure-mode
+  "n e" 'notespace/eval-this-notespace
+  "n r" 'notespace/eval-and-realize-this-notespace
+  "n n" 'notespace/eval-and-realize-note-at-this-line
+  "n i b" 'notespace/init-with-browser
+  "n i i" 'notespace/init
+  "n s" 'notespace/render-static-html)
