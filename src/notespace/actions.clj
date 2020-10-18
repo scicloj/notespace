@@ -82,6 +82,16 @@
                 idx
                 false))
 
+(defn eval-and-realize-notes! [namespace]
+  (dotimes [idx (-> namespace
+                    reread-notes!
+                    :n)]
+    (eval-note! namespace idx))
+  (dotimes [idx (-> namespace
+                    reread-notes!
+                    :n)]
+    (realize-note! namespace idx)))
+
 (defn rerender-note! [namespace idx]
   (update-note! namespace
                 #'note/realized-note

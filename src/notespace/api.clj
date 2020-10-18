@@ -24,6 +24,9 @@
 (defn eval-this-notespace []
   (actions/eval-notes! *ns*))
 
+(defn eval-and-realize-this-notespace []
+  (actions/eval-and-realize-notes! *ns*))
+
 (defn eval-note-at-line [line]
   (actions/eval-note-at-line! *ns* line))
 
