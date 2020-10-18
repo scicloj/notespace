@@ -9,20 +9,45 @@
 
 (defonce server (atom nil))
 
+(defn header-and-footer-config [namespace]
+  (let [{:keys [header footer]} (view/header-and-footer
+                                 namespace)]
+    {:custom-header header
+     :custom-footer footer}))
+
 (defn init []
   (when-not @server
     (reset! server true)
     (gn/start-server!))
   (gn/reset-notes!)
-  (gn/merge-new-options! {:notes-in-cards? false
-                          :header?         false
-                          :reverse-notes?  false
-                          :custom-header [:div {:style {:font-style "italic"
-                                                        :font-family "\"Lucida Console\", Courier, monospace"}}
-                                          "(notespace)"
-                                          [:hr]]
-                          :custom-footer [:div [:hr]]})
+  (gn/merge-new-options! (merge
+                          {:notes-in-cards? false
+                           :header?         false
+                           :reverse-notes?  false}
+                          (header-and-footer-config
+                           nil)))
   (gn/watch-inputs! actions/assoc-input!))
+
+(def change?
+  (atom false))
+
+(defonce last-ns-rendered
+  (atom nil))
+
+(defn refresh-view []
+  (reset! change? false)
+  (gn/broadcast-content-ids!)
+  (future
+    (Thread/sleep 100) ; avoiding gorilla-notes sync race conditions
+    (gn/merge-new-options! (header-and-footer-config
+                            @last-ns-rendered))))
+
+(defonce periodically-refresh-view
+  (async/go-loop []
+    (async/<! (async/timeout 200))
+    (when @change?
+      (refresh-view))
+    (recur)))
 
 (defn browse []
   (gn/browse-default-url))
@@ -30,12 +55,6 @@
 (defn rendering [ctx namespace idx]
   (view/note->hiccup
    (fx/sub-val ctx get-in [:ns->notes namespace idx])))
-
-(defonce last-ns-rendered
-  (atom nil))
-
-(def change?
-  (atom false))
 
 (defn renderer [old-ctx new-ctx]
   (when-let [namespace (fx/sub-val new-ctx :last-ns-handled)]
@@ -79,10 +98,3 @@
                          :broadcast? false))
         (reset! change? true)))))
 
-(defonce periodical-update
-  (async/go-loop []
-    (async/<! (async/timeout 200))
-    (when @change?
-      (reset! change? false)
-      (gn/broadcast-content-ids!))
-    (recur)))

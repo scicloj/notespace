@@ -2,8 +2,11 @@
   (:require [clojure.string :as string]
             [clojure.pprint :as pp]
             [notespace.util :as u]
-            [notespace.state :as state]))
-
+            [notespace.state :as state]
+            [notespace.repo :as repo]
+            [notespace.check :as check]
+            [cljfx.api :as fx]
+            [notespace.context :as ctx]))
 
 (def waiting
   [:div
@@ -81,48 +84,70 @@
          :style {:height "400px"}}
    (markdowns->hiccup mds)])
 
-;; (defn ->reference [namespace]
-;;   [:div
-;;    [:i
-;;     [:small
-;;      (if-let [url (repo/ns-url namespace)]
-;;        [:a {:href url} namespace]
-;;        namespace)
-;;      " - created by " [:a {:href "https://github.com/scicloj/notespace"}
-;;                        "notespace"] ", " (java.util.Date.) "."]]
-;;    [:hr]])
+
+(defn ->reference [namespace]
+  [:div
+   [:i
+    [:small
+     (if-let [url (repo/ns-url namespace)]
+       [:a {:href url} namespace]
+       namespace)
+     " - created by " [:a {:href "https://github.com/scicloj/notespace"}
+                       "notespace"] ", " (str (java.util.Date.)) "."]]
+   [:hr]])
 
 
-;; (defn toc [notes]
-;;   (when-let [labels (->> notes
-;;                          (map :label)
-;;                          (filter some?)
-;;                          seq)]
-;;     [:div
-;;      "Table of contents"
-;;      (->> labels
-;;           (map (fn [label]
-;;                  [:li [:a {:href (->> label
-;;                                       label->anchor-id
-;;                                       (str "#"))}
-;;                        (name label)]]))
-;;           (into [:ul]))
-;;      [:hr]]))
+(defn label->anchor-id [label]
+  (->> label name))
 
-;; (defn notes-and-states->hiccup [namespace notes note-states]
-;;   (let [checks-freqs   (check/->checks-freqs notes)
-;;         checks-summary (check/->checks-summary checks-freqs)
-;;         reference      (->reference namespace)]
-;;     (when checks-freqs
-;;       (log/info [::checks checks-freqs]))
-;;     [:div
-;;      [:h1 (str namespace)]
-;;      reference
-;;      checks-summary
-;;      (toc notes)
-;;      (map note-and-state->hiccup
-;;           notes
-;;           note-states)
-;;      [:hr]
-;;      checks-summary
-;;      reference]))
+(defn label->anchor [label]
+  [:a  {;; :style "border: 2px solid green;"
+        :id (label->anchor-id label)}
+   " "])
+
+
+(defn toc [notes]
+  (when-let [labels (->> notes
+                         (map :label)
+                         (filter some?)
+                         seq)]
+    [:div
+     "Table of contents"
+     (->> labels
+          (map (fn [label]
+                 [:li [:a {:href (->> label
+                                      label->anchor-id
+                                      (str "#"))}
+                       (name label)]]))
+          (into [:ul]))
+     [:hr]]))
+
+(defn notes-count [notes]
+  [:p (count notes) " notes"])
+
+(defn notes->header-and-footer [namespace notes]
+  (let [;; checks-summary (-> notes
+        ;;                    check/->checks-freqs
+        ;;                    check/->checks-summary)
+        reference      (->reference namespace)]
+    {:header [:div {:style {:font-style  "italic"
+                            :font-family "\"Lucida Console\", Courier, monospace"}}
+              "(notespace)"
+              [:p (str (java.util.Date.))]
+              (some-> notes notes-count)
+              ; reference
+              ;; checks-summary
+              (some-> notes toc)
+              [:hr]
+              ]
+     :footer [:div
+              [:hr]
+              ;; checks-summary
+              ;; reference
+              ]}))
+
+(defn header-and-footer [namespace]
+  (->> namespace
+       (state/sub-get-in :ns->note)
+       (notes->header-and-footer namespace)))
+
