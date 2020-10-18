@@ -11,6 +11,8 @@
 
   (api/eval-this-notespace)
 
+  (api/eval-and-realize-this-notespace)
+
   (api/render-static-html)
 
   (browse/browse-url
@@ -105,11 +107,11 @@ Otherwise, you should see a mark that says it is still pending.
 
 For example:"]
 
-(def p1 (promise))
-(def p2 (promise))
-(deliver p2 14)
-p1
-p2
+(def d1 (delay 11))
+(def d2 (delay 12))
+(deref d2)
+d1
+d2
 
 ["### More API functions
 
@@ -121,15 +123,19 @@ Use `notespace.api/eval-and-realize-note-at-line` to evaluate the note at a cert
 
 For example, `(notespace.api/eval-and-realize-note-at-line 14)` applies that to the note at line 14."]
 
+["#### eval-and-realize-this-notespace
+
+Use `notespace.api/eval-and-realize-this-notespace` to evaluate all notes in the current namespace sequentially, one note after another, and then realize them in the background. As always, Notespace is informed about the results."]
+
 ["### Delays"]
 
-["If a note's value is a delay, then you can call `notespace.api/eval-and-realize-note-at-line` to realize it. Notespace will update its state with the dereferenced value.
+["If a note's value is a delay, then you can call `notespace.api/eval-and-realize-note-at-line` or `notespace.api/eval-and-realize-this-notespace` to realize it. Notespace will update its state with the dereferenced value.
 
 For example:"]
 
 (delay (+ 1 2))
 
-["If you have called `notespace.api/eval-and-realize-note-at-line` with the line holding this note, then you should see the number 3 there. Otherwise, you should see a mark that says it is still pending."]
+["If you have called `notespace.api/eval-and-realize-note-at-line` with the line holding this note, or `notespace.api/eval-and-realize-this-notespace` with this notespace, then you should see the number 3 there. Otherwise, you should see a mark that says it is still pending."]
 
 ["### Futures"]
 
@@ -159,6 +165,9 @@ a
 ^k/void
 (comment
   (swap! a update :x inc))
+
+["### Promises
+Coming soon."]
 
 ["## Note kinds
 
