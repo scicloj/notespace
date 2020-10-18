@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This change
 - handling event broadcasting more carefully
 - explicitly marking dereferenced values in rendering by the `(@)` sign
 - Notes which are forms like `(def ...)` or `(defn ...)` are assigned the kind `:void`.
+- added api action: eval-and-realize-this-notespace
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
