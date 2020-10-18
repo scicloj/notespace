@@ -1,47 +1,47 @@
-  (defun notify-send (msg)
-    (interactive)
-    (shell-command (concat "notify-send '" msg "'")))
+(defun notify-send (msg)
+  (interactive)
+  (shell-command (concat "notify-send '" msg "'")))
 
-  (defun notify-line ()
-    (interactive)
-    (notify-send (concat "line: " (number-to-string (line-number-at-pos)))))
+(defun notify-line ()
+  (interactive)
+  (notify-send (concat "line: " (number-to-string (line-number-at-pos)))))
 
-  (defun cider-interactive-notify-and-eval (code)
-    (interactive)
-    (notify-send code)
-    (cider-interactive-eval
-     code
-     (cider-interactive-eval-handler nil (point))
-     nil
-     nil))
+(defun cider-interactive-notify-and-eval (code)
+  (interactive)
+  (notify-send code)
+  (cider-interactive-eval
+   code
+   (cider-interactive-eval-handler nil (point))
+   nil
+   nil))
 
-  (defun notespace/eval-and-realize-note-at-this-line ()
-    (interactive)
-    (save-buffer)
-    (cider-interactive-notify-and-eval
-     (concat "(notespace.api/eval-and-realize-note-at-line "
-             (number-to-string (line-number-at-pos))
-             ")")))
+(defun notespace/eval-and-realize-note-at-this-line ()
+  (interactive)
+  (save-buffer)
+  (cider-interactive-notify-and-eval
+   (concat "(notespace.api/eval-and-realize-note-at-line "
+           (number-to-string (line-number-at-pos))
+           ")")))
 
-  (defun notespace/init-with-browser ()
-    (interactive)
-    (save-buffer)
-    (cider-interactive-notify-and-eval
-     (concat "(notespace.api/init-with-browser)")))
+(defun notespace/init-with-browser ()
+  (interactive)
+  (save-buffer)
+  (cider-interactive-notify-and-eval
+   (concat "(notespace.api/init-with-browser)")))
 
-  (defun notespace/init ()
-    (interactive)
-    (save-buffer)
-    (cider-interactive-notify-and-eval
-     (concat "(notespace.api/init)")))
+(defun notespace/init ()
+  (interactive)
+  (save-buffer)
+  (cider-interactive-notify-and-eval
+   (concat "(notespace.api/init)")))
 
-  (defun notespace/eval-this-notespace ()
-    (interactive)
-    (save-buffer)
-    (cider-interactive-notify-and-eval
-     "(notespace.api/eval-this-notespace)"))
+(defun notespace/eval-this-notespace ()
+  (interactive)
+  (save-buffer)
+  (cider-interactive-notify-and-eval
+   "(notespace.api/eval-this-notespace)"))
 
-  (defun notespace/render-static-html ()
-    (interactive)
-    (cider-interactive-notify-and-eval
-     "(notespace.api/render-static-html)"))
+(defun notespace/render-static-html ()
+  (interactive)
+  (cider-interactive-notify-and-eval
+   "(notespace.api/render-static-html)"))
