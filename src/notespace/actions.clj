@@ -164,16 +164,16 @@
         num-added (- (count new-lines)
                      (count old-lines))]
     (swap! ns-lines assoc anamespace new-lines)
-    (->> (map (fn [i ol nl]
-                [i ol nl (= ol nl)])
-              (range)
-              old-lines
-              new-lines)
-         (drop-while (fn [[i ol nl check]]
-                       check))
-         first
-         first
-         inc)))
+    (some->> (map (fn [i ol nl]
+                    [i ol nl (= ol nl)])
+                  (range)
+                  old-lines
+                  new-lines)
+             (drop-while (fn [[i ol nl check]]
+                           check))
+             first
+             first
+             inc)))
 
 (defn eval-and-realize-notes-from-change! [anamespace]
   (when-let [l (first-line-of-change
