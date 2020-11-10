@@ -31,7 +31,7 @@
         modification-time (-> namespace ns->source-filename io/file (.lastModified))]
     (ctx/handle
      {:event/type ::events/file-modified
-      :fx/sync    true
+      :fx/sync true
       :namespace namespace
       :modification-time modification-time})
     (not= previous-modifiction-time modification-time)))

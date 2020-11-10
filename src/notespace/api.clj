@@ -5,7 +5,9 @@
             [notespace.state :as state]
             [notespace.util :as u]
             [notespace.paths :as paths]
-            [gorilla-notes.core :as gn]))
+            [notespace.watch :as watch]
+            [gorilla-notes.core :as gn]
+            [notespace.source :as source]))
 
 (def init lifecycle/init)
 
@@ -22,19 +24,25 @@
   (actions/reread-notes! *ns*))
 
 (defn eval-this-notespace []
-  (actions/eval-notes! *ns*))
+  (actions/act-on-notes! *ns* [actions/eval-note!]))
 
 (defn eval-and-realize-this-notespace []
-  (actions/eval-and-realize-notes! *ns*))
+  (actions/act-on-notes! *ns* [actions/eval-note!
+                               actions/realize-note!]))
 
 (defn eval-note-at-line [line]
-  (actions/eval-note-at-line! *ns* line))
+  (actions/act-on-note-at-line! *ns* line [actions/eval-note!]))
 
 (defn realize-note-at-line [line]
-  (actions/realize-note-at-line! *ns* line))
+  (actions/act-on-note-at-line! *ns* line [actions/realize-note!]))
 
 (defn eval-and-realize-note-at-line [line]
-  (actions/eval-and-realize-note-at-line! *ns* line))
+  (actions/act-on-note-at-line! *ns* line [actions/eval-note!
+                                           actions/realize-note!]))
+
+(defn eval-and-realize-notes-from-line [line]
+  (actions/act-on-notes-from-line! *ns* line [actions/eval-note!
+                                              actions/realize-note!]))
 
 (defn render-static-html
   ([]
@@ -56,3 +64,11 @@
      :PASSED
      :FAILED)
    (last args)])
+
+(defonce change-lock (atom false))
+
+(defn eval-and-realize-notes-from-change []
+  (when (not @change-lock)
+    (reset! change-lock true)
+    (actions/eval-and-realize-notes-from-change! *ns*)
+    (reset! change-lock false)))

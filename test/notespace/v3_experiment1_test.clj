@@ -16,7 +16,7 @@
   (api/render-static-html)
 
   (browse/browse-url
-   "doc/notespace/v3-experiment1-test/index.html"))
+   "/notespace/v3-experiment1-test/index.html"))
 
 ["# Notespace v3 intro
 
@@ -74,7 +74,7 @@ If you have a browser view open, it should show the updated rendering of the sta
 
 "#### eval-note-at-line
 
-Use `notespace.api/eval-note-at-line` to evaluate the note at a certain line and inform Noteapace about the evaluation result.
+Use `notespace.api/eval-note-at-line` to evaluate the note at a certain line and inform Notespace about the evaluation result.
 
 For example, `(notespace.api/eval-note-at-line 14)` applies that to the note at line 14.
 
@@ -117,15 +117,23 @@ d2
 
 Notespace offers some more API functions that allow for a dynamic experience with Clojure references."]
 
-["#### eval-and-realize-note-at-line
-
-Use `notespace.api/eval-and-realize-note-at-line` to evaluate the note at a certain line, realize the value if it is an unrealized derefable value, and inform Noteapace about the result.
-
-For example, `(notespace.api/eval-and-realize-note-at-line 14)` applies that to the note at line 14."]
-
 ["#### eval-and-realize-this-notespace
 
 Use `notespace.api/eval-and-realize-this-notespace` to evaluate all notes in the current namespace sequentially, one note after another, and then realize them in the background. As always, Notespace is informed about the results."]
+
+["#### eval-and-realize-note-at-line
+
+Use `notespace.api/eval-and-realize-note-at-line` to evaluate the note at a certain line, realize the value if it is an unrealized derefable value, and inform Notespace about the result.
+
+For example, `(notespace.api/eval-and-realize-note-at-line 14)` applies that to the note at line 14."]
+
+["#### eval-and-realize-notes-from-line
+
+Use `notespace.api/eval-and-realize-notes-from-line` to evaluate and realize all notes starting from a certain line, and inform Notespace."]
+
+["#### eval-and-realize-notes-from-change
+
+ Use `notespace.api/eval-and-realize-notes-from-change` to evaluate and realize all notes starting from the line where the file has changed in its last save, compared to the previous save."]
 
 ["### Delays"]
 
@@ -393,4 +401,3 @@ Coming soon."]
 ["## Unit tests
 
 Coming soon."]
-

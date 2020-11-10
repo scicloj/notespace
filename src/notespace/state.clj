@@ -11,3 +11,5 @@
 (defn sub-get-in [& path]
   (fx/sub-val @the-context get-in path))
 
+(comment
+  (sub-get-in :ns->notes))

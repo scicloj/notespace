@@ -8,14 +8,14 @@
 
 ;; We can update our notes structures by reading the notes of a namespace.
 ;; We try not to update things that have not changed.
-(defn reread-notes! [namespace]
-  (let [old-notes    (state/sub-get-in :ns->notes namespace)
-        needs-update (or (not old-notes)
-                         (source/source-file-modified? namespace))
+(defn reread-notes! [anamespace]
+  (let [old-notes    (state/sub-get-in :ns->notes anamespace)
+        needs-update  (or (not old-notes)
+                          (source/source-file-modified? anamespace))
         notes        (if (not needs-update)
                        old-notes
                        (note/merge-notes old-notes
-                                         (note/ns-notes namespace)))]
+                                         (note/ns-notes anamespace)))]
     (when needs-update
       (let [line->index    (->> notes
                                 (map-indexed (fn [idx {:keys [metadata]}]
@@ -38,7 +38,7 @@
                                 (u/fmap (partial mapv :idx)))]
         (ctx/handle {:event/type     ::events/assoc-notes
                      :fx/sync        true
-                     :namespace      namespace
+                     :namespace      anamespace
                      :notes          notes
                      :line->index    line->index
                      :label->indices label->indices})))
@@ -53,68 +53,78 @@
                    count)}))
 
 ;; We support various update transformations for notes.
-(defn update-note! [namespace f idx sync?]
+(defn update-note! [anamespace f idx sync?]
   (ctx/handle {:event/type ::events/update-note
                :fx/sync    sync?
-               :namespace  namespace
+               :namespace  anamespace
                :idx        idx
                :f          f}))
 
-(defn eval-note! [namespace idx]
-  (update-note! namespace
-                (partial note/evaluated-note namespace idx)
+(defn act! [anamespace idx actions]
+  (doseq [a actions]
+    (a anamespace idx)))
+
+(defn act-on-notes! [anamespace actions]
+  (dotimes [idx (-> anamespace
+                    reread-notes!
+                    :n)]
+    (act! anamespace idx actions)))
+
+(defn act-on-notes-from-idx! [anamespace idx actions]
+  (doseq [idx (->> anamespace
+                   reread-notes!
+                   :n
+                   (range idx))]
+    (act! anamespace idx actions)))
+
+(defn line->idx [anamespace line]
+  (state/sub-get-in :ns->line->index anamespace line))
+
+(defn act-on-note-at-line! [anamespace line actions]
+  (reread-notes! anamespace)
+  (when-let [idx (line->idx anamespace line)]
+    (doseq [a actions]
+      (act! anamespace idx actions))))
+
+(defn line->safe-idx [anamespace line]
+  (or (state/sub-get-in :ns->line->index anamespace line)
+      (some->> (state/sub-get-in :ns->notes anamespace)
+               (map-indexed (fn [idx anote]
+                              [idx (-> anote
+                                       :metadata
+                                       :line)]))
+               (drop-while (fn [[idx line1]]
+                             (< line1 line)))
+               first
+               first)))
+
+(defn act-on-notes-from-line! [anamespace line actions]
+  (let [{:keys [n]} (reread-notes! anamespace)]
+    (when-let [initial-idx (line->safe-idx anamespace line)]
+      (doseq [idx (range initial-idx n)]
+        (act! anamespace idx actions)))))
+
+(defn eval-note! [anamespace idx]
+  (update-note! anamespace
+                (partial note/evaluated-note anamespace idx)
                 idx
                 true))
 
-(defn eval-notes! [namespace]
-  (dotimes [idx (-> namespace
-                    reread-notes!
-                    :n)]
-    (eval-note! namespace idx)))
-
-(defn realize-note! [namespace idx]
-  (update-note! namespace
+(defn realize-note! [anamespace idx]
+  (update-note! anamespace
                 #'note/realizing-note
                 idx
                 true)
-  (update-note! namespace
+  (update-note! anamespace
                 #'note/realized-note
                 idx
                 false))
 
-(defn eval-and-realize-notes! [namespace]
-  (dotimes [idx (-> namespace
-                    reread-notes!
-                    :n)]
-    (eval-note! namespace idx))
-  (dotimes [idx (-> namespace
-                    reread-notes!
-                    :n)]
-    (realize-note! namespace idx)))
-
-(defn rerender-note! [namespace idx]
-  (update-note! namespace
+(defn rerender-note! [anamespace idx]
+  (update-note! anamespace
                 #'note/realized-note
                 idx
                 false))
-
-(defn eval-note-at-line! [namespace line]
-  (reread-notes! namespace)
-  (some->> line
-           (state/sub-get-in :ns->line->index namespace)
-           (eval-note! namespace)))
-
-(defn realize-note-at-line! [namespace line]
-  (reread-notes! namespace)
-  (some->> line
-           (state/sub-get-in :ns->line->index namespace)
-           (realize-note! namespace)))
-
-(defn eval-and-realize-note-at-line! [namespace line]
-  (reread-notes! namespace)
-  (when-let [idx (state/sub-get-in :ns->line->index namespace line)]
-    (eval-note! namespace idx)
-    (realize-note! namespace idx)))
 
 (defn assoc-input! [symbol value]
   (ctx/handle {:event/type ::events/assoc-input
@@ -122,23 +132,51 @@
                :symbol     symbol
                :value      value}))
 
-
 (extend-protocol notespace.note/Acceptable
   nil
-  (accept! [value namespace idx])
+  (accept! [value anamespace idx])
 
   Object
-  (accept! [value namespace idx]
+  (accept! [value anamespace idx]
     (when (future? value)
       (future
         @value
-        (rerender-note! namespace idx))))
+        (rerender-note! anamespace idx))))
 
   clojure.lang.Atom
-  (accept! [value namespace idx]
+  (accept! [value anamespace idx]
     (add-watch
      value
      (str "k" (u/next-id :atom))
      (fn [_ _ _ _]
-       (rerender-note! namespace idx)))))
+       (rerender-note! anamespace idx)))))
 
+(defonce ns-lines
+  (atom {}))
+
+(defn first-line-of-change [anamespace]
+  (let [old-lines (or (@ns-lines anamespace)
+                      [])
+        new-lines (with-open [rdr (clojure.java.io/reader
+                                   (source/ns->source-filename
+                                    anamespace))]
+                    (vec (line-seq rdr)))
+        num-added (- (count new-lines)
+                     (count old-lines))]
+    (swap! ns-lines assoc anamespace new-lines)
+    (->> (map (fn [i ol nl]
+                [i ol nl (= ol nl)])
+              (range)
+              old-lines
+              new-lines)
+         (drop-while (fn [[i ol nl check]]
+                       check))
+         first
+         first
+         inc)))
+
+(defn eval-and-realize-notes-from-change! [anamespace]
+  (when-let [l (first-line-of-change
+                anamespace)]
+    (act-on-notes-from-line! anamespace l [eval-note!
+                                           realize-note!])))

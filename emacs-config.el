@@ -1,14 +1,6 @@
-(defun notify-send (msg)
-  (interactive)
-  (shell-command (concat "notify-send '" msg "'")))
-
-(defun notify-line ()
-  (interactive)
-  (notify-send (concat "line: " (number-to-string (line-number-at-pos)))))
-
 (defun cider-interactive-notify-and-eval (code)
   (interactive)
-  (notify-send code)
+  (message code)
   (cider-interactive-eval
    code
    (cider-interactive-eval-handler nil (point))
@@ -22,6 +14,20 @@
    (concat "(notespace.api/eval-and-realize-note-at-line "
            (number-to-string (line-number-at-pos))
            ")")))
+
+(defun notespace/eval-and-realize-notes-from-this-line ()
+  (interactive)
+  (save-buffer)
+  (cider-interactive-notify-and-eval
+   (concat "(notespace.api/eval-and-realize-notes-from-line "
+           (number-to-string (line-number-at-pos))
+           ")")))
+
+(defun notespace/eval-and-realize-notes-from-change ()
+  (interactive)
+  (save-buffer)
+  (cider-interactive-notify-and-eval
+   (concat "(notespace.api/eval-and-realize-notes-from-change)")))
 
 (defun notespace/init-with-browser ()
   (interactive)
@@ -57,6 +63,8 @@
   "n e" 'notespace/eval-this-notespace
   "n r" 'notespace/eval-and-realize-this-notespace
   "n n" 'notespace/eval-and-realize-note-at-this-line
+  "n f" 'notespace/eval-and-realize-notes-from-this-line
   "n i b" 'notespace/init-with-browser
   "n i i" 'notespace/init
-  "n s" 'notespace/render-static-html)
+  "n s" 'notespace/render-static-html
+  "n c" 'notespace/eval-and-realize-notes-from-change)

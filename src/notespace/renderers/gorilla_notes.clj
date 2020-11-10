@@ -9,9 +9,9 @@
 
 (defonce server (atom nil))
 
-(defn header-and-footer-config [namespace]
+(defn header-and-footer-config [anamespace]
   (let [{:keys [header footer]} (view/header-and-footer
-                                 namespace)]
+                                 anamespace)]
     {:custom-header header
      :custom-footer footer}))
 
@@ -52,31 +52,31 @@
 (defn browse []
   (gn/browse-default-url))
 
-(defn rendering [ctx namespace idx]
+(defn rendering [ctx anamespace idx]
   (view/note->hiccup
-   (fx/sub-val ctx get-in [:ns->notes namespace idx])))
+   (fx/sub-val ctx get-in [:ns->notes anamespace idx])))
 
 (defn renderer [old-ctx new-ctx]
-  (when-let [namespace (fx/sub-val new-ctx :last-ns-handled)]
-    ;; Checking if the actively handled namespace has changed.
-    (when (not= namespace @last-ns-rendered)
+  (when-let [anamespace (fx/sub-val new-ctx :last-ns-handled)]
+    ;; Checking if the actively handled anamespace has changed.
+    (when (not= anamespace @last-ns-rendered)
       (gn/reset-notes!)
-      (reset! last-ns-rendered namespace))
+      (reset! last-ns-rendered anamespace))
     ;;Checking if we are here due to a user input change.
     (if (not= (fx/sub-val old-ctx :inputs)
               (fx/sub-val new-ctx :inputs))
       ;; React to a user input change.
       (do
         (dotimes [idx (-> new-ctx
-                          (fx/sub-val get-in [:ns->notes namespace])
+                          (fx/sub-val get-in [:ns->notes anamespace])
                           count)]
-          (actions/rerender-note! namespace idx)))
+          (actions/rerender-note! anamespace idx)))
       ;; Check for a change in notes.
       (let [[old-notes new-notes] (->> [old-ctx new-ctx]
                                        (map (fn [ctx]
                                               (fx/sub-val
                                                ctx
-                                               get-in [:ns->notes namespace]))))
+                                               get-in [:ns->notes anamespace]))))
             new-things            (->> (map vector
                                             (range)
                                             (concat old-notes (repeat nil))
@@ -91,7 +91,7 @@
               (fn [[idx _ _]]
                 (gn/assoc-note!
                  idx
-                 (fx/sub-ctx new-ctx rendering namespace idx)
+                 (fx/sub-ctx new-ctx rendering anamespace idx)
                  :broadcast? false))))
         (when (> old-n new-n)
           (gn/drop-tail! (- old-n new-n)
