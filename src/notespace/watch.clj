@@ -9,25 +9,24 @@
 
 (defonce watchers (atom {}))
 
-(defn start-watching! [namespace f]
-  (when-not (get @watchers namespace)
-    (let [watch-path (source/ns->source-filename namespace)]
+(defn start-watching! [anamespace f]
+  (when-not (get @watchers anamespace)
+    (let [watch-path (source/ns->source-filename anamespace)]
       ;; Call the function on first watch, so that you don't have to do a no-op save to initialize things
-      (f namespace)
+      (f anamespace)
       (let [watcher
             (hawk/watch! [{:paths   [watch-path]
                            :handler (fn [context event]
-                                     (f namespace))}])]
-        (swap! watchers assoc-in [namespace :watcher] watcher)
+                                     (f anamespace))}])]
+        (swap! watchers assoc-in [anamespace :watcher] watcher)
         ::success!))))
 
 (defn stop-watching!
-  [namespace]
-  (some-> (get-in @watchers [namespace :watcher])
+  [anamespace]
+  (some-> (get-in @watchers [anamespace :watcher])
           (hawk/stop!))
-  (swap! watchers dissoc namespace))
+  (swap! watchers dissoc anamespace))
 
 (comment
   (start-watching! *ns* println)
   (stop-watching! *ns*))
-
