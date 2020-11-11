@@ -26,12 +26,12 @@
              (string/replace "-" "_"))
          ".clj")))
 
-(defn source-file-modified? [namespace]
-  (let [previous-modifiction-time (state/sub-get-in :ns->last-modification namespace)
-        modification-time (-> namespace ns->source-filename io/file (.lastModified))]
-    (ctx/handle
-     {:event/type ::events/file-modified
-      :fx/sync true
-      :namespace namespace
-      :modification-time modification-time})
+(defonce ns->last-mofification
+  (atom {}))
+
+(defn source-file-modified? [anamespace]
+  (let [previous-modifiction-time (state/sub-get-in :ns->last-modification anamespace)
+        modification-time (-> anamespace ns->source-filename io/file (.lastModified))]
+    (swap! ns->last-mofification
+           assoc anamespace modification-time)
     (not= previous-modifiction-time modification-time)))

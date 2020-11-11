@@ -155,25 +155,30 @@
   (atom {}))
 
 (defn first-line-of-change [anamespace]
-  (let [old-lines (or (@ns-lines anamespace)
-                      [])
-        new-lines (with-open [rdr (clojure.java.io/reader
-                                   (source/ns->source-filename
-                                    anamespace))]
-                    (vec (line-seq rdr)))
-        num-added (- (count new-lines)
-                     (count old-lines))]
-    (swap! ns-lines assoc anamespace new-lines)
-    (some->> (map (fn [i ol nl]
-                    [i ol nl (= ol nl)])
-                  (range)
-                  old-lines
-                  new-lines)
-             (drop-while (fn [[i ol nl check]]
-                           check))
-             first
-             first
-             inc)))
+  (when (source/source-file-modified? anamespace)
+    (let [old-lines (or (@ns-lines anamespace)
+                        [])
+          new-lines (with-open [rdr (clojure.java.io/reader
+                                     (source/ns->source-filename
+                                      anamespace))]
+                      (vec (line-seq rdr)))
+          num-added (- (count new-lines)
+                       (count old-lines))]
+      (swap! ns-lines assoc anamespace new-lines)
+      (some->> (map (fn [i ol nl]
+                      [i ol nl (= ol nl)])
+                    (range)
+                    (if (pos? num-added)
+                      (concat old-lines (repeat num-added nil))
+                      old-lines)
+                    (if (pos? num-added)
+                      new-lines
+                      (concat new-lines (repeat (- num-added) nil))))
+               (drop-while (fn [[i ol nl check]]
+                             check))
+               first
+               first
+               inc))))
 
 (defn eval-and-realize-notes-from-change! [anamespace]
   (when-let [l (first-line-of-change

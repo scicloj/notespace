@@ -23,8 +23,6 @@
    :ns->label->indices    {}
    ;; the last notespace handled:
    :last-ns-handled       nil
-   ;; We keep track of changes in source files corresponding to namespaces.
-   :ns->last-modification {}
    ;; We keep track of UI inputs per namespace.
    :inputs {}
    ;; Also, we have a map from request id to response, for managing effects.

@@ -1,7 +1,7 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as api]
             [notespace.kinds :as k]
-            [clojure.java.browse :as browse]))
+            ))
 
 ^k/hidden
 (comment
@@ -15,8 +15,14 @@
 
   (api/render-static-html)
 
-  (browse/browse-url
-   "/notespace/v3-experiment1-test/index.html"))
+  (future
+    (clojure.java.shell/sh
+     "firefox"
+     "doc/notespace/v3-experiment1-test/index.html"))
+
+  (api/listen-to-changes)
+
+  (api/unlisten-to-changes))
 
 ["# Notespace v3 intro
 
@@ -134,6 +140,13 @@ Use `notespace.api/eval-and-realize-notes-from-line` to evaluate and realize all
 ["#### eval-and-realize-notes-from-change
 
  Use `notespace.api/eval-and-realize-notes-from-change` to evaluate and realize all notes starting from the line where the file has changed in its last save, compared to the previous save."]
+
+["### Listening to changes
+
+`(notespace.api/listen-to-changes)` will tell Notespace to listen to changes in the file corresponding to the current namespace (on a file save). When changes occur, (notespace.api/eval-and-realize-notes-from-change) is called. This results in an [Oz](https://github.com/metasoarous/oz)-like live-reload experience.
+
+`(notespace.api/unlisten-to-changes)` will tell Notespace to stop listening to the current namespace."]
+
 
 ["### Delays"]
 
@@ -401,3 +414,4 @@ Coming soon."]
 ["## Unit tests
 
 Coming soon."]
+

@@ -67,8 +67,36 @@
 
 (defonce change-lock (atom false))
 
-(defn eval-and-realize-notes-from-change []
-  (when (not @change-lock)
-    (reset! change-lock true)
-    (actions/eval-and-realize-notes-from-change! *ns*)
-    (reset! change-lock false)))
+(defn eval-and-realize-notes-from-change
+  ([]
+   (eval-and-realize-notes-from-change *ns*))
+  ([anamespace]
+   (when (not @change-lock)
+     (reset! change-lock true)
+     (actions/eval-and-realize-notes-from-change! anamespace)
+     (reset! change-lock false))))
+
+(defonce namespaces-listening-to-changes
+  (atom #{}))
+
+(defn listen-to-changes
+  ([]
+   (listen-to-changes *ns*))
+  ([anamespace]
+   (swap! namespaces-listening-to-changes conj anamespace)))
+
+(defn unlisten-to-changes
+  ([]
+   (unlisten-to-changes *ns*))
+  ([anamespace]
+   (swap! namespaces-listening-to-changes #(remove #{anamespace} %))))
+
+(defonce listen-sleep
+  (atom 300))
+
+(defonce periodically-react-to-changes
+  (future
+    (while true
+      (Thread/sleep @listen-sleep)
+      (doseq [anamespace @namespaces-listening-to-changes]
+        (eval-and-realize-notes-from-change anamespace)))))
