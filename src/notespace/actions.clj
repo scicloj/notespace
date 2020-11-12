@@ -180,8 +180,10 @@
                first
                inc))))
 
+
 (defn eval-and-realize-notes-from-change! [anamespace]
-  (when-let [l (first-line-of-change
-                anamespace)]
-    (act-on-notes-from-line! anamespace l [eval-note!
-                                           realize-note!])))
+  (binding [*ns* anamespace]
+    (when-let [l (first-line-of-change
+                  anamespace)]
+      (act-on-notes-from-line! anamespace l [eval-note!
+                                             realize-note!]))))
