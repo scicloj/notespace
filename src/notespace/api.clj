@@ -79,15 +79,15 @@
 (defonce namespaces-listening-to-changes
   (atom #{}))
 
-(defn listen-to-changes
+(defn listen
   ([]
-   (listen-to-changes *ns*))
+   (listen *ns*))
   ([anamespace]
    (swap! namespaces-listening-to-changes conj anamespace)))
 
-(defn unlisten-to-changes
+(defn unlisten
   ([]
-   (unlisten-to-changes *ns*))
+   (unlisten *ns*))
   ([anamespace]
    (swap! namespaces-listening-to-changes #(remove #{anamespace} %))))
 

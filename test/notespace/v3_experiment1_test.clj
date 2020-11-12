@@ -1,7 +1,6 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as api]
-            [notespace.kinds :as k]
-            ))
+            [notespace.kinds :as k]))
 
 ^k/hidden
 (comment
@@ -20,9 +19,9 @@
      "firefox"
      "doc/notespace/v3-experiment1-test/index.html"))
 
-  (api/listen-to-changes)
+  (api/listen)
 
-  (api/unlisten-to-changes))
+  (api/unlisten))
 
 ["# Notespace v3 intro
 
@@ -143,9 +142,9 @@ Use `notespace.api/eval-and-realize-notes-from-line` to evaluate and realize all
 
 ["### Listening to changes
 
-`(notespace.api/listen-to-changes)` will tell Notespace to listen to changes in the file corresponding to the current namespace (on a file save). When changes occur, (notespace.api/eval-and-realize-notes-from-change) is called. This results in an [Oz](https://github.com/metasoarous/oz)-like live-reload experience.
+`(notespace.api/listen)` will tell Notespace to listen to changes in the file corresponding to the current namespace (on a file save). When changes occur, (notespace.api/eval-and-realize-notes-from-change) is called. This results in an [Oz](https://github.com/metasoarous/oz)-like live-reload experience.
 
-`(notespace.api/unlisten-to-changes)` will tell Notespace to stop listening to the current namespace."]
+`(notespace.api/unlisten)` will tell Notespace to stop listening to the current namespace."]
 
 
 ["### Delays"]
