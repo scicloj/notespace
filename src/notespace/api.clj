@@ -83,6 +83,9 @@
   ([]
    (listen *ns*))
   ([anamespace]
+   (actions/act-on-notes! anamespace
+                          [actions/eval-note!
+                           actions/realize-note!])
    (swap! namespaces-listening-to-changes conj anamespace)))
 
 (defn unlisten
