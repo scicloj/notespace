@@ -7,7 +7,8 @@
             [notespace.paths :as paths]
             [notespace.watch :as watch]
             [gorilla-notes.core :as gn]
-            [notespace.source :as source]))
+            [notespace.source :as source]
+            [notespace.view :as view]))
 
 (def init lifecycle/init)
 
@@ -103,3 +104,13 @@
       (Thread/sleep @listen-sleep)
       (doseq [anamespace @namespaces-listening-to-changes]
         (eval-and-realize-notes-from-change anamespace)))))
+
+(defmacro view [form]
+  `(do
+    (init)
+    (-> {:value ~form
+         :metadata {:source ""}
+         :kind ~(note/topform-with-metadata->kind form)}
+        view/note->hiccup
+        (gn/add-note!))
+    :ok))
