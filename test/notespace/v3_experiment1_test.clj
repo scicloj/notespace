@@ -1,6 +1,17 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as api]
-            [notespace.kinds :as k]))
+            [notespace.kinds :as k]
+            [notespace.state :as state]
+             [cljfx.api :as fx]
+            ))
+(comment
+  (reset! state/the-context
+          (fx/swap-context @state/the-context
+                           #(-> %
+                                (assoc-in [:config :render-src?] false)
+                                )
+
+                           )))
 
 ^k/hidden
 (comment
