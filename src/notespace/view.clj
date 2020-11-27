@@ -5,6 +5,7 @@
             [notespace.state :as state]
             [notespace.repo :as repo]
             [notespace.check :as check]
+            [notespace.util :as util]
             [cljfx.api :as fx]
             [notespace.context :as ctx]))
 
@@ -55,7 +56,11 @@
     x))
 
 (defn dataset->grid-hiccup [ds]
-  (let [max-n-rows          100
+
+  (let [ds (if (sequential? ds)
+             (util/map-coll->key-vector-map ds)
+             ds)
+        max-n-rows          100
         string-column-names (->> ds
                                  keys
                                  (map name))
