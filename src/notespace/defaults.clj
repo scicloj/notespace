@@ -4,6 +4,9 @@
 (def initial-state
   {;; global configuration:
    :config                {:target-base-path "doc"}
+   :config                {:target-base-path "doc"
+                           :progress-render-fn (fn [cur-node-idx node-count expected-duration])
+                           :in-eval-count-down-fn (fn [count-down-in-seconds])}
    ;; namespace specific configuration:
    :ns->config            {}
    ;; one way to write a form is using one of several note symbols,

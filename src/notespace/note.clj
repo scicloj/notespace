@@ -134,10 +134,27 @@
                        :exception e}))) ))
 
 (defn evaluated-note [namespace idx note]
-  (assoc
-   note
-   :value (note-evaluation namespace idx note)
-   :status {:stage :evaluated}))
+  (let [progress-render-fn (state/sub-get-in :config :progress-render-fn)
+        in-eval-count-down-fn (state/sub-get-in :config :in-eval-count-down-fn)
+        start-time (System/currentTimeMillis)
+        expected-duration (/ (or  (:duration note) 0) 1000.0)
+        ]
+    (progress-render-fn idx
+                        (count (ns-notes namespace))
+                        expected-duration)
+
+    (future (doseq [x (reverse (range expected-duration))]
+              (in-eval-count-down-fn x)
+              (Thread/sleep 1000))
+
+            )
+    (assoc
+     note
+     :value (note-evaluation namespace idx note)
+     :duration (- (System/currentTimeMillis) start-time)
+     :status {:stage :evaluated}
+
+     )))
 
 (defn realizing-note [note]
   (assoc
