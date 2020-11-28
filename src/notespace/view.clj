@@ -18,9 +18,9 @@
               :kind->behaviour
               kind)]
     [:div
-     (when render-src?
-       [:p/code {:code     (:source metadata)
-                 :bg-class "bg-light"}])
+     (when (and  render-src? (state/sub-get-in :config :render-src?))
+        [:p/code {:code     (:source metadata)
+                  :bg-class "bg-light"}])
      ;; TODO Simplify the logic here.
      [:div (if (u/ready? value)
              (cond ;;
