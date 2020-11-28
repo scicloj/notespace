@@ -1,6 +1,15 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as api]
-            [notespace.kinds :as k]))
+            [notespace.kinds :as k]
+            [notespace.state :as state]
+            [cljfx.api :as fx]))
+
+^k/hidden
+(comment
+  (reset! state/the-context
+          (fx/swap-context @state/the-context
+                           #(-> %
+                                (assoc-in [:config :render-src?] false)))))
 
 ^k/hidden
 (comment
@@ -371,7 +380,11 @@ We do not have an example here, since that would require depending on the above 
 
 ["### dataset-grid
 
-Notes of kind `:dataset-grid` are expecting a value that is a map, whose values are same-length sequentials. One example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries.
+Notes of kind `:dataset-grid` are expecting a value which is one of the following:
+- a map, whose values are same-length sequentials (one example of such a map is a dataset of the [tech.ml.dataset](github.com/techascent/tech.ml.dataset) and [Tablecloth](https://github.com/scicloj/tablecloth) libraries);
+- a sequence of maps.
+
+They render that values as an [ag-Grid](https://www.ag-grid.com/) table view.
 
 For example:"]
 
@@ -380,7 +393,20 @@ For example:"]
  :y (repeatedly 9 rand)
  :z (take 9 (cycle "abc"))}
 
-["The value is rendered as an [ag-Grid](https://www.ag-grid.com/) component."]
+["--------------------"]
+
+^k/dataset-grid
+{:a [1 2 3]
+ :b [4 5 6]}
+
+["--------------------"]
+
+^k/dataset-grid
+[{:a 1 :b 4}
+ {:a 2 :b 5}
+ {:a 3 :b 6}]
+
+["--------------------"]
 
 ["## Other ways to specify note kinds
 

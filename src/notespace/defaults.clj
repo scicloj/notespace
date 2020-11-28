@@ -3,8 +3,8 @@
 
 (def initial-state
   {;; global configuration:
-   :config                {:target-base-path "doc"}
    :config                {:target-base-path "doc"
+                           :render-src? tru
                            :progress-render-fn (fn [cur-node-idx node-count expected-duration])
                            :in-eval-count-down-fn (fn [count-down-in-seconds])}
    ;; namespace specific configuration:

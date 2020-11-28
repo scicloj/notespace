@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file. This change
 - extended api with functions such as `eval-and-realize-notes-from-line` and `eval-and-realize-notes-from-change`
 - support for an Oz-like experience of listening to changes
 - added a `view` api function for viewing a single note
+- added a config option to avoid rendering the source code of notes
+- extended the dataset-grid note kind to handle sequences of maps
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
