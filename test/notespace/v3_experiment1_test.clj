@@ -391,6 +391,16 @@ For example:"]
  :y (repeatedly 9 rand)
  :z (take 9 (cycle "abc"))}
 
+^k/dataset-grid
+{:a [1 2 3]
+ :b [4 5 6] }
+
+^k/dataset-grid
+[{:a 1 :b 4}
+ {:a 2 :b 5}
+ {:a 3 :b 6}]
+
+
 ["The value is rendered as an [ag-Grid](https://www.ag-grid.com/) component."]
 
 ["## Other ways to specify note kinds
