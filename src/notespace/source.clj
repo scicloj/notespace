@@ -6,8 +6,8 @@
             [notespace.state :as state]))
 
 ;; For a given namespace, we can find the location of the corresponding source file.
-(defn src-or-test [namespace]
-  (if (-> namespace
+(defn src-or-test [anamespace]
+  (if (-> anamespace
           str
           (string/split #"-")
           last
@@ -15,12 +15,12 @@
     "test"
     "src"))
 
-(defn ns->source-filename [namespace]
-  (let [base-path (or (state/sub-get-in :ns->config namespace :base-path)
-                      (str (src-or-test namespace)
+(defn ns->source-filename [anamespace]
+  (let [base-path (or (state/sub-get-in :config :by-ns anamespace :base-path)
+                      (str (src-or-test anamespace)
                            "/"))]
     (str base-path
-         (-> namespace
+         (-> anamespace
              str
              (string/replace "." "/")
              (string/replace "-" "_"))
