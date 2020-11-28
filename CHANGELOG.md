@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file. This change
 - added a `view` api function for viewing a single note
 - added a config option to avoid rendering the source code of notes
 - extended the dataset-grid note kind to handle sequences of maps
+- added progress logging support
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
