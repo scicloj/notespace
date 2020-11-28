@@ -8,10 +8,16 @@
   (throw (ex-info "Unrecognized event"
                   {:event event})))
 
-(defmethod handle ::reset [{:keys [fx/context initial-state]}]
+(defmethod handle ::reset-but-keep-config [{:keys [fx/context initial-state]}]
   {:context (fx/reset-context
              context
-             initial-state)})
+             (merge initial-state
+                    (select-keys context [:config])))})
+
+(defmethod handle ::update-config [{:keys [fx/context f]}]
+  {:context (fx/swap-context
+             context
+             #(update % :config f))})
 
 (defmethod handle ::file-modified [{:keys [fx/context namespace modification-time]}]
   {:context (fx/swap-context

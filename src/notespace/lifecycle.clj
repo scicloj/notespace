@@ -7,7 +7,7 @@
 (defn init [& {:keys [open-browser?]
                :or   {open-browser? false}}]
   (ctx/handle
-   {:event/type    ::events/reset
+   {:event/type    ::events/reset-but-keep-config
     :fx/sync       true
     :initial-state defaults/initial-state})
   (gn/init)
