@@ -139,7 +139,7 @@
       (print (ex-info "Note evaluation failed."
                       {:note      note
                        :exception e}))
-      ::failed))))
+      ::failed)))
 
 (defn evaluated-note [namespace idx note]
   (let [progress-render-fn (state/sub-get-in :config :progress-render-fn)
