@@ -48,7 +48,7 @@
              :else
              (status-description
               (cond ;;
-                (u/delay? value)
+                (delay? value)
                 (if (-> status :stage (= :realizing))
                   "delay - already running ..."
                   "delay - not running yet ...")
