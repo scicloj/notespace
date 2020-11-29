@@ -9,11 +9,15 @@
             [cljfx.api :as fx]
             [notespace.context :as ctx]))
 
-(def waiting
-  [:div
-   [:big [:big "..."]]])
+(def notespace-style
+  {:style {:font-style  "italic"
+           :font-family "\"Lucida Console\", Courier, monospace"}})
 
-(defn note->hiccup [{:keys [value metadata kind]}]
+(defn status-description [text]
+  [:p notespace-style
+   [:small (format "(%s)" text)]])
+
+(defn note->hiccup [{:keys [value metadata kind status]}]
   (when-let [{:keys [render-src? value->hiccup]}
              (state/sub-get-in
               :kind->behaviour
@@ -23,19 +27,37 @@
         [:p/code {:code     (:source metadata)
                   :bg-class "bg-light"}])
      ;; TODO Simplify the logic here.
-     [:div (if (u/ready? value)
+     [:div (cond
+             ;;
+             (= value :notespace.note/failed)
+             (status-description "failed")
+             ;;
+             (u/ready? value)
              (cond ;;
                (var? value)
                (value->hiccup value)
                ;;
                (instance? clojure.lang.IDeref value)
                [:div
-                [:p "(@)"]
+                (status-description "dereferenced")
                 (value->hiccup @value)]
                ;;
                :else
                (value->hiccup value))
-             waiting)]]))
+             ;; else
+             :else
+             (status-description
+              (cond ;;
+                (u/delay? value)
+                (if (-> status :stage (= :realizing))
+                  "delay - already running ..."
+                  "delay - not running yet ...")
+                ;;
+                (future? value)
+                "future - running ..."
+                ;;
+                :else
+                "not ready - unknown reason")))]]))
 
 (defn value->naive-hiccup [value]
   [:p/code {:code (-> value
@@ -135,8 +157,7 @@
         ;;                    check/->checks-freqs
         ;;                    check/->checks-summary)
         reference      (->reference namespace)]
-    {:header [:div {:style {:font-style  "italic"
-                            :font-family "\"Lucida Console\", Courier, monospace"}}
+    {:header [:div notespace-style
               "(notespace)"
               [:p (str (java.util.Date.))]
               (some-> notes notes-count)

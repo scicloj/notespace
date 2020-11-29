@@ -22,6 +22,9 @@
   (when (-> elements count (= 1))
     (first elements)))
 
+(defn delay? [v]
+  (instance? clojure.lang.Delay v))
+
 (defn pending? [v]
   (instance? clojure.lang.IPending v))
 

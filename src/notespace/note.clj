@@ -136,9 +136,10 @@
         eval
         (accept namespace idx))
     (catch Exception e
-      (throw (ex-info "Note evaluation failed."
+      (print (ex-info "Note evaluation failed."
                       {:note      note
-                       :exception e}))) ))
+                       :exception e}))
+      ::failed))))
 
 (defn evaluated-note [namespace idx note]
   (let [progress-render-fn (state/sub-get-in :config :progress-render-fn)
@@ -151,11 +152,18 @@
     (future (doseq [x (reverse (range expected-duration))]
               (in-eval-count-down-fn x)
               (Thread/sleep 1000)))
-    (assoc
-     note
-     :value (note-evaluation namespace idx note)
-     :duration (- (System/currentTimeMillis) start-time)
-     :status {:stage :evaluated})))
+    (let [value (note-evaluation namespace idx note)]
+      (if (= value ::failed)
+        (assoc
+         note
+         :value value
+         :duration (- (System/currentTimeMillis) start-time)
+         :status {:stage :failed})
+        (assoc
+         note
+         :value value
+         :duration (- (System/currentTimeMillis) start-time)
+         :status {:stage :evaluated})))))
 
 (defn realizing-note [note]
   (assoc
