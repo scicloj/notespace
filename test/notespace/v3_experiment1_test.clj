@@ -30,7 +30,10 @@
 
   (api/listen)
 
-  (api/unlisten))
+  (api/unlisten)
+  
+  (api/toggle-single-note-mode true)
+  (api/toggle-single-note-mode false))
 
 ["# Notespace v3 intro
 
