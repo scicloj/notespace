@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file. This change
 - added progress logging support
 - handling config changes in the event flow, preserving config on reset
 - support for single-note-mode
+- communicating note state more carefully
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
