@@ -4,7 +4,9 @@
             [notespace.events :as events]
             [notespace.context :as ctx]
             [notespace.source :as source]
-            [notespace.util :as u]))
+            [notespace.util :as u]
+            [notespace.view :as view]
+            [gorilla-notes.core :as gn]))
 
 ;; We can update our notes structures by reading the notes of a namespace.
 ;; We try not to update things that have not changed.
@@ -86,6 +88,35 @@
     (doseq [a actions]
       (act! anamespace idx actions))))
 
+(defonce ns-lines
+  (atom {}))
+
+(defn first-line-of-change [anamespace]
+  (when (source/source-file-modified? anamespace)
+    (let [old-lines (or (@ns-lines anamespace)
+                        [])
+          new-lines (with-open [rdr (clojure.java.io/reader
+                                     (source/ns->source-filename
+                                      anamespace))]
+                      (vec (line-seq rdr)))
+          num-added (- (count new-lines)
+                       (count old-lines))]
+      (swap! ns-lines assoc anamespace new-lines)
+      (some->> (map (fn [i ol nl]
+                      [i ol nl (= ol nl)])
+                    (range)
+                    (if (pos? num-added)
+                      (concat old-lines (repeat num-added nil))
+                      old-lines)
+                    (if (pos? num-added)
+                      new-lines
+                      (concat new-lines (repeat (- num-added) nil))))
+               (drop-while (fn [[i ol nl check]]
+                             check))
+               first
+               first
+               inc))))
+
 (defn line->safe-idx [anamespace line]
   (or (state/sub-get-in :ns->line->index anamespace line)
       (some->> (state/sub-get-in :ns->notes anamespace)
@@ -103,6 +134,18 @@
     (when-let [initial-idx (line->safe-idx anamespace line)]
       (doseq [idx (range initial-idx n)]
         (act! anamespace idx actions)))))
+
+(defn act-on-note-at-change! [anamespace actions]
+  (binding [*ns* anamespace]
+    (when-let [l (first-line-of-change
+                  anamespace)]
+      (act-on-note-at-line! anamespace l actions))))
+
+(defn act-on-notes-from-change! [anamespace actions]
+  (binding [*ns* anamespace]
+    (when-let [l (first-line-of-change
+                  anamespace)]
+      (act-on-notes-from-line! anamespace l actions))))
 
 (defn eval-note! [anamespace idx]
   (update-note! anamespace
@@ -151,39 +194,22 @@
      (fn [_ _ _ _]
        (rerender-note! anamespace idx)))))
 
-(defonce ns-lines
-  (atom {}))
-
-(defn first-line-of-change [anamespace]
-  (when (source/source-file-modified? anamespace)
-    (let [old-lines (or (@ns-lines anamespace)
-                        [])
-          new-lines (with-open [rdr (clojure.java.io/reader
-                                     (source/ns->source-filename
-                                      anamespace))]
-                      (vec (line-seq rdr)))
-          num-added (- (count new-lines)
-                       (count old-lines))]
-      (swap! ns-lines assoc anamespace new-lines)
-      (some->> (map (fn [i ol nl]
-                      [i ol nl (= ol nl)])
-                    (range)
-                    (if (pos? num-added)
-                      (concat old-lines (repeat num-added nil))
-                      old-lines)
-                    (if (pos? num-added)
-                      new-lines
-                      (concat new-lines (repeat (- num-added) nil))))
-               (drop-while (fn [[i ol nl check]]
-                             check))
-               first
-               first
-               inc))))
-
+(defn eval-and-realize-note-at-change! [anamespace]
+  (act-on-note-at-change! anamespace [eval-note!
+                                      realize-note!]))
 
 (defn eval-and-realize-notes-from-change! [anamespace]
-  (binding [*ns* anamespace]
-    (when-let [l (first-line-of-change
-                  anamespace)]
-      (act-on-notes-from-line! anamespace l [eval-note!
-                                             realize-note!]))))
+  (act-on-notes-from-change! anamespace [eval-note!
+                                         realize-note!]))
+
+(defn update-config! [f]
+  (ctx/handle
+   {:event/type    ::events/update-config
+    :fx/sync       true
+    :f f}))
+
+(defn toggle-single-note-mode!
+  ([]
+   (update-config! #(update % :single-note-mode? not)))
+  ([bool]
+   (update-config! #(assoc % :single-note-mode? bool))))

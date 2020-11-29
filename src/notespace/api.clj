@@ -10,16 +10,30 @@
             [notespace.source :as source]
             [notespace.view :as view]))
 
+(defn update-config [f]
+  (actions/update-config! f))
+
+(def toggle-single-note-mode
+  actions/toggle-single-note-mode!)
+
+(comment
+  (toggle-single-note-mode true))
+
+
 (def init lifecycle/init)
 
 (defn init-with-browser []
   (init :open-browser? true))
 
-(defn check [pred & args]
-  [(if (apply pred args)
-     :PASSED
-     :FAILED)
-   (last args)])
+(defmacro view [form]
+  `(do
+     (gn/reset-notes!)
+     (-> {:value    ~(eval form)
+          :metadata {:source ""}
+          :kind     ~(note/topform-with-metadata->kind form)}
+         view/note->hiccup
+         gn/add-note!)
+     :ok))
 
 (defn reread-this-notespace []
   (actions/reread-notes! *ns*))
@@ -44,6 +58,48 @@
 (defn eval-and-realize-notes-from-line [line]
   (actions/act-on-notes-from-line! *ns* line [actions/eval-note!
                                               actions/realize-note!]))
+(defn eval-and-realize-note-at-change
+  ([]
+   (eval-and-realize-note-at-change *ns*))
+  ([anamespace]
+   (actions/eval-and-realize-note-at-change! anamespace)))
+
+(defn eval-and-realize-notes-from-change
+  ([]
+   (eval-and-realize-notes-from-change *ns*))
+  ([anamespace]
+   (actions/eval-and-realize-notes-from-change! anamespace)))
+
+(defonce namespaces-listening-to-changes
+  (atom #{}))
+
+(defn listen
+  ([]
+   (listen *ns*))
+  ([anamespace]
+   (when-not (state/single-note-mode?)
+     (actions/act-on-notes! anamespace
+                            [actions/eval-note!
+                             actions/realize-note!]))
+   (swap! namespaces-listening-to-changes conj anamespace)))
+
+(defn unlisten
+  ([]
+   (unlisten *ns*))
+  ([anamespace]
+   (swap! namespaces-listening-to-changes #(remove #{anamespace} %))))
+
+(defonce listen-sleep
+  (atom 300))
+
+(defonce periodically-react-to-changes
+  (future
+    (while true
+      (Thread/sleep @listen-sleep)
+      (doseq [anamespace @namespaces-listening-to-changes]
+        (if (state/single-note-mode?)
+          (eval-and-realize-note-at-change anamespace)
+          (eval-and-realize-notes-from-change anamespace))))))
 
 (defn render-static-html
   ([]
@@ -66,51 +122,3 @@
      :FAILED)
    (last args)])
 
-(defonce change-lock (atom false))
-
-(defn eval-and-realize-notes-from-change
-  ([]
-   (eval-and-realize-notes-from-change *ns*))
-  ([anamespace]
-   (when (not @change-lock)
-     (reset! change-lock true)
-     (actions/eval-and-realize-notes-from-change! anamespace)
-     (reset! change-lock false))))
-
-(defonce namespaces-listening-to-changes
-  (atom #{}))
-
-(defn listen
-  ([]
-   (listen *ns*))
-  ([anamespace]
-   (actions/act-on-notes! anamespace
-                          [actions/eval-note!
-                           actions/realize-note!])
-   (swap! namespaces-listening-to-changes conj anamespace)))
-
-(defn unlisten
-  ([]
-   (unlisten *ns*))
-  ([anamespace]
-   (swap! namespaces-listening-to-changes #(remove #{anamespace} %))))
-
-(defonce listen-sleep
-  (atom 300))
-
-(defonce periodically-react-to-changes
-  (future
-    (while true
-      (Thread/sleep @listen-sleep)
-      (doseq [anamespace @namespaces-listening-to-changes]
-        (eval-and-realize-notes-from-change anamespace)))))
-
-(defmacro view [form]
-  `(do
-    (init)
-    (-> {:value ~form
-         :metadata {:source ""}
-         :kind ~(note/topform-with-metadata->kind form)}
-        view/note->hiccup
-        (gn/add-note!))
-    :ok))

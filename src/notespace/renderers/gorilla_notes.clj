@@ -5,7 +5,8 @@
             [notespace.note :as note]
             [notespace.actions :as actions]
             [notespace.util :as u]
-            [clojure.core.async :as async]))
+            [clojure.core.async :as async]
+            [notespace.state :as state]))
 
 (defonce server (atom nil))
 
@@ -86,15 +87,44 @@
                                           (not (= old-note new-note)))))
             [old-n new-n]         (->> [old-notes new-notes]
                                        (map count))]
-        (->> new-things
-             (run!
-              (fn [[idx _ _]]
-                (gn/assoc-note!
-                 idx
-                 (fx/sub-ctx new-ctx rendering anamespace idx)
-                 :broadcast? false))))
-        (when (> old-n new-n)
-          (gn/drop-tail! (- old-n new-n)
-                         :broadcast? false))
+        (if (state/single-note-mode?)
+          (do (gn/reset-notes!)
+              (->> new-things
+                   first
+                   ((fn [[idx _ _]]
+                      (gn/assoc-note!
+                       0
+                       (fx/sub-ctx new-ctx rendering anamespace idx)
+                       :broadcast? false)))))
+          ;; else
+          (do (->> new-things
+                   (run!
+                    (fn [[idx _ _]]
+                      (gn/assoc-note!
+                       idx
+                       (fx/sub-ctx new-ctx rendering anamespace idx)
+                       :broadcast? false))))
+              (when (> old-n new-n)
+                (gn/drop-tail! (- old-n new-n)
+                               :broadcast? false))))
         (reset! change? true)))))
 
+
+(defn view-note [anamespace idx]
+  (actions/reread-notes! anamespace)
+  (let [note (state/sub-get-in :ns->notes anamespace idx)]
+    (gn/reset-notes!)
+    (Thread/sleep 100)
+    (->> note
+         (note/evaluated-note namespace idx)
+         view/note->hiccup
+         ((juxt println gn/add-note!)))))
+
+(defn view-note-at-line
+  [line]
+  (actions/act-on-note-at-line! *ns* line [view-note]))
+
+(comment
+  (state/single-note-mode?)
+  (notespace.api/toggle-single-note-mode)
+  (notespace.api/listen))
