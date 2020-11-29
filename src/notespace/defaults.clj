@@ -4,11 +4,10 @@
 (def initial-state
   {;; global configuration:
    :config                {:target-base-path "doc"
+                           :single-note-mode? false
                            :render-src? true
                            :progress-render-fn (fn [cur-node-idx node-count expected-duration])
                            :in-eval-count-down-fn (fn [count-down-in-seconds])}
-   ;; namespace specific configuration:
-   :ns->config            {}
    ;; one way to write a form is using one of several note symbols,
    ;; that have corresponding note kinds.
    ;; E.g., a form of the form (note-md ...) is a note form of kind :md.
