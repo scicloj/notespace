@@ -12,4 +12,8 @@
   (fx/sub-val @the-context get-in path))
 
 (comment
+  (sub-get-in :config)
   (sub-get-in :ns->notes))
+
+(defn single-note-mode? []
+  (sub-get-in :config :single-note-mode?))
