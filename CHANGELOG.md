@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This change
 - using a version of gorilla-notes with an up-to-date core.async dep
 - handling event broadcasting more carefully
 - explicitly marking dereferenced values in rendering by the `(@)` sign
-- Notes which are forms like `(def ...)` or `(defn ...)` are assigned the kind `:void`.
+- Notes which are forms like `(def ...)`, `(defn ...)`, `(defmafro ...)` are assigned the kind `:void`.
 - added api action: `eval-and-realize-this-notespace`
 - extended api with functions such as `eval-and-realize-notes-from-line` and `eval-and-realize-notes-from-change`
 - support for an Oz-like experience of listening to changes
@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file. This change
 - added a config option to avoid rendering the source code of notes
 - extended the dataset-grid note kind to handle sequences of maps
 - added progress logging support
+- handling config changes in the event flow, preserving config on reset
+- support for single-note-mode
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
