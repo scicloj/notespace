@@ -149,9 +149,11 @@
     (progress-render-fn idx
                         (count (ns-notes namespace))
                         expected-duration)
-    (future (doseq [x (reverse (range expected-duration))]
-              (in-eval-count-down-fn x)
-              (Thread/sleep 1000)))
+
+    (when (> expected-duration 1)
+      (future (doseq [x (reverse (range expected-duration))]
+                (in-eval-count-down-fn x)
+                (Thread/sleep 1000))))
     (let [value (note-evaluation namespace idx note)]
       (if (= value ::failed)
         (assoc
