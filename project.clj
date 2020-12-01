@@ -9,7 +9,7 @@
                  [zprint "0.5.2"]
                  [markdown-clj "1.10.0"]
                  [com.rpl/specter "1.1.3"]
-                 [metosin/jsonista "0.2.5"]
+                 [metosin/jsonista "0.2.5" ]
                  [garden "1.3.9"]
                  [cambium/cambium.core         "0.9.3"]
                  [cambium/cambium.codec-simple "0.9.3"]
@@ -26,4 +26,20 @@
                  [cljfx "1.7.5"]
                  [org.clojure/core.cache "1.0.207"]
                  [hawk "0.2.11"]
-                 [scicloj/gorilla-notes "0.5.0-SNAPSHOT"]])
+
+
+                 ;; avoid conflict with jsonista
+                 [scicloj/gorilla-notes "0.5.0-SNAPSHOT"
+                  :exclusions [com.fasterxml.jackson.core/jackson-core
+                               com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
+                               com.fasterxml.jackson.dataformat/jackson-dataformat-smile]]
+                 [com.fasterxml.jackson.core/jackson-core "2.10.0"]
+                 [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor "2.10.0"]
+                 [com.fasterxml.jackson.dataformat/jackson-dataformat-smile "2.10.0"]
+
+                 ]
+  :profiles {:dev {
+                   :cloverage {:runner :midje}
+                   :dependencies [[midje "1.9.9"]]
+                   :plugins [[lein-midje "3.2.1"]
+                             [lein-cloverage "1.1.2"]]}})
