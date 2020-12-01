@@ -145,27 +145,23 @@
   (let [progress-render-fn (state/sub-get-in :config :progress-render-fn)
         in-eval-count-down-fn (state/sub-get-in :config :in-eval-count-down-fn)
         start-time (System/currentTimeMillis)
-        expected-duration (/ (or  (:duration note) 0) 1000.0)]
+        expected-duration (/ (or  (get-in note [:metadata  :duration] ) 0) 1000.0)]
     (progress-render-fn idx
                         (count (ns-notes namespace))
                         expected-duration)
-
     (when (> expected-duration 1)
       (future (doseq [x (reverse (range expected-duration))]
                 (in-eval-count-down-fn x)
                 (Thread/sleep 1000))))
-    (let [value (note-evaluation namespace idx note)]
-      (if (= value ::failed)
-        (assoc
-         note
-         :value value
-         :duration (- (System/currentTimeMillis) start-time)
-         :status {:stage :failed})
-        (assoc
-         note
-         :value value
-         :duration (- (System/currentTimeMillis) start-time)
-         :status {:stage :evaluated})))))
+    (let [value (note-evaluation namespace idx note)
+          stage (if (= value ::failed) :failed :evaluated )
+          duration (- (System/currentTimeMillis) start-time)]
+      (assoc note
+       :value value
+       :status {:stage stage})
+      (assoc (:metadata note)
+       :duration
+       duration))))
 
 (defn realizing-note [note]
   (assoc
