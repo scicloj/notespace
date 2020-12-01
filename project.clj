@@ -39,5 +39,7 @@
 
                  ]
   :profiles {:dev {
+                   :cloverage {:runner :midje}
                    :dependencies [[midje "1.9.9"]]
-                   :plugins [[lein-midje "3.2.1"]]}})
+                   :plugins [[lein-midje "3.2.1"]
+                             [lein-cloverage "1.1.2"]]}})
