@@ -4,13 +4,12 @@
             [notespace.lifecycle :as lifecycle]
             [notespace.api :as api]
             [notespace.renderers.gorilla-notes :as gn]
-            [midje.sweet :refer [with-state-changes => fact facts before]]
+            [midje.sweet :refer [with-state-changes => fact facts before truthy]]
             [midje.checkers :refer [roughly]]
             ))
 
 (defn  sleep-one-sec []
-  (Thread/sleep 1000)
-  )
+  (Thread/sleep 1000))
 
 (def sleep-note
   (sut/->Note kind/naive "" '((sleep-one-sec)) nil nil nil nil))
@@ -36,19 +35,63 @@
                                (reset! fn-params-in-eval-count-down-fn {:idx idx}))))))]
 
   (fact "evaluating note sets duration"
-        (:duration
-         (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note))
-        => (roughly 1000 100)
-        )
+        (get-in
+         (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note)
+         [:metadata :duration]
+         )
+        => (roughly 1000 100))
 
   (fact "evaluating note call progress-render-fn"
         (:duration
          (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note))
-        @fn-params-progress-render => {:count 0 :duration 0.0 :idx 0}
-        )
+        @fn-params-progress-render => {:count 0 :duration 0.0 :idx 0})
 
   (fact "evaluating note call in-eval-fn"
         (sut/evaluated-note "notespace.empty-notespace-test" 0 note-with-duration)
         (Thread/sleep 2000)
-        @fn-params-in-eval-count-down-fn => {:idx 0}
-        ))
+        @fn-params-in-eval-count-down-fn => {:idx 0})
+
+  (fact "evaluation of note runs code"
+        (let [note-list
+              (sut/ns-notes "notespace.all-kinds-notespace-test")]
+          (:value
+           (sut/evaluated-note "notespace.all-kinds-notespace-test" 4 (nth note-list 4) ))
+          => 21)))
+
+
+(facts "Can convert test file to notes"
+       (let [note-list
+             (sut/ns-notes "notespace.all-kinds-notespace-test")
+             a-naive-node (first note-list)]
+         (fact "all are converted and in initial state"
+               (first (distinct (map :status note-list))) => {:stage :initial}
+               (first (distinct (map :realized-value note-list))) => nil
+               (first (distinct (map :value note-list))) => :value/not-ready
+               (first (distinct (map :label note-list))) => nil
+               (->> (map :forms note-list)
+                    (remove nil?)
+                    count
+                    ) => 77
+               (count note-list) => 77
+               (frequencies (map :kind note-list) ) =>
+               {:notespace.kinds/naive 22
+                :notespace.kinds/big 3
+                :notespace.kinds/md-nocode 44
+                :notespace.kinds/hiccup 1
+                :notespace.kinds/div 1
+                :notespace.kinds/leafletmap 1
+                :notespace.kinds/void 3
+                :notespace.kinds/code 1
+                :notespace.kinds/player 1 })
+         (fact "a naive node has a form and metadata"
+               (-> (:forms a-naive-node)
+                   first
+                   first
+                   ) => 'comment
+               (let [metadata (:metadata a-naive-node)]
+                 (:source metadata) => truthy
+                 (dissoc metadata :source) =>  {  :line  7
+                                                :column  1
+                                                :end-line  12
+                                                :end-column  76
+                                                :tag 'k/hidden}))))

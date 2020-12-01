@@ -156,12 +156,11 @@
     (let [value (note-evaluation namespace idx note)
           stage (if (= value ::failed) :failed :evaluated )
           duration (- (System/currentTimeMillis) start-time)]
-      (assoc note
-       :value value
-       :status {:stage stage})
-      (assoc (:metadata note)
-       :duration
-       duration))))
+      (-> note
+          (assoc  :value value
+                  :status {:stage stage})
+          (assoc-in
+           [:metadata :duration] duration)))))
 
 (defn realizing-note [note]
   (assoc
