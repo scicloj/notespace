@@ -34,6 +34,7 @@
                                com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
                                com.fasterxml.jackson.dataformat/jackson-dataformat-smile]]
                  [com.fasterxml.jackson.core/jackson-core "2.10.0"]
+                 [com.fasterxml.jackson.core/jackson-annotations "2.10.0"]
                  [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor "2.10.0"]
                  [com.fasterxml.jackson.dataformat/jackson-dataformat-smile "2.10.0"]
 
