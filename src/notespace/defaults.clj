@@ -6,7 +6,7 @@
    :config                {:target-base-path "doc"
                            :single-note-mode? false
                            :render-src? true
-                           :progress-render-fn (fn [cur-node-idx node-count expected-duration])
+                           :evaluation-callback-fn (fn [cur-node-idx node-count note])
                            :in-eval-count-down-fn (fn [count-down-in-seconds])}
    ;; one way to write a form is using one of several note symbols,
    ;; that have corresponding note kinds.

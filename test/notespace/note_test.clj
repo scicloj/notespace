@@ -18,17 +18,17 @@
   (sut/->Note kind/naive "" '((+ 1 1)) {:duration 2000} nil nil nil))
 
 
-(def fn-params-progress-render (atom nil))
+(def fn-params-evaluation-callback (atom nil))
 (def fn-params-in-eval-count-down-fn  (atom nil))
 
 (with-state-changes
   [(before :facts (do
-                    (reset! fn-params-progress-render nil)
+                    (reset! fn-params-evaluation-callback nil)
                     (lifecycle/init)
                     (api/update-config
-                     #(assoc % :progress-render-fn
-                             (fn [idx count duration]
-                               (reset! fn-params-progress-render {:idx idx :count count :duration duration}))))
+                     #(assoc % :evaluation-callback-fn
+                             (fn [idx count note]
+                               (reset! fn-params-evaluation-callback {:idx idx :count count :note note}))))
                     (api/update-config
                      #(assoc % :in-eval-count-down-fn
                              (fn [idx]
@@ -42,9 +42,11 @@
         => (roughly 1000 100))
 
   (fact "evaluating note call progress-render-fn"
-        (:duration
-         (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note))
-        @fn-params-progress-render => {:count 0 :duration 0.0 :idx 0})
+
+        (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note)
+        (Thread/sleep 500)
+        (:idx @fn-params-evaluation-callback) => 0
+        (get-in @fn-params-evaluation-callback [:note :metadata :duration]) => 0.0)
 
   (fact "evaluating note call in-eval-fn"
         (sut/evaluated-note "notespace.empty-notespace-test" 0 note-with-duration)
