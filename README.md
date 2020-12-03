@@ -96,7 +96,6 @@ As with Version 2, we use [tools.reader](https://github.com/clojure/tools.reader
 Rendering is now an abstract notion, and thus Notespace can be extended with different ways of rendering. At least one of them will create static-htmls, based on gorilla-notes. Other potential renderers may rely on [Oz](https://github.com/metasoarous/oz) or [rmarkdown-clojure](https://github.com/genmeblog/rmarkdown-clojure), or generate and update [Pink Gorilla](https://pink-gorilla.github.io) notebooks on the fly.
 
 ### Known issues
-* Rendering as static html is not supported yet.
 * Many of the notions, ideas and behaviours of Version 2 are not supported by Version 3 at the moment. Most of them are enabled in a different way. We need to discuss whether to create some backwards compatibility layer.
 * At the moment, this version brings [cljfx](https://github.com/cljfx/cljfx) as a dependency, merely for its state management logic. This means it will run only on JDK 11.
 * Currently things tend to break when moving across several namespaces. For now, calling `(notespace.api/init)` is a good habit for such cases.
