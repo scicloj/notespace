@@ -142,13 +142,13 @@
       ::failed)))
 
 (defn evaluated-note [namespace idx note]
-  (let [progress-render-fn (state/sub-get-in :config :progress-render-fn)
+  (let [evaluation-callback-fn (state/sub-get-in :config :evaluation-callback-fn)
         in-eval-count-down-fn (state/sub-get-in :config :in-eval-count-down-fn)
         start-time (System/currentTimeMillis)
         expected-duration (/ (or  (get-in note [:metadata  :duration] ) 0) 1000.0)]
-    (progress-render-fn idx
+    (evaluation-callback-fn idx
                         (count (ns-notes namespace))
-                        expected-duration)
+                        (assoc-in note [:metadata :duration] expected-duration))
     (when (> expected-duration 1)
       (future (doseq [x (reverse (range expected-duration))]
                 (in-eval-count-down-fn x)
