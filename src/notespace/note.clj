@@ -108,7 +108,7 @@
               m
               :value/not-ready
               nil
-              {:stage :initial}))))
+              :initial))))
 
 ;; Thus we can collect all notes in a namespace.
 (defn ns-notes [namespace]
@@ -154,7 +154,7 @@
                 (in-eval-count-down-fn x)
                 (Thread/sleep 1000))))
     (let [value (note-evaluation namespace idx note)
-          stage (if (= value ::failed) :failed :evaluated )
+          stage (if (= value ::failed) :failed :evaluated)
           duration (- (System/currentTimeMillis) start-time)]
       (-> note
           (assoc  :value value
