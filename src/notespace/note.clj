@@ -4,7 +4,8 @@
             [notespace.source :as source]
             [notespace.view :as view]
             [notespace.state :as state]
-            [notespace.util :as u]))
+            [notespace.util :as u]
+            [notespace.kinds :as kinds]))
 
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
 ;; and a dynamic part: a value, a realized-value and a status.
@@ -63,7 +64,7 @@
            keyword?)))
 
 (defn kinds-set []
-  (into #{} (map first) (-> :kinds->behaviour state/sub-get-in methods seq)))
+  (into #{} (map first) (-> kinds/kind->behaviour methods seq)))
 
 (defn metadata->kind [m]
   (some->> m
