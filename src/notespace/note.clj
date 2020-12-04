@@ -63,10 +63,7 @@
            keyword?)))
 
 (defn kinds-set []
-  (-> :kind->behaviour
-      state/sub-get-in
-      keys
-      set))
+  (into #{} (map first) (-> :kinds->behaviour state/sub-get-in methods seq)))
 
 (defn metadata->kind [m]
   (some->> m

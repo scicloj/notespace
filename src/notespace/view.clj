@@ -19,9 +19,7 @@
 
 (defn note->hiccup [{:keys [value metadata kind status]}]
   (when-let [{:keys [render-src? value->hiccup]}
-             (state/sub-get-in
-              :kind->behaviour
-              kind)]
+             ((state/sub-get-in :kind->behaviour) kind)]
     [:div
      (when (and  render-src? (state/sub-get-in :config :render-src?))
         [:p/code {:code     (:source metadata)
