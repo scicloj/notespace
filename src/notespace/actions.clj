@@ -49,7 +49,6 @@
      :n-new   (->> notes
                    (filter (fn [note]
                              (-> note
-                                 :status
                                  :stage
                                  (= :initial))))
                    count)}))

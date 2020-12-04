@@ -7,9 +7,9 @@
             [notespace.util :as u]))
 
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
-;; and a dynamic part: a value, a realized-value and a status.
+;; and a dynamic part: a value, a realized-value and a stage.
 (defrecord Note [kind label forms metadata
-                 value realized-value status])
+                 value realized-value stage])
 
 ;; TODO: Where is is used?
 (defn note->index [namespace note]
@@ -158,19 +158,19 @@
           duration (- (System/currentTimeMillis) start-time)]
       (-> note
           (assoc  :value value
-                  :status {:stage stage})
+                  :stage stage)
           (assoc-in
            [:metadata :duration] duration)))))
 
 (defn realizing-note [note]
   (assoc
    note
-   :status {:stage :realizing}))
+   :stage :realizing))
 
 (defn realized-note [note]
   (assoc
    note
-   :status {:stage :realized}
+   :stage :realized
    :realized-value (-> note :value u/realize)))
 
 ;; TODO: Rethink

@@ -17,7 +17,7 @@
   [:p notespace-style
    [:small (format "(%s)" text)]])
 
-(defn note->hiccup [{:keys [value metadata kind status]}]
+(defn note->hiccup [{:keys [value metadata kind stage]}]
   (when-let [{:keys [render-src? value->hiccup]}
              (state/sub-get-in
               :kind->behaviour
@@ -49,7 +49,7 @@
              (status-description
               (cond ;;
                 (delay? value)
-                (if (-> status :stage (= :realizing))
+                (if (= stage :realizing)
                   "delay - already running ..."
                   "delay - not running yet ...")
                 ;;
