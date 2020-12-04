@@ -48,6 +48,9 @@
              :else
              (status-description
               (cond ;;
+                (= stage :initial)
+                "not evaluated yet"
+                ;;
                 (delay? value)
                 (if (= stage :realizing)
                   "delay - already running ..."
