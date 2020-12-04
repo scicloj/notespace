@@ -103,7 +103,7 @@
     [:div {:class "ag-theme-balham"
            :style {:height "150px"}}
      (status-description
-      (format "(showing at most %d rows)" max-n-rows))
+      (format "showing at most %d rows" max-n-rows))
      [:p/dataset {:columnDefs column-defs
                   :rowData    row-data}]]))
 
