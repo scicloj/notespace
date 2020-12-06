@@ -1,35 +1,60 @@
 (ns notespace.kinds
   (:require [notespace.view :as view]))
 
-(def kind->behaviour
-  {::naive         {:render-src?   true
-                    :value->hiccup #'view/value->naive-hiccup}
-   ::md-nocode     {:render-src?   false
-                    :value->hiccup #'view/markdowns->hiccup}
-   ::md            {:render-src?   true
-                    :value->hiccup #'view/markdowns->hiccup}
-   ::hiccup-nocode {:render-src?   false
-                    :value->hiccup identity}
-   ::hiccup        {:render-src?   true
-                    :value->hiccup identity}
-   ::vega          {:render-src?   true
-                    :value->hiccup (partial vector :p/vega)}
-   ::void          {:render-src?   true
-                    :value->hiccup (constantly nil)}
-   ::hidden        {:render-src?   false
-                    :value->hiccup (constantly nil)}
-   ::dataset-grid  {:render-src?   true
-                    :value->hiccup #'view/dataset->grid-hiccup}
-   ::dataset       {:render-src?   true
-                    :value->hiccup #'view/dataset->md-hiccup}})
+(defmulti kind->behaviour identity)
 
-(def naive ::naive)
-(def md-nocode ::md-nocode)
-(def md ::md)
-(def hiccup-nocode ::hiccup-nocode)
-(def hiccup ::hiccup)
-(def vega ::vega)
-(def void ::void)
-(def hidden ::hidden)
-(def dataset-grid ::dataset-grid)
-(def dataset ::dataset)
+(defmethod kind->behaviour ::naive
+  [_]
+  {:render-src?   true
+   :value->hiccup #'view/value->naive-hiccup})
+
+(defmethod kind->behaviour ::md-nocode
+  [_]
+  {:render-src?   false
+   :value->hiccup #'view/markdowns->hiccup})
+
+(defmethod kind->behaviour ::md
+  [_]
+  {:render-src?   true
+   :value->hiccup #'view/markdowns->hiccup})
+
+(defmethod kind->behaviour ::hiccup-nocode
+  [_]
+  {:render-src?   false
+   :value->hiccup identity})
+
+(defmethod kind->behaviour ::hiccup
+  [_]
+  {:render-src?   true
+   :value->hiccup identity})
+
+(defmethod kind->behaviour ::vega
+  [_]
+  {:render-src?   true
+   :value->hiccup (partial vector :p/vega)})
+
+(defmethod kind->behaviour ::void
+  [_]
+  {:render-src?   true
+   :value->hiccup (constantly nil)})
+
+(defmethod kind->behaviour ::hidden
+  [_]
+  {:render-src?   false
+   :value->hiccup (constantly nil)})
+
+(defmethod kind->behaviour ::dataset-grid
+  [_]
+  {:render-src?   true
+   :value->hiccup #'view/dataset->grid-hiccup})
+
+(defmethod kind->behaviour ::dataset
+  [_]
+  {:render-src?   true
+   :value->hiccup #'view/dataset->md-hiccup})
+
+(defn intern-kinds! []
+  (doseq [m (map first (seq (methods kind->behaviour)))]
+    (intern *ns* (symbol (name m)) m)))
+
+(intern-kinds!)
