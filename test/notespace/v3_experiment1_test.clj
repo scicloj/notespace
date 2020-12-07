@@ -6,10 +6,26 @@
 
 ^k/hidden
 (comment
+
+  (api/update-config #(assoc % :evaluation-callback-fn
+                             (fn [idx note-count note]
+                               (let [expected-duration (or  (get-in note [:duration]) 0)]
+                                 (println "evaluate note: " idx "/" (dec note-count)
+                                          ", expected duration (s): "
+                                          (if (pos? expected-duration)
+                                            expected-duration
+                                            "???"))))))
+
+  (api/update-config #(assoc % :in-eval-count-down-fn
+                           (fn [seconds]
+                             (println seconds))))
   (reset! state/the-context
           (fx/swap-context @state/the-context
                            #(-> %
-                                (assoc-in [:config :render-src?] false)))))
+                                (assoc-in [:config :render-src?] false))))
+
+
+  )
 
 ^k/hidden
 (comment
