@@ -12,10 +12,16 @@
   (Thread/sleep 1000))
 
 (def sleep-note
-  (sut/->Note kind/naive "" '((sleep-one-sec)) nil nil nil nil))
+  (->
+   (sut/->Note kind/naive "" '((sleep-one-sec)) nil nil nil nil)
+   (assoc :duration 100)
+   ))
 
 (def note-with-duration
-  (sut/->Note kind/naive "" '((+ 1 1)) {:duration 2000} nil nil nil))
+  (->
+   (sut/->Note kind/naive "" '((+ 1 1)) nil nil nil nil)
+   (assoc :duration 2000)
+   ))
 
 
 (def fn-params-evaluation-callback (atom nil))
@@ -37,7 +43,7 @@
   (fact "evaluating note sets duration"
         (get-in
          (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note)
-         [:metadata :duration]
+         [:duration]
          )
         => (roughly 1000 100))
 
@@ -46,7 +52,7 @@
         (sut/evaluated-note "notespace.empty-notespace-test" 0 sleep-note)
         (Thread/sleep 500)
         (:idx @fn-params-evaluation-callback) => 0
-        (get-in @fn-params-evaluation-callback [:note :metadata :duration]) => 0.0)
+        (get-in @fn-params-evaluation-callback [:note :duration]) => 100)
 
   (fact "evaluating note call in-eval-fn"
         (sut/evaluated-note "notespace.empty-notespace-test" 0 note-with-duration)
@@ -66,7 +72,7 @@
              (sut/ns-notes "notespace.all-kinds-notespace-test")
              a-naive-node (first note-list)]
          (fact "all are converted and in initial state"
-               (first (distinct (map :status note-list))) => {:stage :initial}
+               (first (distinct (map :stage note-list))) => :initial
                (first (distinct (map :realized-value note-list))) => nil
                (first (distinct (map :value note-list))) => :value/not-ready
                (first (distinct (map :label note-list))) => nil
