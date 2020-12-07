@@ -1,6 +1,6 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as api]
-            [notespace.kinds :as k]
+            [notespace.kinds :as k :reload true]
             [notespace.state :as state]
             [cljfx.api :as fx]))
 
@@ -26,6 +26,28 @@
 
 
   )
+
+^k/hidden
+(defmethod
+  ^{:doc
+    "Example of user extensible kind.
+Note the ':reload true' in the :require vector:
+[notespace.kinds :as k :reload true].
+This will make REPL testing your extensible kind easier!"}
+  k/kind->behaviour ::just-code
+  [_]
+  {:render-src?   true
+   :value->hiccup (constantly nil)})
+
+^k/hidden
+(def ^{:doc "When making a user extensible kind, you MUST assign the keyword
+to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
+
+;; example of properly annotated form with a variable that resolves to a keyword
+;; which is attached to a kind->behavior method
+^just-code
+[:div "just some code"]
+
 
 ^k/hidden
 (comment

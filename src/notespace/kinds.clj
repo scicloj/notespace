@@ -1,6 +1,8 @@
 (ns notespace.kinds
   (:require [notespace.view :as view]))
 
+(declare kind->behaviour)
+(ns-unmap *ns* 'kind->behavior)
 (defmulti kind->behaviour identity)
 
 (defmethod kind->behaviour ::naive
