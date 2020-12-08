@@ -447,6 +447,24 @@ A note's kinds can also be specified by including it in a vector beginning with 
 
 (+ 1 2)
 
+
+["## Mathematic formula"]
+
+[ "One way to generate mathematical form is to use the codegocs.com service."]
+[" It's supports arbitrary Latex formula."]
+[" Please check its usage condition before using it."]
+
+(defn ->codecogs [formula]
+  [:img {:src
+         (str "http://latex.codecogs.com/svg.latex?"
+              formula)}])
+
+^k/hiccup
+(->codecogs  "\\tfrac{2}{\\alpha + \\beta}") ;; duplicate "\" due to Java String literal use
+
+
+
+
 ["## Interactive input and reactive notes
 
 Coming soon."]
