@@ -121,7 +121,7 @@ Hearing your comments, opinions and wishes will help!
 
 ## Relation to other projects
 
-There are several magnificent existing options for literate programming in Clojure: Marginalia, Org-Babel, Gorilla REPL, Pink Gorilla, Clojuopyter, Nextjournal, Saite, Oz. Most of them are actively developed.
+There are several magnificent existing options for literate programming in Clojure: Marginalia, Org-Babel, Gorilla REPL, Pink Gorilla, Clojupyter, Nextjournal, Saite, Oz. Most of them are actively developed.
 
 Creating a separate alternative would be the least desired outcome of the current project. Rather, the hope is to compose and integrate well with some of the other projects. There has been some thoughts and experiments in that direction, and it seems promising.
 
