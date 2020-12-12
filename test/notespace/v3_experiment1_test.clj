@@ -425,12 +425,15 @@ Here are some examples."]
   }
 }
 
-
-
 ["Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
 
 ^k/hiccup
-[:p/code {:code "(defn abcd [x] (+ x 9))"}]
+[:p/code "(defn abcd [x] (+ x 9))"]
+
+^k/hiccup
+[:p/code "def abcd(x):
+  return x+9"
+ {:language :python}]
 
 ["### dataset
 
