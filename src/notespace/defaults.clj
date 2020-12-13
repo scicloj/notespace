@@ -3,7 +3,7 @@
 
 (def initial-state
   {;; global configuration:
-   :config                {:target-base-path "doc"
+   :config                {:target-base-path "docs"
                            :single-note-mode? false
                            :render-src? true
                            :evaluation-callback-fn (fn [cur-node-idx node-count note])
