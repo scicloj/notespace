@@ -4,50 +4,6 @@
             [notespace.state :as state]
             [cljfx.api :as fx]))
 
-^k/hidden
-(comment
-
-  (api/update-config #(assoc % :evaluation-callback-fn
-                             (fn [idx note-count note]
-                               (let [expected-duration (or  (get-in note [:duration]) 0)]
-                                 (println "evaluate note: " idx "/" (dec note-count)
-                                          ", expected duration (s): "
-                                          (if (pos? expected-duration)
-                                            expected-duration
-                                            "???"))))))
-
-  (api/update-config #(assoc % :in-eval-count-down-fn
-                           (fn [seconds]
-                             (println seconds))))
-  (reset! state/the-context
-          (fx/swap-context @state/the-context
-                           #(-> %
-                                (assoc-in [:config :render-src?] false))))
-
-
-  )
-
-^k/hidden
-(defmethod
-  ^{:doc
-    "Example of user extensible kind.
-Note the ':reload true' in the :require vector:
-[notespace.kinds :as k :reload true].
-This will make REPL testing your extensible kind easier!"}
-  k/kind->behaviour ::just-code
-  [_]
-  {:render-src?   true
-   :value->hiccup (constantly nil)})
-
-^k/hidden
-(def ^{:doc "When making a user extensible kind, you MUST assign the keyword
-to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
-
-;; example of properly annotated form with a variable that resolves to a keyword
-;; which is attached to a kind->behavior method
-^just-code
-[:div "just some code"]
-
 
 ^k/hidden
 (comment
@@ -524,5 +480,49 @@ Coming soon."]
 Coming soon."]
 
 
+["## Interactive input and reactive notes
 
+Coming soon."]
 
+["## Progress logging
+
+This should be documented better soon."]
+
+(comment
+  (api/update-config #(assoc % :evaluation-callback-fn
+                             (fn [idx note-count note]
+                               (let [expected-duration (or  (get-in note [:duration]) 0)]
+                                 (println "evaluate note: " idx "/" (dec note-count)
+                                          ", expected duration (s): "
+                                          (if (pos? expected-duration)
+                                            expected-duration
+                                            "???"))))))
+
+  (api/update-config #(assoc % :in-eval-count-down-fn
+                           (fn [seconds]
+                             (println seconds))))
+  (reset! state/the-context
+          (fx/swap-context @state/the-context
+                           #(-> % (assoc-in [:config :render-src?] false)))))
+
+["## Extending Notespace with new note kinds."]
+
+(defmethod
+  ^{:doc
+    "Example of user extensible kind.
+Note the ':reload true' in the :require vector:
+[notespace.kinds :as k :reload true].
+This will make REPL testing your extensible kind easier!"}
+  k/kind->behaviour ::just-code
+  [_]
+  {:render-src?   true
+   :value->hiccup (constantly nil)})
+
+(def ^{:doc "When making a user extensible kind, you MUST assign the keyword
+to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
+
+["example of properly annotated form with a variable that resolves to a keyword
+which is attached to a kind->behavior method"]
+
+^just-code
+[:div "just some code"]
