@@ -22,6 +22,8 @@ All notable changes to this project will be documented in this file. This change
 - handling config changes in the event flow, preserving config on reset
 - support for single-note-mode
 - communicating note state more carefully
+- changed default target base path from "doc" to "docs"
+- made the source base path globally configurable
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds

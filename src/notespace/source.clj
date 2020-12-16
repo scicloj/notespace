@@ -16,9 +16,11 @@
     "src"))
 
 (defn ns->source-filename [anamespace]
-  (let [base-path (or (state/sub-get-in :config :by-ns anamespace :base-path)
-                      (str (src-or-test anamespace)
-                           "/"))]
+  (let [base-path (str
+                   (or (state/sub-get-in :config :by-ns anamespace :source-base-path)
+                       (state/sub-get-in :config :source-base-path)
+                       (src-or-test anamespace))
+                   "/")]
     (str base-path
          (-> anamespace
              str
