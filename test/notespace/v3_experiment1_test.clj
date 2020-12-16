@@ -15,6 +15,7 @@
 
   (api/eval-and-realize-this-notespace)
 
+  (api/update-config #(assoc % :target-base-path "doc"))
   (api/render-static-html)
 
   (future
