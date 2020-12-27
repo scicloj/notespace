@@ -364,7 +364,7 @@ Here are some examples."]
   :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
 
-["### Vega-lite is suuported"]
+["### Vega-lite is supported"]
 ^k/vega
 {
   :description "A simple bar chart with embedded data."
@@ -522,8 +522,7 @@ This will make REPL testing your extensible kind easier!"}
 (def ^{:doc "When making a user extensible kind, you MUST assign the keyword
 to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
 
-["example of properly annotated form with a variable that resolves to a keyword
-which is attached to a kind->behavior method"]
+["An example of properly annotated form with a variable that resolves to a keyword which is attached to a kind->behavior method:"]
 
 ^just-code
 [:div "just some code"]
