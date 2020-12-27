@@ -109,10 +109,11 @@
                   :rowData    row-data}]]))
 
 (defn dataset->md-hiccup [mds]
-  [:div {:class "table table-striped table-hover table-condensed table-responsive"
-         :style {:height "400px"}}
-   (markdowns->hiccup mds)])
-
+  (let [height (* 46 (- (count (string/split-lines (str mds))) 2))
+        height-limit (min height 400)]
+    [:div {:class "table table-striped table-hover table-condensed table-responsive"
+           :style {:height (str height-limit "px")}}
+     (markdowns->hiccup mds)]))
 
 (defn ->reference [namespace]
   [:div
@@ -178,4 +179,3 @@
   (->> namespace
        (state/sub-get-in :ns->note)
        (notes->header-and-footer namespace)))
-
