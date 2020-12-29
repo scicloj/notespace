@@ -48,7 +48,7 @@
     (async/<! (async/timeout 200))
     (when @change?
       (refresh-view)
-      (async/timeout 1000)
+      (async/<! (async/timeout 1000))
       (refresh-view))
     (recur)))
 
