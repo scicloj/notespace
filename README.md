@@ -32,7 +32,7 @@ You can use Notespace alongside with any editor or IDE.
 #### Editor integration
 You can have tighter integration with your editor, using the main API functions.
 
-See [emacs-config.el](https://github.com/scicloj/notespace/blob/v3/emacs-config.el) as a recommended way to do it. We wish to offer similar solutions in other editors and IDEs.
+See [emacs-config.el](./emacs-config.el) as a recommended way to do it. We wish to offer similar solutions in other editors and IDEs.
 
 ### Background
 
