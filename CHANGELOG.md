@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file. This change
 - changed default target base path from "doc" to "docs"
 - made the source base path globally configurable
 - cleanup of old dependencies and obsolete code
+- (require ...) forms get the void kind by default
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds

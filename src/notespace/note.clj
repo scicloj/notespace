@@ -57,6 +57,12 @@
            first
            (= 'defmacro))))
 
+(defn require-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           (= 'require))))
+
 (defn vector-beginning-with-keyword-topform? [topform]
   (and (vector? topform)
        (-> topform
@@ -83,7 +89,8 @@
      ;;
      (or (def-topform? tfwm)
          (defn-topform? tfwm)
-         (defmacro-topform? tfwm))
+         (defmacro-topform? tfwm)
+         (require-topform? tfwm))
      :notespace.kinds/void
      ;;
      (vector-beginning-with-keyword-topform? tfwm)
