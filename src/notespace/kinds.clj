@@ -55,6 +55,11 @@
   {:render-src?   true
    :value->hiccup #'view/dataset->md-hiccup})
 
+(defmethod kind->behaviour ::midje
+  [_]
+  {:render-src?   true
+   :value->hiccup #'view/test-boolean->hiccup})
+
 (defn intern-kinds! []
   (doseq [m (map first (seq (methods kind->behaviour)))]
     (intern *ns* (symbol (name m)) m)))

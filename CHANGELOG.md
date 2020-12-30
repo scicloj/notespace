@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file. This change
 - made the source base path globally configurable
 - cleanup of old dependencies and obsolete code
 - (require ...) forms get the void kind by default
+- recognizing midje facts as a special kind of note, with a dedicated rendering function
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds

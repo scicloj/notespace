@@ -63,6 +63,12 @@
            first
            (= 'require))))
 
+(defn midje-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           (#{'fact 'facts}))))
+
 (defn vector-beginning-with-keyword-topform? [topform]
   (and (vector? topform)
        (-> topform
@@ -92,6 +98,9 @@
          (defmacro-topform? tfwm)
          (require-topform? tfwm))
      :notespace.kinds/void
+     ;;
+     (midje-topform? tfwm)
+     :notespace.kinds/midje
      ;;
      (vector-beginning-with-keyword-topform? tfwm)
      (->> tfwm first name (keyword "notespace.kinds"))

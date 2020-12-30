@@ -526,3 +526,15 @@ to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
 
 ^just-code
 [:div "just some code"]
+
+["## Midje facts"]
+
+(require '[midje.sweet :refer [fact]])
+
+(fact
+ (+ 1 2) => 3)
+
+(fact
+ (+ 1 2) => 4)
+
+

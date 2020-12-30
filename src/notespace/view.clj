@@ -115,6 +115,15 @@
            :style {:height (str height-limit "px")}}
      (markdowns->hiccup mds)]))
 
+(defn test-boolean->hiccup [bool]
+  [:p
+   (if bool
+     [:big {:style {:color "red"}}
+       "❌"]
+     [:big {:style {:color "green"}}
+      "✓"])
+   (str "   " bool)])
+
 (defn ->reference [namespace]
   [:div
    [:i
