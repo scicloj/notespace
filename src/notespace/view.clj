@@ -118,10 +118,10 @@
 (defn test-boolean->hiccup [bool]
   [:p
    (if bool
-     [:big {:style {:color "red"}}
-       "❌"]
-     [:big {:style {:color "green"}}
-      "✓"])
+     [:big [:big {:style {:color "darkred"}}
+       "❌"]]
+     [:big [:big {:style {:color "darkgreen"}}
+      "✓"]])
    (str "   " bool)])
 
 (defn ->reference [namespace]
