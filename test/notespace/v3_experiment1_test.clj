@@ -1,34 +1,36 @@
 (ns notespace.v3-experiment1-test
-  (:require [notespace.api :as api]
-            [notespace.kinds :as k :reload true]
+  (:require [notespace.api :as notespace]
+            [notespace.kinds :as kind :reload true]
             [notespace.state :as state]
             [cljfx.api :as fx]))
 
+^kind/hiccup
+(notespace/midje-summary)
 
-^k/hidden
+^kind/hidden
 (comment
-  (api/init-with-browser)
+  (notespace/init-with-browser)
 
-  (api/init)
+  (notespace/init)
 
-  (api/eval-this-notespace)
+  (notespace/eval-this-notespace)
 
-  (api/eval-and-realize-this-notespace)
+  (notespace/eval-and-realize-this-notespace)
 
-  (api/update-config #(assoc % :target-base-path "doc"))
-  (api/render-static-html)
+  (notespace/update-config #(assoc % :target-base-path "doc"))
+  (notespace/render-static-html)
 
   (future
     (clojure.java.shell/sh
      "firefox"
      "doc/notespace/v3-experiment1-test/index.html"))
 
-  (api/listen)
+  (notespace/listen)
 
-  (api/unlisten)
+  (notespace/unlisten)
   
-  (api/toggle-single-note-mode true)
-  (api/toggle-single-note-mode false))
+  (notespace/toggle-single-note-mode true)
+  (notespace/toggle-single-note-mode false))
 
 ["# Notespace v3 intro
 
@@ -189,7 +191,7 @@ a
 
 ["If you evaluated the code in the comment below once, then you should see `{:x 4}`. Otherwise, you should still see `{:x 3}`."]
 
-^k/void
+^kind/void
 (comment
   (swap! a update :x inc))
 
@@ -204,7 +206,7 @@ One way to specify a note's kind is by metadata. For example, here is a note of 
 
 (require '[notespace.kinds :as k])
 
-^k/hiccup
+^kind/hiccup
 [:big [:big 3]]
 
 ["Let us see what kinds of notes we have.
@@ -213,7 +215,7 @@ One way to specify a note's kind is by metadata. For example, here is a note of 
 
 A `:naive` note renders its value by pretty-printing it."]
 
-^k/naive
+^kind/naive
 (->> (partial rand-int 6)
      (partial repeatedly 6)
      (repeatedly 6))
@@ -224,7 +226,7 @@ A `:naive` note renders its value by pretty-printing it."]
 
 A `:void` note does not render its value."]
 
-^k/void
+^kind/void
 (+ 1 2)
 
 ["### hidden
@@ -233,20 +235,20 @@ A `:hidden` note does not render its value, and also does not show its code.
 
 Here is a note that you cannot see:"]
 
-^k/hidden
+^kind/hidden
 (+ 1 2)
 
 ["### md
 
 Notes of kind `:md` are rendering their values as markdown. More precisely, the value is printed, and the captured printed string is expected to be of Markdown format. If the value is sequential, then its elements are printed and concantenated as lines of one multi-line string, that is then treated as Markdown."]
 
-^k/md
+^kind/md
 ["##### text:"
  "* **bold**
 * *italic*
 * [link](https://www.youtube.com/watch?v=oIw7E-q-flc)"]
 
-^k/md
+^kind/md
 (cons
  "##### numbers:"
  (for [i (range 1 4)]
@@ -256,7 +258,7 @@ Notes of kind `:md` are rendering their values as markdown. More precisely, the 
 
 Notes of kind `:md-nocode` are rendered as Markdown too, but without showing the code. Here is an example:"]
 
-^k/md-nocode
+^kind/md-nocode
 (->> "abcd"
      (map (fn [ch]
             (str "* " ch))))
@@ -265,14 +267,14 @@ Notes of kind `:md-nocode` are rendered as Markdown too, but without showing the
 
 A `:hiccup` note renders its value as Hiccup."]
 
-^k/hiccup
+^kind/hiccup
 [:big [:big 3]]
 
 ["### hiccup-nocode
 
 Notes of kind `:hiccup-nocode` are rendered as Hiccup too, but without showing the code. Here is an example:"]
 
-^k/hiccup-nocode
+^kind/hiccup-nocode
 [:big [:big 3]]
 
 ["### extended hiccup
@@ -281,7 +283,7 @@ In fact, `:hiccup` and `:hiccup-nocode` render by an extended version of Hiccup,
 
 Here are some examples."]
 
-^k/hiccup
+^kind/hiccup
 [:div
  [:h5 "Plot:"]
  [:p/sparklinespot
@@ -290,7 +292,7 @@ Here are some examples."]
                    (reductions +))
    :svgHeight 20}]]
 
-^k/hiccup
+^kind/hiccup
 (into [:ul]
       (for [i (range 9)]
         [:li
@@ -305,7 +307,7 @@ Here are some examples."]
 
 (require '[gorilla-notes.components.leaflet.providers :as leaflet-providers])
 
-^k/hiccup
+^kind/hiccup
 [:p/leafletmap
     {:tile-layer leaflet-providers/Stamen-TonerLite}
     [{:type   :view
@@ -357,7 +359,7 @@ Here are some examples."]
       :radius    200
       :popup     "square the circle"}]]
 
-^k/hiccup
+^kind/hiccup
 [:p/player
  {:width  "100%"
   :height "100%"
@@ -365,7 +367,7 @@ Here are some examples."]
 
 
 ["### Vega-lite is supported"]
-^k/vega
+^kind/vega
 {
   :description "A simple bar chart with embedded data."
   :data {
@@ -384,10 +386,10 @@ Here are some examples."]
 
 ["Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
 
-^k/hiccup
+^kind/hiccup
 [:p/code "(defn abcd [x] (+ x 9))"]
 
-^k/hiccup
+^kind/hiccup
 [:p/code "def abcd(x):
   return x+9"
  {:language :python}]
@@ -410,20 +412,20 @@ They render that values as an [ag-Grid](https://www.ag-grid.com/) table view.
 
 For example:"]
 
-^k/dataset-grid
+^kind/dataset-grid
 {:x (range 9)
  :y (repeatedly 9 rand)
  :z (take 9 (cycle "abc"))}
 
 ["--------------------"]
 
-^k/dataset-grid
+^kind/dataset-grid
 {:a [1 2 3]
  :b [4 5 6]}
 
 ["--------------------"]
 
-^k/dataset-grid
+^kind/dataset-grid
 [{:a 1 :b 4}
  {:a 2 :b 5}
  {:a 3 :b 6}]
@@ -457,7 +459,7 @@ A note's kinds can also be specified by including it in a vector beginning with 
          (str "http://latex.codecogs.com/svg.latex?"
               formula)}])
 
-^k/hiccup
+^kind/hiccup
 (->codecogs  "\\tfrac{2}{\\alpha + \\beta}") ;; duplicate "\" due to Java String literal use
 
 
@@ -467,10 +469,10 @@ A note's kinds can also be specified by including it in a vector beginning with 
 
 Coming soon."]
 
-;; ^k/hiccup
+;; ^kind/hiccup
 ;; [:p/slider :x {:min 0 :max 100 :initial-value 0}]
 
-;; ^k/void
+;; ^kind/void
 ;; (require '[notespace.api :refer [R]])
 
 ;; (R [x]
@@ -490,7 +492,7 @@ Coming soon."]
 This should be documented better soon."]
 
 (comment
-  (api/update-config #(assoc % :evaluation-callback-fn
+  (notespace/update-config #(assoc % :evaluation-callback-fn
                              (fn [idx note-count note]
                                (let [expected-duration (or  (get-in note [:duration]) 0)]
                                  (println "evaluate note: " idx "/" (dec note-count)
@@ -499,7 +501,7 @@ This should be documented better soon."]
                                             expected-duration
                                             "???"))))))
 
-  (api/update-config #(assoc % :in-eval-count-down-fn
+  (notespace/update-config #(assoc % :in-eval-count-down-fn
                            (fn [seconds]
                              (println seconds))))
   (reset! state/the-context
@@ -514,7 +516,7 @@ This should be documented better soon."]
 Note the ':reload true' in the :require vector:
 [notespace.kinds :as k :reload true].
 This will make REPL testing your extensible kind easier!"}
-  k/kind->behaviour ::just-code
+  kind/kind->behaviour ::just-code
   [_]
   {:render-src?   true
    :value->hiccup (constantly nil)})
@@ -527,7 +529,9 @@ to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
 ^just-code
 [:div "just some code"]
 
-["## Midje facts"]
+["## Midje tests
+
+Tests of the Midje test framework are rendered as follows:"]
 
 (require '[midje.sweet :refer [fact]])
 
@@ -536,5 +540,10 @@ to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
 
 (fact
  (+ 1 2) => 4)
+
+["We can ask for a tests summary:"]
+
+^kind/hiccup
+(notespace/midje-summary)
 
 
