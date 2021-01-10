@@ -30,26 +30,24 @@
   (gn/watch-inputs! actions/assoc-input!))
 
 (def change?
-  (atom false))
+  (atom true))
 
 (defonce last-ns-rendered
   (atom nil))
 
 (defn refresh-view []
+  ;;when @change?
   (reset! change? false)
   (gn/broadcast-content-ids!)
   (future
-    (Thread/sleep 100) ; avoiding gorilla-notes sync race conditions
+    (Thread/sleep 500)          ; avoiding gorilla-notes sync race conditions
     (gn/merge-new-options! (header-and-footer-config
                             @last-ns-rendered))))
 
 (defonce periodically-refresh-view
   (async/go-loop []
-    (async/<! (async/timeout 200))
-    (when @change?
-      (refresh-view)
-      (async/<! (async/timeout 1000))
-      (refresh-view))
+    (async/<! (async/timeout 1000))
+    (refresh-view)
     (recur)))
 
 (defn browse []
