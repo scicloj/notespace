@@ -36,13 +36,13 @@
   (atom nil))
 
 (defn refresh-view []
-  ;;when @change?
-  (reset! change? false)
-  (gn/broadcast-content-ids!)
-  (future
-    (Thread/sleep 500)          ; avoiding gorilla-notes sync race conditions
-    (gn/merge-new-options! (header-and-footer-config
-                            @last-ns-rendered))))
+  (when @change?
+    (reset! change? false)
+    (gn/broadcast-content-ids!)
+    (future
+      (Thread/sleep 500)          ; avoiding gorilla-notes sync race conditions
+      (gn/merge-new-options! (header-and-footer-config
+                              @last-ns-rendered)))))
 
 (defonce periodically-refresh-view
   (async/go-loop []
