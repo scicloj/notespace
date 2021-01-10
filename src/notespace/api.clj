@@ -116,9 +116,10 @@
          (let [{:keys [~@symbols]} inputs#]
            ~@forms)))))
 
-(defn check [pred & args]
-  [(if (apply pred args)
-     :PASSED
-     :FAILED)
-   (last args)])
-
+(defn midje-summary
+  ([]
+   (midje-summary *ns*))
+  ([anamespace]
+   (->> anamespace
+        (state/sub-get-in :ns->notes)
+        view/notes->midje-summary)))
