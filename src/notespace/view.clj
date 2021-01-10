@@ -4,7 +4,6 @@
             [notespace.util :as u]
             [notespace.state :as state]
             [notespace.repo :as repo]
-            [notespace.check :as check]
             [notespace.util :as util]
             [cljfx.api :as fx]
             [notespace.context :as ctx]))
@@ -115,13 +114,16 @@
            :style {:height (str height-limit "px")}}
      (markdowns->hiccup mds)]))
 
+(defn bool->symbol [bool]
+  (if bool
+    [:big [:big {:style {:color "darkgreen"}}
+           "✓"]]
+    [:big [:big {:style {:color "darkred"}}
+           "❌"]]))
+
 (defn test-boolean->hiccup [bool]
-  [:p
-   (if bool
-     [:big [:big {:style {:color "darkred"}}
-       "❌"]]
-     [:big [:big {:style {:color "darkgreen"}}
-      "✓"]])
+  [:div
+   (bool->symbol bool)
    (str "   " bool)])
 
 (defn ->reference [namespace]
@@ -164,27 +166,37 @@
 (defn notes-count [notes]
   [:p (count notes) " notes"])
 
+(defn notes->midje-summary [notes]
+  [:div
+   (some->> notes
+           (filter #(= (:kind %) :notespace.kinds/midje))
+           (map :value)
+           frequencies
+           seq
+           (sort-by key)
+           (map (fn [[bool freq]]
+                  [:div
+                   (bool->symbol bool)
+                   ": "
+                   freq]))
+           (into [:div
+                  "Tests summary:"]))])
+
 (defn notes->header-and-footer [namespace notes]
-  (let [;; checks-summary (-> notes
-        ;;                    check/->checks-freqs
-        ;;                    check/->checks-summary)
-        reference      (->reference namespace)]
+  (let [reference     (->reference namespace)
+        midje-summary (notes->midje-summary notes)]
     {:header [:div notespace-style
               "(notespace)"
               [:p (str (java.util.Date.))]
-              (some-> notes notes-count)
-              ; reference
-              ;; checks-summary
+              ;; (some-> notes notes-count)
+              ;; reference
               (some-> notes toc)
-              [:hr]
-              ]
+              [:hr]]
      :footer [:div
               [:hr]
-              ;; checks-summary
-              ;; reference
-              ]}))
+              [:hr]]}))
 
 (defn header-and-footer [namespace]
   (->> namespace
-       (state/sub-get-in :ns->note)
+       (state/sub-get-in :ns->notes)
        (notes->header-and-footer namespace)))
