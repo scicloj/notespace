@@ -4,9 +4,6 @@
             [notespace.state :as state]
             [cljfx.api :as fx]))
 
-^kind/hiccup
-(notespace/midje-summary)
-
 ^kind/hidden
 (comment
   (notespace/init-with-browser)
