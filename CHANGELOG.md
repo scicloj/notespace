@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [3.0.0-alpha3-SNAPSHOT] - 2020-11-12
+## [3.0.0-alpha3-SNAPSHOT] - 2021-01-10
 - added support for visualizing datasets as tables
 - extending markdown rendering to more types
 - bugfix in reporting the static rendering path
@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file. This change
 - cleanup of old dependencies and obsolete code
 - (require ...) forms get the void kind by default
 - recognizing midje facts as a special kind of note, with a dedicated rendering function
+- gorilla-notes update (0.5.0): state cleanup on server and client
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
