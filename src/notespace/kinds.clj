@@ -60,6 +60,11 @@
   {:render-src?   true
    :value->hiccup #'view/test-boolean->hiccup})
 
+(defmethod kind->behaviour ::html
+  [_]
+  {:render-src?   true
+   :value->hiccup (partial vector :p/html)})
+
 (defn intern-kinds! []
   (doseq [m (map first (seq (methods kind->behaviour)))]
     (intern *ns* (symbol (name m)) m)))

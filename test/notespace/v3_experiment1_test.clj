@@ -9,6 +9,7 @@
   (notespace/init-with-browser)
 
   (notespace/init)
+  (notespace/init :port 1904)
 
   (notespace/eval-this-notespace)
 
@@ -429,6 +430,12 @@ For example:"]
 
 ["--------------------"]
 
+["### Plain html"]
+
+^kind/html
+(str "<h4>h4</h4>"
+     "<h5>h5</h5>")
+
 ["## Other ways to specify note kinds
 
 A note's kinds can also be specified by including it in a vector beginning with a keyword. This is inspired by the approach of [Oz](https://github.com/metasoarous/oz), and should allow some partial compatibility with Oz notebooks."]
@@ -474,11 +481,6 @@ Coming soon."]
 
 ;; (R [x]
 ;;    (* x 100))
-
-["## Unit tests
-
-Coming soon."]
-
 
 ["## Interactive input and reactive notes
 
