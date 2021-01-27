@@ -16,10 +16,9 @@
     {:custom-header header
      :custom-footer footer}))
 
-(defn init []
+(defn init [& server-options]
   (when-not @server
-    (reset! server true)
-    (gn/start-server!))
+    (reset! server (apply gn/start-server! server-options)))
   (gn/reset-notes!)
   (gn/merge-new-options! (merge
                           {:notes-in-cards? false
@@ -51,7 +50,7 @@
     (recur)))
 
 (defn browse []
-  (gn/browse-default-url))
+  (gn/browse-http-url))
 
 (defn rendering [ctx anamespace idx]
   (view/note->hiccup
