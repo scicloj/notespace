@@ -1,9 +1,9 @@
 (ns notespace.actions-test
   (:require [notespace.actions :as sut]
             [notespace.state :as state]
-            [notespace.lifecycle :as lifecycle]
             [notespace.kinds :as k]
             [notespace.view :as view]
+            [notespace.api :as api]
             [midje.sweet :refer :all]))
 
 
@@ -13,10 +13,9 @@
    :value->hiccup #'view/value->naive-hiccup})
 
 
-
 (with-state-changes
   [(before :facts (do
-                    (lifecycle/init)))]
+                    (api/init)))]
 
 
   (facts "can evaluate all nodes in test-ns"

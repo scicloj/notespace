@@ -1,12 +1,10 @@
 (ns notespace.note-test
   (:require [notespace.note :as sut]
             [notespace.kinds :as kind]
-            [notespace.lifecycle :as lifecycle]
             [notespace.api :as api]
             [notespace.renderers.gorilla-notes :as gn]
             [midje.sweet :refer [with-state-changes => fact facts before truthy]]
-            [midje.checkers :refer [roughly]]
-            ))
+            [midje.checkers :refer [roughly]]))
 
 (defn  sleep-one-sec []
   (Thread/sleep 1000))
@@ -30,7 +28,7 @@
 (with-state-changes
   [(before :facts (do
                     (reset! fn-params-evaluation-callback nil)
-                    (lifecycle/init)
+                    (api/init)
                     (api/update-config
                      #(assoc % :evaluation-callback-fn
                              (fn [idx count note]
@@ -82,13 +80,13 @@
                     ) => 77
                (count note-list) => 77
                (frequencies (map :kind note-list) ) =>
-               {:notespace.kinds/naive 22
+               {:notespace.kinds/naive 20
                 :notespace.kinds/big 3
                 :notespace.kinds/md-nocode 44
                 :notespace.kinds/hiccup 1
                 :notespace.kinds/div 1
                 :notespace.kinds/leafletmap 1
-                :notespace.kinds/void 3
+                :notespace.kinds/void 5
                 :notespace.kinds/code 1
                 :notespace.kinds/player 1 })
          (fact "a naive node has a form and metadata"
@@ -103,3 +101,4 @@
                                                 :end-line  12
                                                 :end-column  76
                                                 :tag 'k/hidden}))))
+
