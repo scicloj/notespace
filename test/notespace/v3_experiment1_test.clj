@@ -7,9 +7,12 @@
 ^kind/hidden
 (comment
   (notespace/init-with-browser)
+  (notespace/init-with-browser :port 1904)
 
   (notespace/init)
   (notespace/init :port 1904)
+
+  (notespace/stop-server)
 
   (notespace/eval-this-notespace)
 

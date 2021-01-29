@@ -28,6 +28,11 @@
                            nil)))
   (gn/watch-inputs! actions/assoc-input!))
 
+(defn stop-server! []
+  (when @server
+    (@server))
+  (reset! server nil))
+
 (def change?
   (atom true))
 

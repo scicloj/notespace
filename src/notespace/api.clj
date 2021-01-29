@@ -1,6 +1,5 @@
 (ns notespace.api
   (:require [notespace.actions :as actions]
-            [notespace.lifecycle :as lifecycle]
             [notespace.note :as note]
             [notespace.state :as state]
             [notespace.util :as u]
@@ -8,7 +7,11 @@
             [notespace.watch :as watch]
             [gorilla-notes.core :as gn]
             [notespace.source :as source]
-            [notespace.view :as view]))
+            [notespace.view :as view]
+            [notespace.events :as events]
+            [notespace.context :as ctx]
+            [notespace.defaults :as defaults]
+            [notespace.renderers.gorilla-notes :as renderers-gn]))
 
 (defn update-config [f]
   (actions/update-config! f))
@@ -20,10 +23,27 @@
   (toggle-single-note-mode true))
 
 
-(def init lifecycle/init)
+(defn init [& {:keys [open-browser? port]
+               :or   {open-browser? false}}]
+  (ctx/handle
+   {:event/type    ::events/reset-but-keep-config
+    :fx/sync       true
+    :initial-state defaults/initial-state})
+  (println [:port port])
+  (if port
+    (renderers-gn/init {:port port})
+    (renderers-gn/init))
+  (when open-browser?
+    (renderers-gn/browse))
+  (ctx/unmount-renderer #'renderers-gn/renderer)
+  (ctx/mount-renderer #'renderers-gn/renderer)
+  :ok)
 
-(defn init-with-browser []
-  (init :open-browser? true))
+(defn init-with-browser [& options]
+  (apply init :open-browser? true options))
+
+(defn stop-server []
+  (renderers-gn/stop-server!))
 
 (defmacro view [form]
   `(do
