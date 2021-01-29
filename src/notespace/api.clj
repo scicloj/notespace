@@ -29,7 +29,6 @@
    {:event/type    ::events/reset-but-keep-config
     :fx/sync       true
     :initial-state defaults/initial-state})
-  (println [:port port])
   (if port
     (renderers-gn/init {:port port})
     (renderers-gn/init))
