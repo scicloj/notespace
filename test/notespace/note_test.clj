@@ -3,6 +3,7 @@
             [notespace.kinds :as kind]
             [notespace.api :as api]
             [notespace.renderers.gorilla-notes :as gn]
+            [notespace.setup-test]
             [midje.sweet :refer [with-state-changes => fact facts before truthy]]
             [midje.checkers :refer [roughly]]))
 
@@ -12,14 +13,12 @@
 (def sleep-note
   (->
    (sut/->Note kind/naive "" '((sleep-one-sec)) nil nil nil nil)
-   (assoc :duration 100)
-   ))
+   (assoc :duration 100)))
 
 (def note-with-duration
   (->
    (sut/->Note kind/naive "" '((+ 1 1)) nil nil nil nil)
-   (assoc :duration 2000)
-   ))
+   (assoc :duration 2000)))
 
 
 (def fn-params-evaluation-callback (atom nil))
@@ -28,7 +27,7 @@
 (with-state-changes
   [(before :facts (do
                     (reset! fn-params-evaluation-callback nil)
-                    (api/init)
+                    (api/init :port notespace.setup-test/testing-port)
                     (api/update-config
                      #(assoc % :evaluation-callback-fn
                              (fn [idx count note]
