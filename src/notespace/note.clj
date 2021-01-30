@@ -39,29 +39,11 @@
            first
            string?)))
 
-(defn def-topform? [topform]
+(defn void-by-default-topform? [topform]
   (and (sequential? topform)
        (-> topform
            first
-           (= 'def))))
-
-(defn defn-topform? [topform]
-  (and (sequential? topform)
-       (-> topform
-           first
-           (= 'defn))))
-
-(defn defmacro-topform? [topform]
-  (and (sequential? topform)
-       (-> topform
-           first
-           (= 'defmacro))))
-
-(defn require-topform? [topform]
-  (and (sequential? topform)
-       (-> topform
-           first
-           (= 'require))))
+           ('#{def defonce defn defmacro require import}))))
 
 (defn midje-topform? [topform]
   (and (sequential? topform)
@@ -93,10 +75,7 @@
      (strings-topform? tfwm)
      :notespace.kinds/md-nocode
      ;;
-     (or (def-topform? tfwm)
-         (defn-topform? tfwm)
-         (defmacro-topform? tfwm)
-         (require-topform? tfwm))
+     (void-by-default-topform? tfwm)
      :notespace.kinds/void
      ;;
      (midje-topform? tfwm)

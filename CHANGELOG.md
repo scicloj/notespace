@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [3.0.0-alpha3-SNAPSHOT] - 2021-01-29
+## [3.0.0-alpha3-SNAPSHOT] - 2021-01-30
 - added support for visualizing datasets as tables
 - extending markdown rendering to more types
 - bugfix in reporting the static rendering path
@@ -11,7 +11,6 @@ All notable changes to this project will be documented in this file. This change
 - using a version of gorilla-notes with an up-to-date core.async dep
 - handling event broadcasting more carefully
 - explicitly marking dereferenced values in rendering by the `(@)` sign
-- Notes which are forms like `(def ...)`, `(defn ...)`, `(defmafro ...)` are assigned the kind `:void`.
 - added api action: `eval-and-realize-this-notespace`
 - extended api with functions such as `eval-and-realize-notes-from-line` and `eval-and-realize-notes-from-change`
 - support for an Oz-like experience of listening to changes
@@ -31,6 +30,7 @@ All notable changes to this project will be documented in this file. This change
 - plain html support
 - customizable server port
 - support for stopping the server
+- Notes which are forms like `(def ...)`, `(defn ...)`, and a few more of these, are assigned the kind `:void`.
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
