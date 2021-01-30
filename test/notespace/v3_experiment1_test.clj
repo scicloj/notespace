@@ -540,9 +540,6 @@ Tests of the Midje test framework are rendered as follows:"]
 (fact
  (+ 1 2) => 3)
 
-(fact
- (+ 1 2) => 4)
-
 ["We can ask for a tests summary:"]
 
 ^kind/hiccup
