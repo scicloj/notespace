@@ -2,9 +2,12 @@
   (:require [notespace.view :as view]
             [notespace.note :as note]
             [notespace.api :as api]
+            [notespace.kinds :as kind]
+            [notespace.setup-test]
             [midje.sweet :refer [with-state-changes => fact facts before]]
             [clojure.test :refer :all]))
 
+(notespace.api/init :port notespace.setup-test/testing-port)
 
 (fact "map-of-seqs converts to grid"
       (->
