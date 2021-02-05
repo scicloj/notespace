@@ -154,14 +154,9 @@
 
 (defn realize-note! [anamespace idx]
   (update-note! anamespace
-                #'note/realizing-note
-                idx
-                true)
-  (update-note! anamespace
                 #'note/realized-note
                 idx
                 false))
-
 (defn rerender-note! [anamespace idx]
   (update-note! anamespace
                 #'note/realized-note
