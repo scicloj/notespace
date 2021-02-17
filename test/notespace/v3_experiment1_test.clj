@@ -367,7 +367,10 @@ Here are some examples."]
   :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
 
-["### Vega-lite is supported"]
+["### vega"]
+
+["The `vega` kind supports both Vega and Vega-Lite visualizations."]
+
 ^kind/vega
 {
   :description "A simple bar chart with embedded data."
@@ -385,6 +388,8 @@ Here are some examples."]
   }
 }
 
+["### code"]
+
 ["Some additional tags such as `:p/code` are added by the [gorilla-notes](https://github.com/scicloj/gorilla-notes) infrastructure."]
 
 ^kind/hiccup
@@ -394,6 +399,31 @@ Here are some examples."]
 [:p/code "def abcd(x):
   return x+9"
  {:language :python}]
+
+["Such tags can usually be handled through dedicated kinds too."]
+
+^kind/code
+["(defn abcd [x] (+ x 9))"
+ "(defn abcd [x] (+ x 3))"]
+
+^kind/code
+(pr-str '(defn abcd [x] (+ x 9)))
+
+["### math"]
+
+^kind/hiccup
+[:p/math
+ "(ax ^2 + bx + c = 0 )"]
+
+^kind/math
+["(ax ^2 + bx + c = 0 )"
+ "(dx ^2 + ex + f = 0 )"]
+
+^kind/math
+(str "(ax ^2 "
+     "+ bx "
+     "+ c "
+     " = 0)")
 
 ["### dataset
 
@@ -453,24 +483,6 @@ A note's kinds can also be specified by including it in a vector beginning with 
 ["All other notes witn no explicit metadata are assigned the kind `:naive` automatically."]
 
 (+ 1 2)
-
-
-["## Mathematic formula"]
-
-[ "One way to generate mathematical form is to use the codegocs.com service."]
-[" It's supports arbitrary Latex formula."]
-[" Please check its usage condition before using it."]
-
-(defn ->codecogs [formula]
-  [:img {:src
-         (str "http://latex.codecogs.com/svg.latex?"
-              formula)}])
-
-^kind/hiccup
-(->codecogs  "\\tfrac{2}{\\alpha + \\beta}") ;; duplicate "\" due to Java String literal use
-
-
-
 
 ["## Interactive input and reactive notes
 

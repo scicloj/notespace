@@ -35,6 +35,24 @@
   {:render-src?   true
    :value->hiccup (partial vector :p/vega)})
 
+(defn wrap [wrapper v]
+  (if (vector? v)
+    (->> v
+         (map (fn [x]
+                [wrapper x]))
+         (into [:div]))
+    [wrapper v]))
+
+(defmethod kind->behaviour ::math
+  [_]
+  {:render-src?   true
+   :value->hiccup (partial wrap :p/math)})
+
+(defmethod kind->behaviour ::code
+  [_]
+  {:render-src?   true
+   :value->hiccup (partial wrap :p/code)})
+
 (defmethod kind->behaviour ::void
   [_]
   {:render-src?   true

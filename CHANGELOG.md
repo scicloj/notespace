@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [3.0.0-alpha3-SNAPSHOT] - 2021-01-30
+## [3.0.0-alpha3-SNAPSHOT] - 2021-02-17
 - added support for visualizing datasets as tables
 - extending markdown rendering to more types
 - bugfix in reporting the static rendering path
@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file. This change
 - customizable server port
 - support for stopping the server
 - Notes which are forms like `(def ...)`, `(defn ...)`, and a few more of these, are assigned the kind `:void`.
+- added :code and :math note kinds
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
