@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [3.0.0-alpha3-SNAPSHOT] - 2021-02-17
+## [3-beta1] (previously called: [3-alpha3-SNAPSHOT]) - 2021-02-17
 - added support for visualizing datasets as tables
 - extending markdown rendering to more types
 - bugfix in reporting the static rendering path

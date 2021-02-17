@@ -4,9 +4,6 @@ Notebook experience in your Clojure namespace
 
 [![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
 
-At the moment, it is recommended to use the snapshot version:
-[3-alpha3-SNAPSHOT](https://clojars.org/scicloj/notespace/versions/3-alpha3-SNAPSHOT)
-
 ## What is it?
 
 This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
