@@ -16,48 +16,59 @@
   [:p notespace-style
    [:small (format "(%s)" text)]])
 
+(defn details->hiccup [value source kind]
+  (let [actual-kind (-> value
+                        meta
+                        :notespace.kind
+                        (or kind))]
+    (println (pr-str [:actual-kind
+                      value
+                      actual-kind]))
+    (when-let [{:keys [render-src? value->hiccup]}
+               ((state/sub-get-in :kind->behaviour) actual-kind)]
+      [:div
+       (when (and  render-src? (state/sub-get-in :config :render-src?))
+         [:p/code {:code     source
+                   :bg-class "bg-light"}])
+       (value->hiccup value)])))
+
 (defn note->hiccup [{:keys [value metadata kind stage]}]
-  (when-let [{:keys [render-src? value->hiccup]}
-             ((state/sub-get-in :kind->behaviour) kind)]
-    [:div
-     (when (and  render-src? (state/sub-get-in :config :render-src?))
-        [:p/code {:code     (:source metadata)
-                  :bg-class "bg-light"}])
-     ;; TODO Simplify the logic here.
-     [:div (cond
-             ;;
-             (= value :notespace.note/failed)
-             (status-description "failed")
-             ;;
-             (u/ready? value)
-             (cond ;;
-               (var? value)
-               (value->hiccup value)
-               ;;
-               (instance? clojure.lang.IDeref value)
-               [:div
-                (status-description "dereferenced")
-                (value->hiccup @value)]
-               ;;
-               :else
-               (value->hiccup value))
-             ;; else
-             :else
-             (status-description
-              (cond ;;
-                (= stage :initial)
-                "not evaluated yet"
-                ;;
-                (delay? value)
-                (if (= stage :realizing)
-                  "delay - already running ..."
-                  "delay - not running yet ...")
-                ;;
-                (future? value)
-                "future - running ..."
-                ;;
-                :else
-                "not ready - unknown reason")))]]))
+  (let [->hiccup (fn [v]
+                   (details->hiccup v (:source metadata) kind))]
+    (cond
+      ;;
+      (= value :notespace.note/failed)
+      (status-description "failed")
+      ;;
+      (u/ready? value)
+      (cond ;;
+        (var? value)
+        (->hiccup value)
+        ;;
+        (instance? clojure.lang.IDeref value)
+        [:div
+         (status-description "dereferenced")
+         (->hiccup @value)]
+        ;;
+        :else
+        (->hiccup value))
+      ;; else
+      :else
+      (status-description
+       (cond ;;
+         (= stage :initial)
+         "not evaluated yet"
+         ;;
+         (delay? value)
+         (if (= stage :realizing)
+           "delay - already running ..."
+           "delay - not running yet ...")
+         ;;
+         (future? value)
+         "future - running ..."
+         ;;
+         :else
+         "not ready - unknown reason")))))
 
 (defn value->naive-hiccup [value]
   [:p/code {:code (-> value

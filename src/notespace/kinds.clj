@@ -88,3 +88,7 @@
     (intern *ns* (symbol (name m)) m)))
 
 (intern-kinds!)
+
+
+(defn override [value kind]
+  (vary-meta value assoc :notespace.kind kind))

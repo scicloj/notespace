@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file. This change
 - support for stopping the server
 - Notes which are forms like `(def ...)`, `(defn ...)`, and a few more of these, are assigned the kind `:void`.
 - added :code and :math note kinds
+- support for overriding note kinds on runtime
 
 ## [3.0.0-alpha2] - 2020-09-21
 - changes in some note kinds
