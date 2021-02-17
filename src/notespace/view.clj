@@ -21,9 +21,6 @@
                         meta
                         :notespace.kind
                         (or kind))]
-    (println (pr-str [:actual-kind
-                      value
-                      actual-kind]))
     (when-let [{:keys [render-src? value->hiccup]}
                ((state/sub-get-in :kind->behaviour) actual-kind)]
       [:div
