@@ -12,11 +12,11 @@
   {:style {:font-style  "italic"
            :font-family "\"Lucida Console\", Courier, monospace"}})
 
-(defn status-description [text]
+(defn status-description->hiccup [status-description]
   [:p notespace-style
-   [:small (format "(%s)" text)]])
+   [:small (format "(%s)" status-description)]])
 
-(defn details->hiccup [value source kind]
+(defn details->hiccup [kind source status-description value]
   (let [actual-kind (-> value
                         meta
                         :notespace.kind
@@ -27,45 +27,45 @@
        (when (and  render-src? (state/sub-get-in :config :render-src?))
          [:p/code {:code     source
                    :bg-class "bg-light"}])
-       (value->hiccup value)])))
+       (when status-description
+         (status-description->hiccup status-description))
+       (when value
+         (value->hiccup value))])))
 
 (defn note->hiccup [{:keys [value metadata kind stage]}]
-  (let [->hiccup (fn [v]
-                   (details->hiccup v (:source metadata) kind))]
+  (let [->hiccup (partial details->hiccup kind (:source metadata))]
     (cond
       ;;
       (= value :notespace.note/failed)
-      (status-description "failed")
+      (->hiccup "failed" nil)
       ;;
       (u/ready? value)
       (cond ;;
         (var? value)
-        (->hiccup value)
+        (->hiccup nil value)
         ;;
         (instance? clojure.lang.IDeref value)
-        [:div
-         (status-description "dereferenced")
-         (->hiccup @value)]
+        (->hiccup "dereferenced" @value)
         ;;
         :else
-        (->hiccup value))
+        (->hiccup nil value))
       ;; else
       :else
-      (status-description
-       (cond ;;
-         (= stage :initial)
-         "not evaluated yet"
-         ;;
-         (delay? value)
-         (if (= stage :realizing)
-           "delay - already running ..."
-           "delay - not running yet ...")
-         ;;
-         (future? value)
-         "future - running ..."
-         ;;
-         :else
-         "not ready - unknown reason")))))
+      (->hiccup (cond ;;
+                  (= stage :initial)
+                  "not evaluated yet"
+                  ;;
+                  (delay? value)
+                  (if (= stage :realizing)
+                    "delay - already running ..."
+                    "delay - not running yet ...")
+                  ;;
+                  (future? value)
+                  "future - running ..."
+                  ;;
+                  :else
+                  "not ready - unknown reason")
+                nil))))
 
 (defn value->naive-hiccup [value]
   [:p/code {:code (-> value
@@ -110,7 +110,7 @@
                              columns)]
     [:div {:class "ag-theme-balham"
            :style {:height "150px"}}
-     (status-description
+     (status-description->hiccup
       (format "showing at most %d rows" max-n-rows))
      [:p/dataset {:columnDefs column-defs
                   :rowData    row-data}]]))

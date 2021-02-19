@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [3-beta2] - 2021-02-19
+- rendering notes with status descriptions properly (fixing a recent mistake in logic)
+
 ## [3-beta1] (previously called: [3-alpha3-SNAPSHOT]) - 2021-02-17
 - added support for visualizing datasets as tables
 - extending markdown rendering to more types
