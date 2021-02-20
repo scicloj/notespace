@@ -34,7 +34,7 @@
   (let [->hiccup (partial details->hiccup kind (:source metadata))]
     (cond
       ;;
-      (util/value=keyword value :notespace.note/failed)
+      (= value :notespace.note/failed)
       (->hiccup "failed" nil)
       ;;
       (u/ready? value)

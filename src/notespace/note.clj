@@ -152,7 +152,7 @@
                 (in-eval-count-down-fn x)
                 (Thread/sleep 1000))))
     (let [value (note-evaluation namespace idx note)
-          stage (if (util/value=keyword value ::failed) :failed :evaluated)
+          stage (if (= value ::failed) :failed :evaluated)
           duration (- (System/currentTimeMillis) start-time)]
       (-> note
           (assoc  :value value
