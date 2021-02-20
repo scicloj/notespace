@@ -29,8 +29,14 @@
 
 (def abcd (atom 3))
 
+(defn value=keyword
+  "A careful ad-hoc way to compare values to keywords. This was necessary just for usage with version 0.15.0 of Sicmutils, due to some [bug](https://github.com/sicmutils/sicmutils/issues/291) that is fixed in the following version."
+  [v kw]
+  (and (keyword? v)
+       (= v kw)))
+
 (defn ready? [v]
-  (cond (= v :value/not-ready) false
+  (cond (value=keyword v :value/not-ready) false
         (pending? v)           (realized? v)
         :else                  true))
 

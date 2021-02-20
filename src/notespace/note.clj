@@ -5,7 +5,8 @@
             [notespace.view :as view]
             [notespace.state :as state]
             [notespace.util :as u]
-            [notespace.kinds :as kinds]))
+            [notespace.kinds :as kinds]
+            [notespace.util :as util]))
 
 ;; A note has a static part: a kind, possibly a label, a collection of forms, and the reader metadata,
 ;; and a dynamic part: a value, a realized-value and a stage.
@@ -151,7 +152,7 @@
                 (in-eval-count-down-fn x)
                 (Thread/sleep 1000))))
     (let [value (note-evaluation namespace idx note)
-          stage (if (= value ::failed) :failed :evaluated)
+          stage (if (util/value=keyword value ::failed) :failed :evaluated)
           duration (- (System/currentTimeMillis) start-time)]
       (-> note
           (assoc  :value value

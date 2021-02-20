@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 - (temporarily?) removing the Oz-compatibility sugar, that was not implemented well
 - considering more things as ::void kind
 - inferring note behaviors from types
+- a careful ad-hoc way to compare values to keywords. This was necessary just for usage with version 0.15.0 of Sicmutils, due to some [bug](https://github.com/sicmutils/sicmutils/issues/291) that is fixed in the following version.
 
 ## [3-beta2] - 2021-02-19
 - rendering notes with status descriptions properly (fixing a recent mistake in logic)
