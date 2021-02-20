@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [3-beta3] - 2021-02-20
 - (temporarily?) removing the Oz-compatibility sugar, that was not implemented well
+- considering more things as ::void kind
 
 ## [3-beta2] - 2021-02-19
 - rendering notes with status descriptions properly (fixing a recent mistake in logic)

@@ -43,7 +43,9 @@
   (and (sequential? topform)
        (-> topform
            first
-           ('#{def defonce defn defmacro require import}))))
+           ('#{def defonce defn defmacro
+               deftype defrecord defprotocol extend-protocol
+               require import}))))
 
 (defn midje-topform? [topform]
   (and (sequential? topform)
