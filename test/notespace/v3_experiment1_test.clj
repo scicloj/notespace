@@ -360,11 +360,11 @@ Here are some examples."]
       :radius    200
       :popup     "square the circle"}]]
 
-^kind/hiccup
-[:p/player
- {:width  "100%"
-  :height "100%"
-  :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
+;; ^kind/hiccup
+;; [:p/player
+;;  {:width  "100%"
+;;   :height "100%"
+;;   :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
 
 ["### vega"]
