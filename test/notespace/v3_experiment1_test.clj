@@ -1,6 +1,6 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as notespace]
-            [notespace.kinds :as kind :reload true]
+            [notespace.kinds :as kind]
             [notespace.state :as state]
             [cljfx.api :as fx]))
 
@@ -497,10 +497,6 @@ Coming soon."]
 ;; (R [x]
 ;;    (* x 100))
 
-["## Interactive input and reactive notes
-
-Coming soon."]
-
 ["## Progress logging
 
 This should be documented better soon."]
@@ -526,7 +522,7 @@ This should be documented better soon."]
 
  "It is possible to override a note's kind during its evaluation using the `notespace.kinds/override` functions."]
 
-(-> [:div [:big [:big 3]]]
+(-> [:big [:big 3]]
     (kind/override kind/hiccup))
 
 (-> ["(ax ^2 + bx + c = 0 )"]
@@ -542,6 +538,20 @@ This should be documented better soon."]
      :encoding    {:x {:field :a :type :nominal :axis {:labelAngle 0}}
                    :y {:field :b :type :quantitative}}}
     (kind/override kind/vega))
+
+["## Inferring note behaviors from types"
+
+ "It is possible to infer a note's behavior from the type of its rendered, overriding the behavior prescribed by its kind. This can be done by extending the `Behaving` protocol."]
+
+(require '[notespace.behavior])
+
+(deftype DummyType1 [data]
+  notespace.behavior/Behaving
+  (->behavior [this]
+    {:render-src? true
+     :value->hiccup (fn [v] data)}))
+
+(DummyType1. [:big [:big 3]])
 
 ["## Extending Notespace with new note kinds."]
 
@@ -577,6 +587,5 @@ Tests of the Midje test framework are rendered as follows:"]
 
 ^kind/hiccup
 (notespace/midje-summary)
-
 
 

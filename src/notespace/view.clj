@@ -6,7 +6,8 @@
             [notespace.repo :as repo]
             [notespace.util :as util]
             [cljfx.api :as fx]
-            [notespace.context :as ctx]))
+            [notespace.context :as ctx]
+            [notespace.behavior :as behavior]))
 
 (def notespace-style
   {:style {:font-style  "italic"
@@ -17,20 +18,17 @@
    [:small (format "(%s)" status-description)]])
 
 (defn details->hiccup [kind source status-description value]
-  (let [actual-kind (-> value
-                        meta
-                        :notespace.kind
-                        (or kind))]
-    (when-let [{:keys [render-src? value->hiccup]}
-               ((state/sub-get-in :kind->behaviour) actual-kind)]
+  (let [actual-behavior (behavior/->actual-behavior kind value)]
+    (when-let [{:keys [render-src? value->hiccup]} actual-behavior]
+      (when-not value->hiccup
+        (println [:source source]))
       [:div
        (when (and  render-src? (state/sub-get-in :config :render-src?))
          [:p/code {:code     source
                    :bg-class "bg-light"}])
        (when status-description
          (status-description->hiccup status-description))
-       (when value
-         (value->hiccup value))])))
+       (value->hiccup value)])))
 
 (defn note->hiccup [{:keys [value metadata kind stage]}]
   (let [->hiccup (partial details->hiccup kind (:source metadata))]
