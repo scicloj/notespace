@@ -469,11 +469,11 @@ For example:"]
 (str "<h4>h4</h4>"
      "<h5>h5</h5>")
 
-["## Other ways to specify note kinds
+;; ["## Other ways to specify note kinds
 
-A note's kinds can also be specified by including it in a vector beginning with a keyword. This is inspired by the approach of [Oz](https://github.com/metasoarous/oz), and should allow some partial compatibility with Oz notebooks."]
+;; A note's kinds can also be specified by including it in a vector beginning with a keyword. This is inspired by the approach of [Oz](https://github.com/metasoarous/oz), and should allow some partial compatibility with Oz notebooks."]
 
-[:hiccup [:big [:big 3]]]
+;; [:hiccup [:big [:big 3]]]
 
 ["Notes which are sequential forms beginning with a string (e.g., `[\"Hello!\" \"How are you?\"]`) are assigned the default kind `:md-nocode`  automatically."
  "This very text you are reading is an example of a note of that kind."]

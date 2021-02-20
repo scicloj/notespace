@@ -51,11 +51,11 @@
            first
            (#{'fact 'facts}))))
 
-(defn vector-beginning-with-keyword-topform? [topform]
-  (and (vector? topform)
-       (-> topform
-           first
-           keyword?)))
+;; (defn vector-beginning-with-keyword-topform? [topform]
+;;   (and (vector? topform)
+;;        (-> topform
+;;            first
+;;            keyword?)))
 
 (defn kinds-set []
   (into #{} (map first) (-> kinds/kind->behaviour methods seq)))
@@ -80,9 +80,9 @@
      ;;
      (midje-topform? tfwm)
      :notespace.kinds/midje
-     ;;
-     (vector-beginning-with-keyword-topform? tfwm)
-     (->> tfwm first name (keyword "notespace.kinds"))
+     ;; ;;
+     ;; (vector-beginning-with-keyword-topform? tfwm)
+     ;; (->> tfwm first name (keyword "notespace.kinds"))
      ;;
      :else :notespace.kinds/naive)))
 
