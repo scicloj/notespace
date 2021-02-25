@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [3-beta4] - 2021-02-25
+- removed the cljfx dependency (copied the relevant parts under Notespace)
+
 ## [3-beta3] - 2021-02-20
 - (temporarily?) removing the Oz-compatibility sugar, that was not implemented well
 - considering more things as ::void kind
