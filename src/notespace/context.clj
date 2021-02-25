@@ -1,5 +1,5 @@
 (ns notespace.context
-  (:require [cljfx.api :as fx]
+  (:require [notespace.cljfx.api :as fx]
             [notespace.state :as state]
             [notespace.events :as events]))
 
@@ -23,8 +23,7 @@
        {:context     (fx/make-reset-effect state/the-context)
         :dispatch    fx/dispatch-effect
         :update update-note-effect
-        :throw maybe-throw})
-      (fx/wrap-async)))
+        :throw maybe-throw})))
 
 (defn mount-renderer [renderer]
   (add-watch state/the-context

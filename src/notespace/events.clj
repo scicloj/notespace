@@ -1,5 +1,5 @@
 (ns notespace.events
-  (:require [cljfx.api :as fx]
+  (:require [notespace.cljfx.api :as fx]
             [notespace.util :as u]))
 
 (defmulti handle :event/type)

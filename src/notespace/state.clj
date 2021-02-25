@@ -1,5 +1,5 @@
 (ns notespace.state
-  (:require [cljfx.api :as fx]
+  (:require [notespace.cljfx.api :as fx]
             [clojure.core.cache :as cache]))
 
 (def the-context

@@ -48,7 +48,7 @@ Here are the main thingss that are changing here, comparing to Version 2:
 * Data visualizations based on [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui) Hiccup extensions are supported.
 
 ### Implementation
-For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts).
+For state management and event handling at Clojure JVM, we use [cljfx](https://github.com/cljfx/cljfx)'s [state management logic](https://github.com/cljfx/cljfx#subscriptions-and-contexts). To avoid the dependency of JavaFX, we copied the relevant parts of cljfx under `notespace.cljfx.*`.
 
 The current rendering engine is based on [gorilla-notes](https://github.com/scicloj/gorilla-notes), which is a thin wrapper of [gorilla-ui](https://github.com/pink-gorilla/gorilla-ui).
 
@@ -62,7 +62,6 @@ Rendering is now an abstract notion, and thus Notespace can be extended with dif
 
 ### Known issues
 * Many of the notions, ideas and behaviours of Version 2 are not supported by Version 3 at the moment. Most of them are enabled in a different way. We need to discuss whether to create some backwards compatibility layer.
-* At the moment, this version brings [cljfx](https://github.com/cljfx/cljfx) as a dependency, merely for its state management logic. This means it will run only on some versions of JDK 8.
 * Currently things tend to break when moving across several namespaces. For now, calling `(notespace.api/init)` is a good habit for such cases.
 
 It follows some ideas from our discussions of [alternative notation](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/alternative.20notation) and of [evaluation semantics](https://clojurians.zulipchat.com/#narrow/stream/224153-notespace-dev/topic/evaluation.20semantics.20--.20suggested.20breaking.20change).

@@ -1,6 +1,6 @@
 (ns notespace.renderers.gorilla-notes
   (:require [gorilla-notes.core :as gn]
-            [cljfx.api :as fx]
+            [notespace.cljfx.api :as fx]
             [notespace.view :as view]
             [notespace.note :as note]
             [notespace.actions :as actions]

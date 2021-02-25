@@ -2,7 +2,7 @@
   (:require [notespace.api :as notespace]
             [notespace.kinds :as kind]
             [notespace.state :as state]
-            [cljfx.api :as fx]))
+            [notespace.cljfx.api :as fx]))
 
 ^kind/hidden
 (comment

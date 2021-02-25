@@ -5,7 +5,7 @@
             [notespace.state :as state]
             [notespace.repo :as repo]
             [notespace.util :as util]
-            [cljfx.api :as fx]
+            [notespace.cljfx.api :as fx]
             [notespace.context :as ctx]
             [notespace.behavior :as behavior]))
 
