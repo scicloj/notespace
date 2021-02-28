@@ -1,8 +1,7 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as notespace]
             [notespace.kinds :as kind]
-            [notespace.state :as state]
-            [notespace.cljfx.api :as fx]))
+            [notespace.state :as state]))
 
 ^kind/hidden
 (comment
@@ -502,6 +501,8 @@ Coming soon."]
 This should be documented better soon."]
 
 (comment
+  (require '[notespace.cljfx.api :as fx]) 
+
   (notespace/update-config #(assoc % :evaluation-callback-fn
                              (fn [idx note-count note]
                                (let [expected-duration (or  (get-in note [:duration]) 0)]
