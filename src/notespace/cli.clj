@@ -1,7 +1,9 @@
 (ns notespace.cli
   (:require [notespace.api :as api]
             [clojure.tools.namespace.find :as ns-find]
-            [clojure.java.classpath :as cp]))
+            [clojure.java.classpath :as cp]
+            [notespace.renderers.gorilla-notes :as gn]
+            ))
 
 (defn find-ns-declr [ns-symbol]
   (let  [ns-decls
@@ -14,7 +16,7 @@
      (filter #(= (second %) ns-symbol))
      first)))
 
-(defn eval-and-realize-a-notespace [options]
+(defn eval-and-render-a-notespace [options]
 
   (let  [ns-symbol (:ns options)]
 
@@ -29,7 +31,4 @@
     (api/eval-and-realize-this-notespace)
     (api/render-static-html)
     )
-
-  (System/exit 0)
   )
-
