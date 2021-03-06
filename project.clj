@@ -8,6 +8,7 @@
                  [org.clojure/tools.reader "1.3.2"]
                  [org.clojure/core.async "1.1.587"]
                  [org.clojure/core.cache "1.0.207"]
+                 [org.clojure/tools.namespace "1.1.0"]
                  [hawk "0.2.11"]
 
                  ;; avoid conflict with jsonista
