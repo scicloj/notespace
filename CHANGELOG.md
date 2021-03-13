@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [3-beta5] - 2021-03-13
+- updated to gorilla-notes 0.5.6: css changes (borught margins back), prepartation for added sci component and external files
+
 ## [3-beta4] - 2021-02-25
 - removed the cljfx dependency (copied the relevant parts under Notespace)
 
