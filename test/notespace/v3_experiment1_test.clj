@@ -618,3 +618,5 @@ Support for external files is still considered experimental. The API will stabil
 [:button (notespace/file-link-tag "download dummy.txt" "dummy.txt")]
 
 (notespace/img-file-tag "clojure.png" {})
+
+["When rendering to static HTML, the external files will be moved alongside it, so that the same links work."]
