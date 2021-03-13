@@ -11,7 +11,8 @@
             [notespace.events :as events]
             [notespace.context :as ctx]
             [notespace.defaults :as defaults]
-            [notespace.renderers.gorilla-notes :as renderers-gn]))
+            [notespace.renderers.gorilla-notes :as renderers-gn]
+            [babashka.fs :as fs]))
 
 (defn update-config [f]
   (actions/update-config! f))
@@ -21,7 +22,6 @@
 
 (comment
   (toggle-single-note-mode true))
-
 
 (defn init [& {:keys [open-browser? port]
                :or   {open-browser? false}}]
@@ -36,6 +36,7 @@
     (renderers-gn/browse))
   (ctx/unmount-renderer #'renderers-gn/renderer)
   (ctx/mount-renderer #'renderers-gn/renderer)
+  (paths/clean-dynamic-files-dir)
   :ok)
 
 (defn init-with-browser [& options]
@@ -126,6 +127,12 @@
   ([path]
    (let [path-to-use (or path (paths/ns->target-path *ns*))]
      (gn/render-current-state! path-to-use)
+     (let [files-dirname (format "%s/%s" (fs/parent path-to-use)
+                                 paths/files-dirname)]
+       (when-not (fs/exists? files-dirname)
+         (fs/create-dir files-dirname))
+       (fs/copy-tree paths/dynamic-files-dirname
+                     files-dirname))
      (println [:rendered path-to-use]))))
 
 (defmacro R [symbols & forms]
@@ -142,3 +149,21 @@
    (->> anamespace
         (state/sub-get-in :ns->notes)
         view/notes->midje-summary)))
+
+(defn file-target-path
+  [filename]
+  (format "%s/%s"
+          paths/dynamic-files-dirname
+          filename))
+
+(defn file-link-tag [title filename]
+  ^{:notespace.kind :notespace.kinds/hiccup}
+  [:a
+   {:href (paths/file-path-for-url filename)}
+   title])
+
+(defn img-file-tag [filename options]
+  ^{:notespace.kind :notespace.kinds/hiccup}
+  [:img
+   (merge {:src (paths/file-path-for-url filename)}
+          options)])
