@@ -20,12 +20,12 @@
 (defn details->hiccup [kind source status-description value]
   (let [actual-behavior (behavior/->actual-behavior kind value)]
     (when-let [{:keys [render-src? value->hiccup]} actual-behavior]
-      (when-not value->hiccup
-        (println [:source source]))
       [:div
+       [:p]
        (when (and  render-src? (state/sub-get-in :config :render-src?))
-         [:p/code {:code     source
-                   :bg-class "bg-light"}])
+         [:div
+          [:p/code {:code     source
+                   :bg-class "bg-light"}]])
        (when status-description
          (status-description->hiccup status-description))
        (value->hiccup value)])))
