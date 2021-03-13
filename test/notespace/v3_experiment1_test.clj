@@ -1,7 +1,8 @@
 (ns notespace.v3-experiment1-test
   (:require [notespace.api :as notespace]
             [notespace.kinds :as kind]
-            [notespace.state :as state]))
+            [notespace.state :as state]
+            [notespace.paths :as paths]))
 
 ^kind/hidden
 (comment
@@ -28,9 +29,10 @@
   (notespace/listen)
 
   (notespace/unlisten)
-  
+
   (notespace/toggle-single-note-mode true)
   (notespace/toggle-single-note-mode false))
+
 
 ["# Notespace v3 intro
 
@@ -371,21 +373,14 @@ Here are some examples."]
 ["The `vega` kind supports both Vega and Vega-Lite visualizations."]
 
 ^kind/vega
-{
-  :description "A simple bar chart with embedded data."
-  :data {
-    :values [
-      {:a "A" :b 28} {:a "B" :b 55} {:a "C" :b 43}
-      {:a "D" :b 91} {:a "E" :b 81} {:a "F" :b 53}
-      {:a "G" :b 19} {:a "H" :b 87} {:a "I" :b 52}
-    ]
-  }
-  :mark :bar
-  :encoding {
-    :x {:field :a :type :nominal :axis {:labelAngle 0}}
-    :y {:field :b :type :quantitative}
-  }
-}
+(do (Thread/sleep 3000)
+    {:description "A simple bar chart with embedded data."
+     :data        {:values [{:a "A" :b 28} {:a "B" :b 55} {:a "C" :b 43}
+                            {:a "D" :b 91} {:a "E" :b 81} {:a "F" :b 53}
+                            {:a "G" :b 19} {:a "H" :b 87} {:a "I" :b 52}]}
+     :mark        :bar
+     :encoding    {:x {:field :a :type :nominal :axis {:labelAngle 0}}
+                   :y {:field :b :type :quantitative}}})
 
 ["### code"]
 
@@ -590,3 +585,36 @@ Tests of the Midje test framework are rendered as follows:"]
 (notespace/midje-summary)
 
 
+["## External files (experimental)
+
+Support for external files is still considered experimental. The API will stabilize soon."]
+
+["To put files under your local project directory, in a place that is accessible to notespace, please use the `notespace.api/file-target-path` function."]
+
+(notespace/file-target-path "dummy.txt")
+
+["Let us put some files there."]
+
+(spit (notespace/file-target-path "dummy.txt")
+      "hi!")
+
+(require '[clojure.java.io :as io])
+
+;; https://stackoverflow.com/a/19297746
+(defn copy [uri file]
+  (with-open [in  (io/input-stream uri)
+              out (io/output-stream file)]
+    (io/copy in out)))
+
+(copy "https://clojure.org/images/clojure-logo-120b.png"
+      (notespace/file-target-path "clojure.png"))
+
+["Now we can include file links and images as follows:"]
+
+^kind/hiccup
+(notespace/file-link-tag "download dummy.txt" "dummy.txt")
+
+^kind/hiccup
+[:button (notespace/file-link-tag "download dummy.txt" "dummy.txt")]
+
+(notespace/img-file-tag "clojure.png" {})
