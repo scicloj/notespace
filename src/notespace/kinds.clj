@@ -33,7 +33,10 @@
 (defmethod kind->behaviour ::vega
   [_]
   {:render-src?   true
-   :value->hiccup (partial vector :p/vega)})
+   :value->hiccup (fn [v]
+                    (if (map? v)
+                      [:p/vega v]
+                      v))})
 
 (defn wrap [wrapper v]
   (if (vector? v)
