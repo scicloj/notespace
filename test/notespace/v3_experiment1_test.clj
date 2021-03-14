@@ -404,9 +404,15 @@ Here are some examples."]
 
 ["### math"]
 
+["Regular markdown text can contain math expressions using TeX notation: $(ax ^2 + bx + c = 0 )$."]
+
+["We can also include math tags in Hiccup elements:"]
+
 ^kind/hiccup
 [:p/math
  "(ax ^2 + bx + c = 0 )"]
+
+["We can also have notes of math kind:"]
 
 ^kind/math
 ["(ax ^2 + bx + c = 0 )"
@@ -594,6 +600,7 @@ Support for external files is still considered experimental. The API will stabil
 
 ["Let us put some files there."]
 
+^kind/void
 (spit (notespace/file-target-path "dummy.txt")
       "hi!")
 
@@ -605,6 +612,7 @@ Support for external files is still considered experimental. The API will stabil
               out (io/output-stream file)]
     (io/copy in out)))
 
+^kind/void
 (copy "https://clojure.org/images/clojure-logo-120b.png"
       (notespace/file-target-path "clojure.png"))
 
