@@ -31,39 +31,51 @@
        (value->hiccup value)])))
 
 (defn note->hiccup [{:keys [value metadata kind stage]}]
-  (let [->hiccup (partial details->hiccup kind (:source metadata))]
+  (let [->value-hiccup (fn [value]
+                         (details->hiccup kind
+                                          (:source metadata)
+                                          nil
+                                          value))
+        ->status-hiccup (fn [status-description]
+                          (details->hiccup :notespace.kinds/void
+                                           (:source metadata)
+                                           status-description
+                                           nil))]
     (cond
       ;;
       (= value :notespace.note/failed)
-      (->hiccup "failed" nil)
+      (->status-hiccup "failed")
       ;;
       (u/ready? value)
       (cond ;;
         (var? value)
-        (->hiccup nil value)
+        (->value-hiccup value)
         ;;
         (instance? clojure.lang.IDeref value)
-        (->hiccup "dereferenced" @value)
+        (details->hiccup kind
+                         (:source metadata)
+                         "dereferenced"
+                         @value)
         ;;
         :else
-        (->hiccup nil value))
+        (->value-hiccup value))
       ;; else
       :else
-      (->hiccup (cond ;;
-                  (= stage :initial)
-                  "not evaluated yet"
-                  ;;
-                  (delay? value)
-                  (if (= stage :realizing)
-                    "delay - already running ..."
-                    "delay - not running yet ...")
-                  ;;
-                  (future? value)
-                  "future - running ..."
-                  ;;
-                  :else
-                  "not ready - unknown reason")
-                nil))))
+      (->status-hiccup
+       (cond ;;
+         (= stage :initial)
+         "not evaluated yet"
+         ;;
+         (delay? value)
+         (if (= stage :realizing)
+           "delay - already running ..."
+           "delay - not running yet ...")
+         ;;
+         (future? value)
+         "future - running ..."
+         ;;
+         :else
+         "not ready - unknown reason")))))
 
 (defn value->naive-hiccup [value]
   [:p/code {:code (-> value
@@ -73,7 +85,7 @@
 (defn markdowns->hiccup [mds]
   (if-not (sequential? mds)
     (markdowns->hiccup [mds])
-    [:p/markdown
+    [:p/md
      (->> mds
           (map #(-> % print with-out-str))
           (string/join "\n"))]))
