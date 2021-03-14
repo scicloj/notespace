@@ -12,7 +12,7 @@
                  [hawk "0.2.11"]
 
                  ;; avoid conflict with jsonista
-                 [scicloj/gorilla-notes "0.5.6"
+                 [scicloj/gorilla-notes "0.5.9"
                   :exclusions [com.fasterxml.jackson.core/jackson-core
                                com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
                                com.fasterxml.jackson.dataformat/jackson-dataformat-smile]]
