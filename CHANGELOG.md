@@ -2,7 +2,9 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [3-beta5] - 2021-03-13
-- updated to gorilla-notes 0.5.6: css changes (borught margins back), prepartation for added sci component and external files
+- updated to gorilla-notes 0.5.9: css changes (borught margins back), prepartation for added sci component and external files, support for math inside markdown
+- support for external files (experimental)
+- added function for render a namespace to file, given a ns symbol (PR #57)
 
 ## [3-beta4] - 2021-02-25
 - removed the cljfx dependency (copied the relevant parts under Notespace)
