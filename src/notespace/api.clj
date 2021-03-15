@@ -130,7 +130,7 @@
      (let [files-dirname (format "%s/%s" (fs/parent path-to-use)
                                  paths/files-dirname)]
        (when-not (fs/exists? files-dirname)
-         (fs/create-dir files-dirname))
+         (fs/create-dirs files-dirname))
        (fs/copy-tree paths/dynamic-files-dirname
                      files-dirname
                      {:replace-existing true}))
@@ -172,6 +172,8 @@
 
 (defn file-target-path
   [filename]
+  (when-not (fs/exists? paths/dynamic-files-dirname)
+    (fs/create-dirs paths/dynamic-files-dirname))
   (format "%s/%s"
           paths/dynamic-files-dirname
           filename))
