@@ -73,6 +73,11 @@
   {:render-src?   true
    :value->hiccup #'view/dataset->md-hiccup})
 
+(defmethod kind->behaviour ::clojure-test
+  [_]
+  {:render-src?   true
+   :value->hiccup #'view/test-boolean->hiccup})
+
 (defmethod kind->behaviour ::midje
   [_]
   {:render-src?   true

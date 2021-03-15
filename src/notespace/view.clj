@@ -184,25 +184,32 @@
 (defn notes-count [notes]
   [:p (count notes) " notes"])
 
-(defn notes->midje-summary [notes]
-  [:div
-   (some->> notes
-           (filter #(= (:kind %) :notespace.kinds/midje))
-           (map :value)
-           frequencies
-           seq
-           (sort-by key)
-           (map (fn [[bool freq]]
-                  [:div
-                   (bool->symbol bool)
-                   ": "
-                   freq]))
-           (into [:div
-                  "Tests summary:"]))])
+(defn notes->tests-summary
+  ([notes]
+   (notes->tests-summary notes nil))
+  ([notes {:keys [note-kinds-set]
+           :or   {note-kinds-set
+                  #{:notespace.kinds/midje
+                    :notespace.kinds/clojure-test}}}]
+   [:div
+    (some->> notes
+             (filter #(-> % :kind note-kinds-set))
+             (map :value)
+             (filter #(not= % :value/not-ready))
+             frequencies
+             seq
+             (sort-by key)
+             (map (fn [[bool freq]]
+                    [:div
+                     (bool->symbol bool)
+                     ": "
+                     freq]))
+             (into [:div
+                    "Tests summary:"]))]))
 
 (defn notes->header-and-footer [namespace notes]
   (let [reference     (->reference namespace)
-        midje-summary (notes->midje-summary notes)]
+        tests-summary (notes->tests-summary notes)]
     {:header [:div notespace-style
               "(notespace)"
               [:p (str (java.util.Date.))]

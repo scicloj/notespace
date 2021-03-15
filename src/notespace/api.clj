@@ -142,13 +142,32 @@
          (let [{:keys [~@symbols]} inputs#]
            ~@forms)))))
 
+(defn tests-summary
+  ([]
+   (tests-summary *ns*))
+  ([anamespace]
+   (tests-summary anamespace nil))
+  ([anamespace note-kinds-set]
+   (-> (state/sub-get-in :ns->notes anamespace)
+       (view/notes->tests-summary note-kinds-set)
+       (vary-meta
+        assoc
+        :notespace.kind :notespace.kinds/hiccup))))
+
+(defn clojure-tests-summary
+  ([]
+   (clojure-tests-summary *ns*))
+  ([anamespace]
+   (tests-summary anamespace {:note-kinds-set
+                              #{notespace.kinds/clojure-test}})))
+
 (defn midje-summary
   ([]
    (midje-summary *ns*))
   ([anamespace]
-   (->> anamespace
-        (state/sub-get-in :ns->notes)
-        view/notes->midje-summary)))
+   (tests-summary anamespace {:note-kinds-set
+                              #{notespace.kinds/midje}})))
+
 
 (defn file-target-path
   [filename]

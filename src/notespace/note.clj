@@ -55,6 +55,12 @@
            first
            (#{'fact 'facts}))))
 
+(defn deftest-topform? [topform]
+  (and (sequential? topform)
+       (-> topform
+           first
+           (= 'deftest))))
+
 ;; (defn vector-beginning-with-keyword-topform? [topform]
 ;;   (and (vector? topform)
 ;;        (-> topform
@@ -84,7 +90,10 @@
      ;;
      (midje-topform? tfwm)
      :notespace.kinds/midje
-     ;; ;;
+     ;;
+     (deftest-topform? tfwm)
+     :notespace.kinds/clojure-test
+      ;; ;;
      ;; (vector-beginning-with-keyword-topform? tfwm)
      ;; (->> tfwm first name (keyword "notespace.kinds"))
      ;;
@@ -125,23 +134,32 @@
   (accept! value namespace idx)
   value)
 
+
 (defn note-evaluation [namespace idx note]
   (try
-    (-> note
-        :forms
-        (->> (cons 'do))
-        eval
-        (accept namespace idx))
+    (let [naive-value (-> note
+                          :forms
+                          (->> (cons 'do))
+                          eval
+                          (accept namespace idx))
+          test (-> naive-value
+                   meta
+                   :test)
+          value (if test
+                  (test)
+                  naive-value)]
+      (accept value namespace idx))
     (catch Exception e
       (print (ex-info "Note evaluation failed."
                       {:note      note
                        :exception e}))
       ::failed)))
 
+
 (defn evaluated-note [namespace idx note]
   (let [evaluation-callback-fn (state/sub-get-in :config :evaluation-callback-fn)
-        in-eval-count-down-fn (state/sub-get-in :config :in-eval-count-down-fn)
-        start-time (System/currentTimeMillis)
+        in-eval-count-down-fn  (state/sub-get-in :config :in-eval-count-down-fn)
+        start-time             (System/currentTimeMillis)
         expected-duration-in-s (/ (or (:duration note ) 0) 1000.0)]
     (evaluation-callback-fn idx
                             (count (ns-notes namespace))
@@ -157,8 +175,7 @@
       (-> note
           (assoc  :value value
                   :stage stage
-                  :duration duration
-                  )))))
+                  :duration duration)))))
 
 (defn realizing-note [note]
   (assoc
@@ -191,3 +208,4 @@
   (mapv merge-note
         (concat old-notes (repeat nil))
         new-notes))
+
