@@ -35,6 +35,16 @@
   {:render-src?   true
    :value->hiccup (partial vector :p/vega)})
 
+(defmethod kind->behaviour ::quil
+  [_]
+  {:render-src?   true
+   :value->hiccup (partial vector :p/quil)})
+
+(defmethod kind->behaviour ::sci
+  [_]
+  {:render-src?   true
+   :value->hiccup (partial vector :p/sci)})
+
 (defn wrap [wrapper v]
   (if (vector? v)
     (->> v
@@ -93,7 +103,6 @@
     (intern *ns* (symbol (name m)) m)))
 
 (intern-kinds!)
-
 
 (defn override [value kind]
   (vary-meta value assoc :notespace.kind kind))
