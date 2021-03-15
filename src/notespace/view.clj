@@ -85,7 +85,7 @@
 (defn markdowns->hiccup [mds]
   (if-not (sequential? mds)
     (markdowns->hiccup [mds])
-    [:p/md
+    [:p/markdown
      (->> mds
           (map #(-> % print with-out-str))
           (string/join "\n"))]))
