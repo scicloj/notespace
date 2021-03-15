@@ -367,6 +367,37 @@ Here are some examples."]
 ;;   :height "100%"
 ;;   :url    "https://www.youtube.com/watch?v=G512fvK9KXA"}]
 
+["### sci
+
+We can use the [Small Clojure Interpreter](https://github.com/borkdude/sci) to run code on the browser side:"]
+
+^kind/hiccup
+[:p/sci '(+ 1 2)]
+
+^kind/sci
+[:div [:big[:big '(+ 1 2)]]]
+
+["### Quil (experimental)"]
+
+["We can create [Quil](https://github.com/quil/quil) components. This is still work in progress."]
+
+["The following example is an adaptation of [quil-reagent-demo](https://github.com/yogthos/quil-reagent-demo)."]
+
+^kind/quil
+{:draw         '(fn [{:keys [circles]}]
+                 (q/background 255)
+                 (doseq [{[x y] :pos [r g b] :color} circles]
+                   (q/fill r g b)
+                   (q/ellipse x y 10 10)))
+ :update-state '(fn [{:keys [width height] :as state}]
+                 (update state :circles conj {:pos   [(+ 20 (rand-int (- width 40)))
+                                                      (+ 20 (rand-int (- height 40)))]
+                                              :color (repeatedly 3 #(rand-int 250))}))
+ :init         '(fn [width height]
+                 (fn []
+                   {:width   width
+                    :height  height
+                    :circles []}))}
 
 ["### vega"]
 
@@ -575,7 +606,21 @@ to a variable. Annotating with a keyword WILL NOT WORK!"} just-code ::just-code)
 ^just-code
 [:div "just some code"]
 
-["## Midje tests
+["## Tests"]
+
+["### clojure.test"]
+
+(require '[clojure.test :refer [deftest testing is are]])
+
+(deftest t1
+  (testing "abcd"
+    (is (= 3 3))))
+
+["We can ask for the summary of all clojure.test tests:"]
+
+(notespace/clojure-tests-summary)
+
+["### Midje
 
 Tests of the Midje test framework are rendered as follows:"]
 
@@ -584,10 +629,15 @@ Tests of the Midje test framework are rendered as follows:"]
 (fact
  (+ 1 2) => 3)
 
-["We can ask for a tests summary:"]
+["We can ask for the summary of all midje tests:"]
 
-^kind/hiccup
 (notespace/midje-summary)
+
+["### total"]
+
+["We can ask for the summary of all tests:"]
+
+(notespace/tests-summary)
 
 
 ["## External files (experimental)
