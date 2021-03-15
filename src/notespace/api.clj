@@ -132,7 +132,8 @@
        (when-not (fs/exists? files-dirname)
          (fs/create-dir files-dirname))
        (fs/copy-tree paths/dynamic-files-dirname
-                     files-dirname))
+                     files-dirname
+                     {:replace-existing true}))
      (println [:rendered path-to-use]))))
 
 (defmacro R [symbols & forms]
