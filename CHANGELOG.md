@@ -1,12 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [3-beta5-SNAPSHOT] - 2021-03-13
-- updated to gorilla-notes 0.5.10: css changes (borught margins back), prepartation for added sci component and external files, support for math inside markdown, experimental quil support
+## [3-beta5] - 2021-03-16
+- updated to gorilla-notes 0.5.11: css changes (borught margins back), prepartation for added sci component and external files, support for math inside markdown, experimental quil support, improved browser sync
 - sci notes
 - quil notes (experimental)
 - support for external files (experimental)
-- added function for render a namespace to file, given a ns symbol (PR #57)
+- added function for rendering a namespace to file, given a ns symbol (PR #57)
 - clojute.test support (experimental)
 - more careful note rendering (handling various situations more gracefully)
 
