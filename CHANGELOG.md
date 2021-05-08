@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [3-beta6] - 2021-05-08
+- updated gorilla-notes version, solving some concurrency and performance problems on the frontend
+
 ## [3-beta5] - 2021-03-16
 - updated to gorilla-notes 0.5.11: css changes (borught margins back), prepartation for added sci component and external files, support for math inside markdown, experimental quil support, improved browser sync
 - sci notes
