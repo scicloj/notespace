@@ -12,6 +12,7 @@
                  [org.clojure/tools.namespace "1.1.0"]
                  [carocad/parcera "0.11.6"]
                  [org.antlr/antlr4-runtime "4.7.1"]
+                 [juji/editscript "0.5.7"]
 
                  ;; avoid conflict with jsonista
                  [scicloj/gorilla-notes "0.5.12"
