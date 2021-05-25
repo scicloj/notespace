@@ -1,7 +1,8 @@
 (ns notespace.v4.read
   (:require [clojure.tools.reader]
             [clojure.tools.reader.reader-types]
-            [parcera.core :as parcera]))
+            [parcera.core :as parcera]
+            [clojure.string :as string]))
 
 (defn read-by-tools-reader [code]
   (->> code
@@ -31,42 +32,54 @@
                 ;; We use parcera only for specific types of
                 ;; code blocks, that tools.reader does not
                 ;; provide location info for.
-                (some-> (cond
-                          ;;
-                          (#{:number :string :symbol :keyword}
-                           node-type)
-                          {:source (first node-contents)}
-                          ;;
-                          (= :comment node-type)
-                          {:comment (first node-contents)})
-                        (assoc :method :parcera
-                               :region
-                               (->> node
-                                    meta
-                                    ((juxt :parcera.core/start
-                                           :parcera.core/end))
-                                    (mapcat (juxt :row
-                                                  (comp inc
-                                                        :column)))
-                                    vec))))))
+                (some->> (when (#{:number :string :symbol :keyword :comment}
+                              node-type)
+                           {:source (first node-contents)})
+                         (merge {:method :parcera
+                                 :region (->> node
+                                              meta
+                                              ((juxt :parcera.core/start
+                                                     :parcera.core/end))
+                                              (mapcat (juxt :row
+                                                            (comp inc
+                                                                  :column)))
+                                              vec)}
+                                (when (= :comment node-type)
+                                  {:comment? true}))))))
        (filter some?)))
 
 
-(->> "dummy.clj"
-     slurp
-     ((juxt read-by-tools-reader read-by-parcera))
-     (apply concat)
-     (group-by :region)
-     (map (fn [[region results]]
-            (if (-> results count (= 1))
-              (first results)
-              ;; prefer tools.reader over parcera
-              (->> results
-                   (filter #(-> % :method (= :tools-reader)))
-                   first))))
-     (sort-by :region)
-     (map #(dissoc % :method))
-     (partition-by :comment))
+(defn unified-cleaned-comment-block [comment-blocks-sorted-by-region]
+  {:region  (vec (concat (->> comment-blocks-sorted-by-region
+                              first
+                              :region
+                              (take 2))
+                         (->> comment-blocks-sorted-by-region
+                              last
+                              :region
+                              (drop 2))))
+   :source (->> comment-blocks-sorted-by-region
+                (map :source)
+                (string/join "\n"))
+   :comment? true})
 
-
-
+(defn ->notes [source]
+  (->> source
+       ((juxt read-by-tools-reader read-by-parcera))
+       (apply concat)
+       (group-by :region)
+       (map (fn [[region results]]
+              (if (-> results count (= 1))
+                (first results)
+                ;; prefer tools.reader over parcera
+                (->> results
+                     (filter #(-> % :method (= :tools-reader)))
+                     first))))
+       (sort-by :region)
+       (map #(dissoc % :method))
+       (partition-by :comment?)
+       (mapcat (fn [part]
+                 (if (-> part first :comment?)
+                   [(unified-cleaned-comment-block part)]
+                   part)))
+       vec))
