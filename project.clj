@@ -10,6 +10,8 @@
                  [org.clojure/core.cache "1.0.207"]
                  [babashka/fs "0.0.1"]
                  [org.clojure/tools.namespace "1.1.0"]
+                 [carocad/parcera "0.11.6"]
+                 [org.antlr/antlr4-runtime "4.7.1"]
 
                  ;; avoid conflict with jsonista
                  [scicloj/gorilla-notes "0.5.12"
