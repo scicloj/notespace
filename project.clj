@@ -10,7 +10,6 @@
                  [org.clojure/core.cache "1.0.207"]
                  [babashka/fs "0.0.1"]
                  [org.clojure/tools.namespace "1.1.0"]
-                 [hawk "0.2.11"]
 
                  ;; avoid conflict with jsonista
                  [scicloj/gorilla-notes "0.5.12"
