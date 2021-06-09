@@ -2,7 +2,14 @@
   (:require [clojure.tools.reader]
             [clojure.tools.reader.reader-types]
             [parcera.core :as parcera]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [notespace.v4.log :as v4.log]))
+
+(def *generation (atom 0))
+
+(defn generation []
+  (swap! *generation inc)
+  @*generation)
 
 (defn read-by-tools-reader [code]
   (->> code
@@ -48,7 +55,6 @@
                                   {:comment? true}))))))
        (filter some?)))
 
-
 (defn unified-cleaned-comment-block [comment-blocks-sorted-by-region]
   {:region  (vec (concat (->> comment-blocks-sorted-by-region
                               first
@@ -82,4 +88,6 @@
                  (if (-> part first :comment?)
                    [(unified-cleaned-comment-block part)]
                    part)))
-       vec))
+       (mapv (let [g (generation)]
+               (fn [note]
+                 (assoc note :gen g))))))
