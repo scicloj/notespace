@@ -1,4 +1,4 @@
-(defproject scicloj/notespace "3-beta6"
+(defproject scicloj/notespace "3-beta7"
   :description "Notebook experience in your Clojure namespace."
   :url "http://github.com/scicloj/notespace"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -13,7 +13,7 @@
                  [hawk "0.2.11"]
 
                  ;; avoid conflict with jsonista
-                 [scicloj/gorilla-notes "0.5.12"
+                 [scicloj/gorilla-notes "0.5.13"
                   :exclusions [com.fasterxml.jackson.core/jackson-core
                                com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
                                com.fasterxml.jackson.dataformat/jackson-dataformat-smile]]

@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [3-beta7] - 2021-06-14
+- updated gorilla-notes version, where static rendering works differently: the client side bundle is a file living alongside the html document, rather than downloaded from a cdn
+
 ## [3-beta6] - 2021-05-08
 - updated gorilla-notes version, solving some concurrency and performance problems on the frontend
 
