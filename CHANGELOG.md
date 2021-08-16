@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [3-beta7] - 2021-06-15
+## [3-beta9] - 2021-08-16
+- allow to specify options for cli render [#61](https://github.com/scicloj/notespace/pull/61)
+
+## [3-beta8] - 2021-08-16
 - excluding com.fzakaria/slf4j-timbre in project definition
 - removing the delay in listen mode
 
