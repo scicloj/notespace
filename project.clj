@@ -1,4 +1,4 @@
-(defproject scicloj/notespace "3-beta7"
+(defproject scicloj/notespace "3-beta8"
   :description "Notebook experience in your Clojure namespace."
   :url "http://github.com/scicloj/notespace"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -16,7 +16,8 @@
                  [scicloj/gorilla-notes "0.5.13"
                   :exclusions [com.fasterxml.jackson.core/jackson-core
                                com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
-                               com.fasterxml.jackson.dataformat/jackson-dataformat-smile]]
+                               com.fasterxml.jackson.dataformat/jackson-dataformat-smile
+                               com.fzakaria/slf4j-timbre]]
                  [com.fasterxml.jackson.core/jackson-core "2.10.0"]
                  [com.fasterxml.jackson.core/jackson-annotations "2.10.0"]
                  [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor "2.10.0"]
@@ -25,3 +26,4 @@
                    :dependencies [[midje "1.9.9"]]
                    :plugins      [[lein-midje "3.2.1"]
                                   [lein-cloverage "1.1.2"]]}})
+

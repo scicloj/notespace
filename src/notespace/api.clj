@@ -110,7 +110,7 @@
    (swap! namespaces-listening-to-changes #(remove #{anamespace} %))))
 
 (defonce listen-sleep
-  (atom 300))
+  (atom 0))
 
 (defonce periodically-react-to-changes
   (future
