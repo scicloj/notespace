@@ -1,7 +1,8 @@
 (ns notespace.v4.log
-  (:require [clojure.pprint :as pp]))
+  (:require [clojure.pprint :as pp]
+            [gorilla-notes.core :as gn]))
 
-(def log-path "/tmp/notespace-nrepl-log.edn")
+(def log-path "/tmp/notespace-log.edn")
 
 (defn empty-logfile []
   ;; Run in a different thread.
@@ -33,3 +34,18 @@
         with-out-str
         log)
    data))
+
+;; (defn log-data-and-broadcast
+;;   ([data]
+;;    (log-data-and-broadcast nil data))
+;;   ([title data]
+;;    (log-data title data)
+;;    (gn/add-note!
+;;     [:div [:p title]
+;;      [:p/code (-> data pp/pprint with-out-str)]])
+;;    data))
+
+;; (comment
+;;   (log-data-and-broadcast ".")
+;;   (gn/reset-notes!))
+

@@ -3,7 +3,8 @@
             [clojure.tools.reader.reader-types]
             [parcera.core :as parcera]
             [clojure.string :as string]
-            [notespace.v4.log :as v4.log]))
+            [notespace.v4.log :as v4.log]
+            [notespace.v4.status :as v4.status]))
 
 (def *generation (atom 0))
 
@@ -13,21 +14,21 @@
 
 (defn read-by-tools-reader [code]
   (->> code
-       clojure.tools.reader.reader-types/source-logging-push-back-reader
-       repeat
-       (map #(clojure.tools.reader/read % false ::EOF))
-       (take-while (partial not= ::EOF))
-       (map (fn [form]
-              (let [{:keys [line column
-                            end-line end-column
-                            source]}
-                    (meta form)]
-                (when line ; skip forms with no location info
-                  {:method :tools-reader
-                   :region [line column
-                            end-line end-column]
-                   :source source}))))
-       (filter some?)))
+         clojure.tools.reader.reader-types/source-logging-push-back-reader
+         repeat
+         (map #(clojure.tools.reader/read % false ::EOF))
+         (take-while (partial not= ::EOF))
+         (map (fn [form]
+                (let [{:keys [line column
+                              end-line end-column
+                              source]}
+                      (meta form)]
+                  (when line ; skip forms with no location info
+                    {:method :tools-reader
+                     :region [line column
+                              end-line end-column]
+                     :source source}))))
+         (filter some?)))
 
 (defn read-by-parcera [code]
   (->> code
@@ -71,23 +72,32 @@
 
 (defn ->notes [source]
   (->> source
-       ((juxt read-by-tools-reader read-by-parcera))
-       (apply concat)
-       (group-by :region)
-       (map (fn [[region results]]
-              (if (-> results count (= 1))
-                (first results)
-                ;; prefer tools.reader over parcera
-                (->> results
-                     (filter #(-> % :method (= :tools-reader)))
-                     first))))
-       (sort-by :region)
-       (map #(dissoc % :method))
-       (partition-by :comment?)
-       (mapcat (fn [part]
-                 (if (-> part first :comment?)
-                   [(unified-cleaned-comment-block part)]
-                   part)))
-       (mapv (let [g (generation)]
-               (fn [note]
-                 (assoc note :gen g))))))
+    ((juxt read-by-tools-reader read-by-parcera))
+    (apply concat)
+    (group-by :region)
+    (map (fn [[region results]]
+           (if (-> results count (= 1))
+             (first results)
+             ;; prefer tools.reader over parcera
+             (->> results
+               (filter #(-> % :method (= :tools-reader)))
+               first))))
+    (sort-by :region)
+    (map #(dissoc % :method))
+    (partition-by :comment?)
+    (mapcat (fn [part]
+              (if (-> part first :comment?)
+                [(unified-cleaned-comment-block part)]
+                part)))
+    (mapv (let [g (generation)]
+            (fn [note]
+              (assoc note :gen g))))))
+
+
+(defn ->safe-notes [source]
+  (try
+    (->notes source)
+    (catch Exception e
+      (v4.status/add :invalid-notes {})
+      nil)))
+
