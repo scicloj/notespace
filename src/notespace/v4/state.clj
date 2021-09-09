@@ -17,7 +17,8 @@
 (declare update-view)
 
 (defn start []
-  (swap! *state assoc :started? true))
+  (swap! *state assoc :started? true)
+  (update-view))
 
 (defn started? []
   (:started? @*state))
