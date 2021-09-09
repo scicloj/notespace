@@ -1,4 +1,5 @@
-(ns notespace.v4.render)
+(ns notespace.v4.render
+  (:require [notespace.v4.image :as v4.image]))
 
 
 (defprotocol Renderable
@@ -12,8 +13,10 @@
      (pr-str o)])
   nil
   (render [this]
-    [:div]))
-
+    [:div])
+  java.awt.image.BufferedImage
+  (render [this]
+    (v4.image/buffered-image->hiccup this)))
 
 (defn as-hiccup [content]
   (vary-meta
