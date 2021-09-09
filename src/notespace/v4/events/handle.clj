@@ -65,7 +65,7 @@
 
 (defn handle-value [{:keys [request-id value]
                      :as   event}]
-  (when-let [path (v4.state/request-path requv4.state/est-id)]
+  (when-let [path (v4.state/request-path request-id)]
     (v4.state/reset-last-value value)
     (v4.state/update-notes
      path
