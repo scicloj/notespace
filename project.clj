@@ -14,6 +14,7 @@
                  [org.antlr/antlr4-runtime "4.7.1"]
                  [juji/editscript "0.5.7"]
                  [hawk "0.2.11"]
+                 [com.nextjournal/beholder "1.0.0"]
                  [techascent/tech.resource "5.04"]
 
                  ;; avoid conflict with jsonista

@@ -3,7 +3,6 @@
             [notespace.v4.log :as v4.log]
             [notespace.v4.merge :as v4.merge]
             [notespace.v4.read :as v4.read]
-            [notespace.v4.watch :as v4.watch]
             [notespace.v4.note :as v4.note]
             [notespace.v4.path :as v4.path]
             [notespace.v4.status :as v4.status]
@@ -17,15 +16,6 @@
                            new-notes))))
 
 (declare handle-buffer-update)
-
-(defn watch-path [path]
-  (when path
-    (future ; avoid blocking the nREPL thread
-            (v4.watch/watch-file
-             path
-             (fn [_ e]
-               (handle-buffer-update
-                {:path (.getPath ^java.io.File (:file e))}))))))
 
 (defn handle-buffer-update [{:keys [path buffer-snapshot]}]
   (some->> (or buffer-snapshot
@@ -75,7 +65,6 @@
 
 
 (defn handle [event]
-  (-> event :path watch-path)
   (case (:event-type event)
     :eval (handle-eval event)
     :buffer-update (handle-buffer-update event)

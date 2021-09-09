@@ -11,7 +11,8 @@
                        :path->notes      {}
                        :request-id->path {}
                        :last-path nil
-                       :event-counter    0}))
+                       :event-counter    0
+                       :watcher nil}))
 
 (declare update-view)
 
@@ -20,6 +21,9 @@
 
 (defn started? []
   (:started? @*state))
+
+(defn start-watching-files [watcher]
+  (swap! *state assoc :watcher watcher))
 
 (defn next-event-counter []
   (swap! *state update :event-counter inc)
