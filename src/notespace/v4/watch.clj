@@ -11,6 +11,10 @@
        {:path       path-str
         :event-type :buffer-update}))))
 
-(defn watcher []
+(defn watch []
   (beholder/watch #'handle "."))
+
+(defn stop [watcher]
+  (beholder/stop watcher))
+
 

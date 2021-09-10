@@ -23,22 +23,9 @@
 (defn started? []
   (:started? @*state))
 
-(defn start-watching-files [watcher]
-  (swap! *state assoc :watcher watcher))
-
 (defn next-event-counter []
   (swap! *state update :event-counter inc)
   (:event-counter @*state))
-
-(defn gn-server []
-  (:gn-server @*state))
-
-(defn start-gorilla-notes-server [options]
-  (when-not (gn-server)
-    (swap! *state
-           assoc
-           :gn-server (gn/start-server! options)))
-  (gn/reset-notes!))
 
 (defn current-notes [path]
   (-> @*state

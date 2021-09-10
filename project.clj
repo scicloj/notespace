@@ -16,6 +16,7 @@
                  [hawk "0.2.11"]
                  [com.nextjournal/beholder "1.0.0"]
                  [techascent/tech.resource "5.04"]
+                 [integrant "0.8.0"]
 
                  ;; avoid conflict with jsonista
                  [scicloj/gorilla-notes "0.5.15-SNAPSHOT"
