@@ -1,7 +1,8 @@
 (ns notespace.v4.view
   (:require [clojure.string :as string]
             [gorilla-notes.core :as gn]
-            [notespace.v4.render :as v4.render]))
+            [notespace.v4.render :as v4.render]
+            [notespace.v4.log :as v4.log]))
 
 (def lightgreyback {:style {:background "#efefef"}})
 
@@ -9,6 +10,7 @@
   [:p [:small [:b title]]])
 
 (defn messages->hiccup [messages]
+  (v4.log/log-data messages)
   [:div
    (title "events log")
    (->> messages
@@ -17,8 +19,13 @@
                [:small
                 [:li message]]))
         (into [:ul {:style {:overflow-y "scroll"
-                            :max-height "60px"}}]))
+                            :max-height "120px"}}]))
    [:hr]])
+
+(defn last-value->hiccup [last-value]
+  [:div
+   (title "last value")
+   (v4.render/render last-value)])
 
 (defn comment-source->hiccup [source]
   [:p/markdown
@@ -36,6 +43,7 @@
      #_[:small lightgreyback "gen" gen]
      [:div lightgreyback [:p/code source]]
      [:p
+      ;; (v4.render/render note)
       (when-let [{:keys [state]} status]
         (case state
           :evaluating "evaluating ..."
@@ -48,14 +56,9 @@
        (map note->hiccup)
        (into [:div])))
 
-
-
-(defn update-view [last-value notes]
-  (->> [:div
-        (title "last value")
-        (or (some-> last-value v4.render/render)
-            "-")
-        [:hr]
-        (title "notes")
-        (notes->hiccup notes)]
-       (gn/assoc-note! 0)))
+(defn ->header [messages last-value]
+  [:div
+   (messages->hiccup messages)
+   [:hr]
+   (last-value->hiccup last-value)
+   [:hr]])

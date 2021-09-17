@@ -5,68 +5,79 @@
             [notespace.v4.read :as v4.read]
             [notespace.v4.note :as v4.note]
             [notespace.v4.path :as v4.path]
-            [notespace.v4.status :as v4.status]
+            [notespace.v4.state :as v4.state]
+            [notespace.v4.change :as v4.change]
             [notespace.v4.view :as v4.view]))
 
-(defn merge-new-notes [path new-notes]
-  (v4.state/update-notes
-   path
-   (fn [current-notes]
-     (v4.merge/merge-notes current-notes
-                           new-notes))))
+:notespace.v4.events.handle/buffer-update
 
-(declare handle-buffer-update)
+(defmulti handle :event/type)
 
-(defn handle-buffer-update [{:keys [path buffer-snapshot]}]
-  (some->> (or buffer-snapshot
-               (slurp path))
-           v4.read/->safe-notes
-           (merge-new-notes path))
-  (v4.status/add :updated-buffer
-                 {:path path}))
+(defmethod handle :default [event]
+  (throw (ex-info "Unrecognized event"
+                  {:event event})))
 
-(defn handle-eval [{:keys [path code buffer-snapshot request-id]
-                    :as event}]
-  (v4.status/add :handle-eval
-                 {:event event})
+(defmethod handle ::buffer-update
+  [{:keys [path buffer-snapshot state]}]
+  (let [old-notes (v4.state/path-notes state path)
+        new-notes (->> (or buffer-snapshot
+                           (slurp path))
+                       v4.read/->safe-notes)
+        edits (some->> new-notes
+                       (v4.merge/merge-notes old-notes))
+        new-state (-> (if edits
+                        (-> state
+                            (v4.change/edit-notes path edits))
+                        state)
+                      (v4.change/set-current-path path))]
+    (v4.state/add-formatted-message! :edit
+                                     {:edits     edits
+                                      :old-nodes old-notes
+                                      :new-notes new-notes
+                                      :new-state new-state})
+    (v4.state/add-formatted-message! :updated-buffer
+                                     {:path path})
+    new-state))
+
+(defmethod handle ::eval
+  [{:keys [path code buffer-snapshot request-id state]}]
   (when path
     (when buffer-snapshot
-      (handle-buffer-update {:buffer-snapshot buffer-snapshot
-                             :path path}))
-    (v4.state/update-request-path request-id path)
-    (let [current-notes (v4.state/current-notes path)
-          region-notes  (some->> code
-                                 v4.read/->safe-notes
-                                 (map #(v4.note/mark-status
-                                        %
-                                        {:state      :evaluating
-                                         :request-id request-id})))
+      (handle {:event/type ::buffer-snapshot
+               :path            path}))
+    (let [region-notes (some->> code
+                                v4.read/->safe-notes
+                                (map #(v4.note/mark-status
+                                       %
+                                       {:state      :evaluating
+                                        :request-id request-id})))
           merged-notes (if region-notes
                          (v4.merge/merge-eval-region-notes
-                          current-notes
+                          (v4.state/current-notes state)
                           region-notes)
-                         current-notes)]
-      (v4.state/update-notes
-       path
-       (fn [_] merged-notes)))
-    (v4.status/add :started-eval
-                   {:path       path
-                    :request-id request-id})))
+                         [])
+          new-state (-> state
+                        (v4.change/set-request-path request-id path)
+                        (v4.change/edit-notes path merged-notes))]
+      (v4.state/add-formatted-message! :started-eval
+                                          {:path       path
+                                           :request-id request-id})
+      state)))
 
-(defn handle-value [{:keys [request-id value]
-                     :as   event}]
-  (when-let [path (v4.state/request-path request-id)]
-    (v4.state/reset-last-value value)
-    (v4.state/update-notes
-     path
-     (fn [current-notes]
-       (v4.merge/merge-value current-notes
-                             event)))))
-
-
-(defn handle [event]
-  (case (:event-type event)
-    :eval (handle-eval event)
-    :buffer-update (handle-buffer-update event)
-    :value (handle-value event)))
+(defmethod handle ::value
+  [{:keys [request-id value state] :as event}]
+  (let [new-state (-> (if-let [path (v4.state/request-path state request-id)]
+                        ;; found the relevant eval request
+                        ;; -- try edit the notes with the value
+                        (do (v4.state/add-formatted-message! :updating-nots-with-value)
+                            (v4.change/edit-notes
+                             state
+                             path
+                             (v4.merge/merge-value (v4.state/current-notes state)
+                                                   event)))
+                        ;; else -- cannot edit the notes
+                        state)
+                      (v4.change/set-last-value value))]
+    (v4.state/add-formatted-message! :updated-last-value)
+    new-state))
 

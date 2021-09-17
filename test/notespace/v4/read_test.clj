@@ -3,8 +3,7 @@
             [midje.sweet :refer [fact =>]]))
 
 
-(fact (v4.read/->notes
-       "
+(fact (->> "
 (def x
   ;; let us define x
   9)
@@ -26,7 +25,9 @@ x
 3 4 5
 
 :bye
-")
+"
+           v4.read/->notes
+           (map #(dissoc % :gen)))
 
       =>
 

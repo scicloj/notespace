@@ -4,7 +4,8 @@
             [parcera.core :as parcera]
             [clojure.string :as string]
             [notespace.v4.log :as v4.log]
-            [notespace.v4.status :as v4.status]))
+            [notespace.v4.state :as v4.state]
+            [notespace.v4.note :as v4.note]))
 
 (def *generation (atom 0))
 
@@ -14,21 +15,21 @@
 
 (defn read-by-tools-reader [code]
   (->> code
-         clojure.tools.reader.reader-types/source-logging-push-back-reader
-         repeat
-         (map #(clojure.tools.reader/read % false ::EOF))
-         (take-while (partial not= ::EOF))
-         (map (fn [form]
-                (let [{:keys [line column
-                              end-line end-column
-                              source]}
-                      (meta form)]
-                  (when line ; skip forms with no location info
-                    {:method :tools-reader
-                     :region [line column
-                              end-line end-column]
-                     :source source}))))
-         (filter some?)))
+       clojure.tools.reader.reader-types/source-logging-push-back-reader
+       repeat
+       (map #(clojure.tools.reader/read % false ::EOF))
+       (take-while (partial not= ::EOF))
+       (map (fn [form]
+              (let [{:keys [line column
+                            end-line end-column
+                            source]}
+                    (meta form)]
+                (when line ; skip forms with no location info
+                  {:method :tools-reader
+                   :region [line column
+                            end-line end-column]
+                   :source source}))))
+       (filter some?)))
 
 (defn read-by-parcera [code]
   (->> code
@@ -90,14 +91,16 @@
                 [(unified-cleaned-comment-block part)]
                 part)))
     (mapv (let [g (generation)]
-            (fn [note]
-              (assoc note :gen g))))))
+            (fn [note-data]
+              (-> note-data
+                  (assoc :gen g)
+                  v4.note/->new-note))))))
 
 
 (defn ->safe-notes [source]
   (try
     (->notes source)
     (catch Exception e
-      (v4.status/add :invalid-notes {})
+      (v4.state/add-formatted-message! :invalid-notes {})
       nil)))
 

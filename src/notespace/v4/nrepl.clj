@@ -1,6 +1,8 @@
 (ns notespace.v4.nrepl
-  (:require [nrepl.middleware :as middleware]
+  (:require [nrepl.core :as nrepl]
+            [nrepl.middleware :as middleware]
             [nrepl.middleware.print :as print]
+            [nrepl.middleware.dynamic-loader :as dynamic-loader]
             [nrepl.transport :as transport]
             [clojure.core.async :as async]
             [notespace.v4.loop :as v4.loop]
@@ -8,7 +10,8 @@
             [notespace.v4.path :as v4.path]))
 
 
-(defn get-path-when-eval-buffer [{:keys [op file-path code] :as request}]
+(defn get-path-when-eval-buffer 
+  [{:keys [op file-path code] :as request}]
   (cond ;;
     (= op "load-file")
     file-path
@@ -33,14 +36,14 @@
       (when-not (some->> file
                          (re-matches #"\*cider-repl.*\*"))
         (let [event-type (if path-when-eval-buffer
-                           :buffer-update
-                           :eval)
+                           :notespace.v4.events.handle/buffer-update
+                           :notespace.v4.events.handle/eval)
               path  (or path-when-eval-buffer
                         file)]
           (merge {:request-id id
-                  :event-type event-type
+                  :event/type event-type
                   :path       path}
-                 (when (= event-type :eval)
+                 (when (= event-type :notespace.v4.events.handle/eval)
                    {:code code})))))))
 
 (defn handle-request [request]
@@ -53,11 +56,11 @@
   (when (and (= "eval" op)
              (contains? message :value))
     (let [request-event (request->event request)]
-      (when (-> request-event :event-type (= :eval))
+      (when (-> request-event :event/type (= :notespace.v4.events.handle/eval))
         (v4.loop/push-event
          {:request-id id
           :value      value
-          :event-type :value})))))
+          :event/type :notespace.v4.events.handle/value})))))
 
 (defn middleware [f]
   (fn [request]
@@ -79,4 +82,7 @@
                             {:requires #{#'print/wrap-print}
                              :expects #{"eval"}
                              :handles {}})
+
+
+
 

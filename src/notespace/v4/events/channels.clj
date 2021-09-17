@@ -1,8 +1,7 @@
 (ns notespace.v4.events.channels
   (:require [clojure.core.async :as async :refer [<! go go-loop timeout chan]]
             [notespace.v4.log :as v4.log]
-            [notespace.v4.state :as v4.state]
-            [notespace.v4.status :as v4.status]))
+            [notespace.v4.state :as v4.state]))
 
 (defn pass-valid-events [in out]
   (async/go-loop []

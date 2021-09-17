@@ -9,7 +9,7 @@
     (when (re-matches #".*\.clj$" path-str)
       (v4.loop/push-event
        {:path       path-str
-        :event-type :buffer-update}))))
+        :event/type :notespace.v4.events.handle/buffer-update}))))
 
 (defn watch []
   (beholder/watch #'handle "."))

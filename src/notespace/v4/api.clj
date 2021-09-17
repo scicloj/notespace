@@ -5,7 +5,12 @@
             [gorilla-notes.core :as gn]))
 
 (defn start [{:keys [port open-browser?]}]
-  (v4.state/start)
+  (v4.state/start!)
   (v4.system/init)
   (when open-browser?
     (gn/browse-http-url)))
+
+(defonce dev
+  (start {:port 1903}))
+
+
