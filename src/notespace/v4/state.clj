@@ -15,6 +15,7 @@
 
 (defonce *messages (atom []))
 
+
 (defn next-event-counter []
   (swap! *state update :event-counter inc)
   (:event-counter @*state))

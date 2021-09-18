@@ -7,7 +7,10 @@
            (java.util.Date.)))
 
 (defn add-message [messages message]
-  (conj messages message))
+  (-> messages
+      (conj message)
+      (->> (take 20))
+      vec))
 
 (defn add-formatted-message [messages label info]
   (add-message

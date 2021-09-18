@@ -14,11 +14,4 @@
 (defn ->new-note [note-data]
   (assoc note-data ::id (next-id)))
 
-(defn start-line [note]
-  (-> note :region first))
 
-(defn shift [note line-offset]
-  (-> note
-      (update-in [:region 0] (partial + line-offset))
-      (update-in [:region 2] (partial + line-offset))
-      ->new-note))

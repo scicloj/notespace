@@ -9,8 +9,6 @@
             [notespace.v4.change :as v4.change]
             [notespace.v4.view :as v4.view]))
 
-:notespace.v4.events.handle/buffer-update
-
 (defmulti handle :event/type)
 
 (defmethod handle :default [event]
@@ -30,11 +28,6 @@
                             (v4.change/edit-notes path edits))
                         state)
                       (v4.change/set-current-path path))]
-    (v4.state/add-formatted-message! :edit
-                                     {:edits     edits
-                                      :old-nodes old-notes
-                                      :new-notes new-notes
-                                      :new-state new-state})
     (v4.state/add-formatted-message! :updated-buffer
                                      {:path path})
     new-state))
@@ -66,10 +59,13 @@
 
 (defmethod handle ::value
   [{:keys [request-id value state] :as event}]
+  (v4.state/add-formatted-message! :debug {:request-id request-id
+                                           :value value
+                                           :path (v4.state/request-path state request-id)})
   (let [new-state (-> (if-let [path (v4.state/request-path state request-id)]
                         ;; found the relevant eval request
                         ;; -- try edit the notes with the value
-                        (do (v4.state/add-formatted-message! :updating-nots-with-value)
+                        (do (v4.state/add-formatted-message! :updating-notes-with-value)
                             (v4.change/edit-notes
                              state
                              path

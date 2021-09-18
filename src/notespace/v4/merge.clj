@@ -9,20 +9,26 @@
             [notespace.v4.note :as v4.note]))
 
 (defn merge-notes [old-notes new-notes]
-  ;; (v4.state/add-formatted-message! :DEBUG1
-  ;;                                  {:old old-notes
-  ;;                                   :new new-notes})
-  (v4.diff/diff-by-function (or old-notes [])
+ (v4.diff/diff-by-function (or old-notes [])
                             new-notes
                             (juxt :source :region)))
 
+(defn ->read-context [note]
+  (select-keys note [:region :source]))
+
+(defn start-line [read-context]
+  (-> read-context :region first))
+
+(defn shift [read-context line-offset]
+  (-> read-context
+      (update-in [:region 0] (partial + line-offset))
+      (update-in [:region 2] (partial + line-offset))))
+
 (defn identify-valid-offsets [current-notes region-notes]
-  (let [->read-context            (fn [note]
-                                (select-keys note [:region :source]))
-        current-read-contexts     (map ->read-context current-notes)
+  (let [current-read-contexts     (map ->read-context current-notes)
         region-read-contexts      (map ->read-context region-notes)
-        current-notes-start-lines (map v4.note/start-line current-notes)
-        region-notes-start-lines  (map v4.note/start-line region-notes)
+        current-notes-start-lines (map start-line current-notes)
+        region-notes-start-lines  (map start-line region-notes)
         first-region-line         (first region-notes-start-lines)
         region-n-notes            (count region-notes)]
     (->> current-notes-start-lines
@@ -33,9 +39,9 @@
                    (->> current-read-contexts
                         (drop idx-offset)
                         (take region-n-notes)
-                        (map (fn [note]
-                               (v4.note/shift note
-                                              (- line-offset))))
+                        (map (fn [read-context]
+                               (shift read-context
+                                      (- line-offset))))
                         (= region-read-contexts)))))))
 
 (defn identify-unique-offset [current-notes region-notes]
@@ -62,10 +68,13 @@
                                                 {:idx-offset  idx-offset
                                                  :line-offset line-offset})
             (->> region-notes
-                 (mapv (fn [i note]
-                         [[(+ i idx-offset)]
-                          :r
-                          (v4.note/shift note line-offset)]))))))))
+                 (map-indexed (fn [i note]
+                                [[(+ i idx-offset)]
+                                 :r
+                                 (-> note
+                                     (shift line-offset)
+                                     v4.note/->new-note)]))
+                 vec))))))
 
 (defn merge-value [current-notes
                    {:keys [request-id value]

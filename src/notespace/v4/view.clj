@@ -12,19 +12,16 @@
 (defn messages->hiccup [messages]
   (v4.log/log-data messages)
   [:div
-   (title "events log")
    (->> messages
         reverse
         (map (fn [message]
                [:small
                 [:li message]]))
         (into [:ul {:style {:overflow-y "scroll"
-                            :max-height "120px"}}]))
-   [:hr]])
+                            :max-height "120px"}}]))])
 
 (defn last-value->hiccup [last-value]
   [:div
-   (title "last value")
    (v4.render/render last-value)])
 
 (defn comment-source->hiccup [source]
@@ -58,7 +55,10 @@
 
 (defn ->header [messages last-value]
   [:div
+   (title "events log")
    (messages->hiccup messages)
    [:hr]
+   (title "last value")
    (last-value->hiccup last-value)
-   [:hr]])
+   [:hr]
+   (title "notes")])
