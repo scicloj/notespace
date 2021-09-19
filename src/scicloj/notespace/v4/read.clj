@@ -1,11 +1,11 @@
-(ns notespace.v4.read
+(ns scicloj.notespace.v4.read
   (:require [clojure.tools.reader]
             [clojure.tools.reader.reader-types]
             [parcera.core :as parcera]
             [clojure.string :as string]
-            [notespace.v4.log :as v4.log]
-            [notespace.v4.state :as v4.state]
-            [notespace.v4.note :as v4.note]))
+            [scicloj.notespace.v4.log :as v4.log]
+            [scicloj.notespace.v4.state :as v4.state]
+            [scicloj.notespace.v4.note :as v4.note]))
 
 (def *generation (atom 0))
 

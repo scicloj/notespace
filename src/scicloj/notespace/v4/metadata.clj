@@ -1,4 +1,4 @@
-(ns notespace.v4.metadata
+(ns scicloj.notespace.v4.metadata
   (:import [clojure.lang IObj]))
 
 (deftype HasMeta [data metadata]

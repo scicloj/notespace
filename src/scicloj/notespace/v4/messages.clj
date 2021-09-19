@@ -1,6 +1,6 @@
-(ns notespace.v4.messages
+(ns scicloj.notespace.v4.messages
   (:require [clojure.pprint :as pp]
-            [notespace.v4.path :as v4.path]))
+            [scicloj.notespace.v4.path :as v4.path]))
 
 (defn time-string []
   (.format (new java.text.SimpleDateFormat "HH:mm:ss")

@@ -1,7 +1,7 @@
-(ns notespace.v4.path
+(ns scicloj.notespace.v4.path
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [notespace.v4.log :as v4.log])
+            [scicloj.notespace.v4.log :as v4.log])
   (:import (java.nio.file LinkOption)))
 
 (set! *warn-on-reflection* true)

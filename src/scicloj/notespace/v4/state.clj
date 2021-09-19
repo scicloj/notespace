@@ -1,8 +1,8 @@
-(ns notespace.v4.state
-  (:require [notespace.v4.log :as v4.log]
-            [notespace.v4.view :as v4.view]
-            [notespace.v4.frontend.change :as v4.frontend.change]
-            [notespace.v4.messages :as v4.messages]
+(ns scicloj.notespace.v4.state
+  (:require [scicloj.notespace.v4.log :as v4.log]
+            [scicloj.notespace.v4.view :as v4.view]
+            [scicloj.notespace.v4.frontend.change :as v4.frontend.change]
+            [scicloj.notespace.v4.messages :as v4.messages]
             [editscript.core :as editscript])
   (:import java.util.Date))
 

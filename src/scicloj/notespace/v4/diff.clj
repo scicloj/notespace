@@ -1,6 +1,6 @@
-(ns notespace.v4.diff
+(ns scicloj.notespace.v4.diff
   (:require [editscript.core :as editscript]
-            [notespace.v4.metadata :as v4.metadata]))
+            [scicloj.notespace.v4.metadata :as v4.metadata]))
 
 (defn diff-by-function [old-values new-values f]
   (->> [old-values new-values]

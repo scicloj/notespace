@@ -1,8 +1,8 @@
-(ns notespace.v4.view
+(ns scicloj.notespace.v4.view
   (:require [clojure.string :as string]
             [gorilla-notes.core :as gn]
-            [notespace.v4.render :as v4.render]
-            [notespace.v4.log :as v4.log]))
+            [scicloj.notespace.v4.render :as v4.render]
+            [scicloj.notespace.v4.log :as v4.log]))
 
 (def lightgreyback {:style {:background "#efefef"}})
 

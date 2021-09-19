@@ -1,12 +1,12 @@
-(ns notespace.v4.merge
-  (:require [notespace.v4.log :as v4.log]
+(ns scicloj.notespace.v4.merge
+  (:require [scicloj.notespace.v4.log :as v4.log]
             [editscript.core :as editscript]
             [editscript.edit :as edit]
-            [notespace.v4.state :as v4.state]
-            [notespace.v4.change :as v4.change]
-            [notespace.v4.messages :as v4.messages]
-            [notespace.v4.diff :as v4.diff]
-            [notespace.v4.note :as v4.note]))
+            [scicloj.notespace.v4.state :as v4.state]
+            [scicloj.notespace.v4.change :as v4.change]
+            [scicloj.notespace.v4.messages :as v4.messages]
+            [scicloj.notespace.v4.diff :as v4.diff]
+            [scicloj.notespace.v4.note :as v4.note]))
 
 (defn merge-notes [old-notes new-notes]
  (v4.diff/diff-by-function (or old-notes [])

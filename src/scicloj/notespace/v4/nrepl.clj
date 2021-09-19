@@ -1,13 +1,13 @@
-(ns notespace.v4.nrepl
+(ns scicloj.notespace.v4.nrepl
   (:require [nrepl.core :as nrepl]
             [nrepl.middleware :as middleware]
             [nrepl.middleware.print :as print]
             [nrepl.middleware.dynamic-loader :as dynamic-loader]
             [nrepl.transport :as transport]
             [clojure.core.async :as async]
-            [notespace.v4.loop :as v4.loop]
-            [notespace.v4.log :as v4.log]
-            [notespace.v4.path :as v4.path]))
+            [scicloj.notespace.v4.loop :as v4.loop]
+            [scicloj.notespace.v4.log :as v4.log]
+            [scicloj.notespace.v4.path :as v4.path]))
 
 
 (defn get-path-when-eval-buffer 
@@ -36,14 +36,14 @@
       (when-not (some->> file
                          (re-matches #"\*cider-repl.*\*"))
         (let [event-type (if path-when-eval-buffer
-                           :notespace.v4.events.handle/buffer-update
-                           :notespace.v4.events.handle/eval)
+                           :scicloj.notespace.v4.events.handle/buffer-update
+                           :scicloj.notespace.v4.events.handle/eval)
               path  (or path-when-eval-buffer
                         file)]
           (merge {:request-id id
                   :event/type event-type
                   :path       path}
-                 (when (= event-type :notespace.v4.events.handle/eval)
+                 (when (= event-type :scicloj.notespace.v4.events.handle/eval)
                    {:code code})))))))
 
 (defn handle-request [request]
@@ -56,11 +56,11 @@
   (when (and (= "eval" op)
              (contains? message :value))
     (let [request-event (request->event request)]
-      (when (-> request-event :event/type (= :notespace.v4.events.handle/eval))
+      (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
         (v4.loop/push-event
          {:request-id id
           :value      value
-          :event/type :notespace.v4.events.handle/value})))))
+          :event/type :scicloj.notespace.v4.events.handle/value})))))
 
 (defn middleware [f]
   (fn [request]

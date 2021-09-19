@@ -1,4 +1,4 @@
-(ns notespace.v4.image
+(ns scicloj.notespace.v4.image
   (:require [tech.v3.resource :as resource]
             [clojure.java.io :as io]
             [babashka.fs :as fs])

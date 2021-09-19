@@ -1,7 +1,7 @@
-(ns notespace.v4.loop
-  (:require [notespace.v4.events.handle :as v4.handle]
-            [notespace.v4.events.channels :as v4.channels]
-            [notespace.v4.state :as v4.state]))
+(ns scicloj.notespace.v4.loop
+  (:require [scicloj.notespace.v4.events.handle :as v4.handle]
+            [scicloj.notespace.v4.events.channels :as v4.channels]
+            [scicloj.notespace.v4.state :as v4.state]))
 
 (defn handle-and-transact [event]
   (try

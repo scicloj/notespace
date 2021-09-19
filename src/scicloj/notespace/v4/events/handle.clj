@@ -1,13 +1,13 @@
-(ns notespace.v4.events.handle
-  (:require [notespace.v4.state :as v4.state]
-            [notespace.v4.log :as v4.log]
-            [notespace.v4.merge :as v4.merge]
-            [notespace.v4.read :as v4.read]
-            [notespace.v4.note :as v4.note]
-            [notespace.v4.path :as v4.path]
-            [notespace.v4.state :as v4.state]
-            [notespace.v4.change :as v4.change]
-            [notespace.v4.view :as v4.view]))
+(ns scicloj.notespace.v4.events.handle
+  (:require [scicloj.notespace.v4.state :as v4.state]
+            [scicloj.notespace.v4.log :as v4.log]
+            [scicloj.notespace.v4.merge :as v4.merge]
+            [scicloj.notespace.v4.read :as v4.read]
+            [scicloj.notespace.v4.note :as v4.note]
+            [scicloj.notespace.v4.path :as v4.path]
+            [scicloj.notespace.v4.state :as v4.state]
+            [scicloj.notespace.v4.change :as v4.change]
+            [scicloj.notespace.v4.view :as v4.view]))
 
 (defmulti handle :event/type)
 

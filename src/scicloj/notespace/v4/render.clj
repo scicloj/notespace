@@ -1,5 +1,5 @@
-(ns notespace.v4.render
-  (:require [notespace.v4.image :as v4.image]))
+(ns scicloj.notespace.v4.render
+  (:require [scicloj.notespace.v4.image :as v4.image]))
 
 
 (defprotocol Renderable
@@ -21,5 +21,5 @@
 (defn as-hiccup [content]
   (vary-meta
    content
-   assoc 'notespace.v4.render/render identity))
+   assoc 'scicloj.notespace.v4.render/render identity))
 

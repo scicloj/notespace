@@ -1,4 +1,4 @@
-(ns notespace.v4.frontend.engine
+(ns scicloj.notespace.v4.frontend.engine
   (:require [gorilla-notes.core :as gorilla-notes]))
 
 (defn start! [options]

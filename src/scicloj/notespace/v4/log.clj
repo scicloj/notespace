@@ -1,4 +1,4 @@
-(ns notespace.v4.log
+(ns scicloj.notespace.v4.log
   (:require [clojure.pprint :as pp]
             [gorilla-notes.core :as gn]))
 

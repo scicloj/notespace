@@ -1,4 +1,4 @@
-(ns notespace.v4.note)
+(ns scicloj.notespace.v4.note)
 
 (defonce current-id (atom 0))
 
