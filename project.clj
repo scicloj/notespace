@@ -31,4 +31,4 @@
                    :dependencies [[midje "1.9.9"]]
                    :plugins      [[lein-midje "3.2.1"]
                                   [lein-cloverage "1.1.2"]]
-                   :repl-options {:nrepl-middleware [notespace.v4.nrepl/middleware]}}})
+                   :repl-options {:nrepl-middleware [scicloj.notespace.v4.nrepl/middleware]}}})
