@@ -9,7 +9,7 @@
 (defn add-message [messages message]
   (-> messages
       (conj message)
-      (->> (take 20))
+      (->> (take-last 20))
       vec))
 
 (defn add-formatted-message [messages label info]

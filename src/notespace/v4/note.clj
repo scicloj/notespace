@@ -1,11 +1,5 @@
 (ns notespace.v4.note)
 
-(defn mark-as-new [note]
-  (assoc note :new? true))
-
-(defn mark-status [note status]
-  (assoc note :status status))
-
 (defonce current-id (atom 0))
 
 (defn next-id []
@@ -14,4 +8,7 @@
 (defn ->new-note [note-data]
   (assoc note-data ::id (next-id)))
 
-
+(defn mark-status [note status]
+  (-> note
+      (assoc :status status)
+      ->new-note))

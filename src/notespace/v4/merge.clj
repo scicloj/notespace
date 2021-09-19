@@ -91,7 +91,13 @@
                         first
                         first)]
         ;; found where this value belongs:
-        [[[idx :status :state] :r :evaluated]
-         [[idx :status :value] :r :value]]
+        (let [note-with-value (-> idx
+                                  current-notes
+                                  (update :status
+                                          assoc
+                                          :state :evaluated
+                                          :value value)
+                                  (v4.note/->new-note))]
+          [[[idx] :r note-with-value]])
         ;; else -- not found:
         [])))

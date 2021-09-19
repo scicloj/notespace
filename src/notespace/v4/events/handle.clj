@@ -55,13 +55,10 @@
       (v4.state/add-formatted-message! :started-eval
                                           {:path       path
                                            :request-id request-id})
-      state)))
+      new-state)))
 
 (defmethod handle ::value
   [{:keys [request-id value state] :as event}]
-  (v4.state/add-formatted-message! :debug {:request-id request-id
-                                           :value value
-                                           :path (v4.state/request-path state request-id)})
   (let [new-state (-> (if-let [path (v4.state/request-path state request-id)]
                         ;; found the relevant eval request
                         ;; -- try edit the notes with the value

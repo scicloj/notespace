@@ -53,7 +53,6 @@
 (defn stop! []
   (swap! *state assoc :started? false))
 
-
 (defn add-formatted-message!
   ([label]
    (add-formatted-message! label {}))

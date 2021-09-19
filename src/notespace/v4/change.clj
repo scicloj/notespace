@@ -2,6 +2,7 @@
   (:require [clojure.pprint :as pp]
             [notespace.v4.path :as v4.path]
             [notespace.v4.state :as v4.state]
+            [notespace.v4.log :as v4.log]
             [editscript.core :as editscript]))
 
 

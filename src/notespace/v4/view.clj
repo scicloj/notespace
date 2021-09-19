@@ -10,7 +10,6 @@
   [:p [:small [:b title]]])
 
 (defn messages->hiccup [messages]
-  (v4.log/log-data messages)
   [:div
    (->> messages
         reverse
