@@ -23,3 +23,9 @@
    content
    assoc 'scicloj.notespace.v4.render/render identity))
 
+(defn as-vega [content]
+  (vary-meta
+   content
+   assoc 'scicloj.notespace.v4.render/render
+   (fn [spec]
+     [:p/vega spec])))
