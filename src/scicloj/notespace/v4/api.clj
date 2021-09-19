@@ -10,7 +10,5 @@
   (when open-browser?
     (gn/browse-http-url)))
 
-(defonce dev
-  (start {:port 1903}))
 
 
