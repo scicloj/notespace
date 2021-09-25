@@ -1,5 +1,5 @@
 (ns scicloj.notespace.v4.events.channels
-  (:require [clojure.core.async :as async :refer [<! go go-loop timeout chan]]
+  (:require [clojure.core.async :as async :refer [<! go go-loop timeout chan thread]]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.state :as v4.state]))
 
@@ -68,7 +68,7 @@
 (defonce events-channel (async/chan 100))
 
 (defn start! [handler]
-  (go
+  (thread
     (let [batched-events-channel (async/chan 20)
           clean-events-channel   (async/chan 20)]
       (batch-events events-channel batched-events-channel
