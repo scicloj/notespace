@@ -7,7 +7,9 @@
             [scicloj.notespace.v4.path :as v4.path]
             [scicloj.notespace.v4.state :as v4.state]
             [scicloj.notespace.v4.change :as v4.change]
-            [scicloj.notespace.v4.view :as v4.view]))
+            [scicloj.notespace.v4.view :as v4.view]
+            [scicloj.notespace.v4.render :as v4.render]
+            [clojure.string :as string]))
 
 (defmulti handle :event/type)
 
@@ -40,10 +42,14 @@
                :path            path}))
     (let [region-notes (some->> code
                                 v4.read/->safe-notes
-                                (map #(v4.note/mark-status
-                                       %
-                                       {:state      :evaluating
-                                        :request-id request-id})))
+                                (map (fn [note]
+                                       (if (:comment? note)
+                                         note
+                                         ;; else
+                                         (v4.note/mark-status
+                                          note
+                                          {:state      :evaluating
+                                           :request-id request-id})))))
           merged-notes (if region-notes
                          (v4.merge/merge-eval-region-notes
                           (v4.state/current-notes state)
@@ -53,15 +59,15 @@
                         (v4.change/set-request-path request-id path)
                         (v4.change/edit-notes path merged-notes))]
       (v4.state/add-formatted-message! :started-eval
-                                          {:path       path
-                                           :request-id request-id})
+                                       {:path       path
+                                        :request-id request-id})
       new-state)))
 
 (defmethod handle ::value
   [{:keys [request-id value state] :as event}]
   (let [new-state (-> (if-let [path (v4.state/request-path state request-id)]
                         ;; found the relevant eval request
-                        ;; -- try edit the notes with the value
+                        ;; -- try to edit the notes with the value
                         (do (v4.state/add-formatted-message! :updating-notes-with-value)
                             (v4.change/edit-notes
                              state
@@ -71,6 +77,38 @@
                         ;; else -- cannot edit the notes
                         state)
                       (v4.change/set-last-value value))]
-    (v4.state/add-formatted-message! :updated-last-value)
+    (v4.state/add-formatted-message! :updated-last-value
+                                     {:request-id request-id})
     new-state))
 
+
+(defmethod handle ::error
+  [{:keys [request-id err state] :as event}]
+  (let [new-state (-> state
+                      (v4.change/set-last-value
+                       (-> [:div
+                            [:p/markdown
+                             (-> err
+                                 (string/replace #"\n" "\n\n"))]]
+                           (v4.render/as-hiccup ))))]
+    (v4.state/add-formatted-message! :handled-error
+                                     {:request-id request-id
+                                      :err err})
+    new-state))
+
+(defmethod handle ::done
+  [{:keys [request-id state] :as event}]
+  (let [new-state (-> (if-let [path (v4.state/request-path state request-id)]
+                        ;; found the relevant eval request
+                        ;; -- try to edit the notes with the value
+                        (do (v4.state/add-formatted-message! :updating-notes-with-value)
+                            (v4.change/edit-notes
+                             state
+                             path
+                             (v4.merge/merge-done (v4.state/current-notes state)
+                                                  event)))
+                        ;; else -- cannot edit the notes
+                        state))]
+    (v4.state/add-formatted-message! :finished-handling-eval
+                                     {:request-id request-id})
+    new-state))

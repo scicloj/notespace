@@ -7,7 +7,8 @@
             [clojure.core.async :as async]
             [scicloj.notespace.v4.loop :as v4.loop]
             [scicloj.notespace.v4.log :as v4.log]
-            [scicloj.notespace.v4.path :as v4.path]))
+            [scicloj.notespace.v4.path :as v4.path]
+            [scicloj.notespace.v4.state :as v4.state]))
 
 
 (defn get-path-when-eval-buffer 
@@ -52,15 +53,33 @@
           v4.loop/push-event))
 
 (defn handle-message [{:keys [id op] :as request}
-                      {:keys [value] :as message}]
-  (when (and (= "eval" op)
-             (contains? message :value))
-    (let [request-event (request->event request)]
-      (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-        (v4.loop/push-event
-         {:request-id id
-          :value      value
-          :event/type :scicloj.notespace.v4.events.handle/value})))))
+                      {:keys [value err] :as message}]
+  (when (= "eval" op)
+    (cond
+      ;;
+      (contains? message :value)
+      (let [request-event (request->event request)]
+        (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
+          (v4.loop/push-event
+           {:request-id id
+            :value      value
+            :event/type :scicloj.notespace.v4.events.handle/value})))
+      ;;
+      err
+      (let [request-event (request->event request)]
+        (v4.state/add-formatted-message! :debug)
+        (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
+          (v4.loop/push-event
+           {:request-id id
+            :err err
+            :event/type :scicloj.notespace.v4.events.handle/error})))
+      ;;
+      (-> message :status :done)
+      (let [request-event (request->event request)]
+        (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
+          (v4.loop/push-event
+           {:request-id id
+            :event/type :scicloj.notespace.v4.events.handle/done}))))))
 
 (defn middleware [f]
   (fn [request]
@@ -82,7 +101,4 @@
                             {:requires #{#'print/wrap-print}
                              :expects #{"eval"}
                              :handles {}})
-
-
-
 

@@ -101,3 +101,33 @@
           [[[idx] :r note-with-value]])
         ;; else -- not found:
         [])))
+
+
+(defn merge-done [current-notes
+                  {:keys [request-id value]
+                   :as   event}]
+  (-> (if-let [indexes (->> current-notes
+                            (map-indexed vector)
+                            (filter (fn [[_ {:keys [status]}]]
+                                      (and (-> status
+                                               :state
+                                               (= :evaluating))
+                                           (-> status
+                                               :request-id
+                                               (= request-id)))))
+                            (map first)
+                            seq)]
+        ;; found some evaluated notes that haven't got a value
+        ;; -- mark them as failed
+        (->> indexes
+             (mapv (fn [idx]
+                     (let [note-with-value (-> idx
+                                               current-notes
+                                               (update :status
+                                                       assoc
+                                                       :state :failed)
+                                               (v4.note/->new-note))]
+                       [[[idx] :r note-with-value]]))))
+        
+        ;; else -- nothing to do
+        [])))

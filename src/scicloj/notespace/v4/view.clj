@@ -43,6 +43,7 @@
       (when-let [{:keys [state]} status]
         (case state
           :evaluating "evaluating ..."
+          :failed "failed"
           :evaluated  (-> status
                           :value
                           v4.render/render)))]]))
