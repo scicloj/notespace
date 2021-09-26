@@ -3,7 +3,7 @@
             [scicloj.notespace.v4.frontend.engine :as v4.frontend.engine]
             [scicloj.notespace.v4.watch :as v4.watch]))
 
-(def config
+(def default-config
   {:server/gorilla-notes {:port 1903}
    :watcher/beholder nil})
 
@@ -19,5 +19,10 @@
 (defmethod integrant/halt-key! :adapter/jetty [_ watcher]
   (v4.watch/stop watcher))
 
-(defn init []
-  (integrant/init config))
+(defn init
+  ([]
+   (init default-config))
+  ([config]
+   (->> config
+        (merge default-config)
+        integrant/init)))

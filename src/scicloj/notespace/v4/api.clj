@@ -6,7 +6,9 @@
 
 (defn start [{:keys [port open-browser?]}]
   (v4.state/start!)
-  (v4.system/init)
+  (v4.system/init
+   (merge {}
+          (when port {:server/gorilla-notes {:port port}})))
   (when open-browser?
     (gn/browse-http-url)))
 
