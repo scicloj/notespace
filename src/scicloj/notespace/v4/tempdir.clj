@@ -1,6 +1,7 @@
-(ns notespace.v4.tempdir
+(ns scicloj.notespace.v4.tempdir
   (:require [babashka.fs :as fs]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.string :as string])
   (:import [java.io File]
            [java.nio.file Files Path Paths]
            [java.nio.file.attribute FileAttribute]))
@@ -23,12 +24,19 @@
       (or (make-new!))
       str))
 
-(defn get-tmp-filepath! [extension]
-  (.getPath
-   ^File
-   (File/createTempFile "tmp"
-                       extension
-                       (io/file (get-current!)))))
+(defn get-tempfile! [extension]
+  (let [file ^File (File/createTempFile "tmp"
+                                   extension
+                                   (io/file (get-current!)))
+        path (.getPath file)
+        [dir subdir filename] (-> path
+                                  (string/split #"/"))]
+    [dir subdir filename]
+    {:path path
+     :url (format "/file/%s?subdir=%s&file=%s"
+                  dir subdir filename)}))
+
+
 
 (defn delete-all! []
   (-> root
