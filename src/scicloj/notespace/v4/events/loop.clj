@@ -1,4 +1,4 @@
-(ns scicloj.notespace.v4.loop
+(ns scicloj.notespace.v4.events.loop
   (:require [scicloj.notespace.v4.events.handle :as v4.handle]
             [scicloj.notespace.v4.events.channels :as v4.channels]
             [scicloj.notespace.v4.state :as v4.state]))

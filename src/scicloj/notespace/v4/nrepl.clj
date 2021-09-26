@@ -5,7 +5,7 @@
             [nrepl.middleware.dynamic-loader :as dynamic-loader]
             [nrepl.transport :as transport]
             [clojure.core.async :as async]
-            [scicloj.notespace.v4.loop :as v4.loop]
+            [scicloj.notespace.v4.events.loop :as v4.loop]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.path :as v4.path]
             [scicloj.notespace.v4.state :as v4.state]))
