@@ -6,6 +6,9 @@
 
 (set! *warn-on-reflection* true)
 
+(defn clj-path? [path]
+  (re-matches #".*\.clj$" path))
+
 (defn real-path [path]
   (let [file (io/file path)]
     (when (.exists file)
