@@ -33,3 +33,6 @@
   (gorilla-notes/reset-notes-with-content!
    {:ids-and-content (->> widgets-data
                           (map (juxt id-fn widget-fn)))}))
+
+(defn browse! []
+  (gorilla-notes/browse-http-url))

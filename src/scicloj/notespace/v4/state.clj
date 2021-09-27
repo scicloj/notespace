@@ -6,12 +6,12 @@
             [editscript.core :as editscript])
   (:import java.util.Date))
 
-(defonce *state (atom {:started?         false
-                       :event-counter    0
+(defonce *state (atom {:event-counter    0
                        :last-value       nil
                        :path->notes      {}
                        :request-id->path {}
-                       :current-path        nil}))
+                       :current-path     nil
+                       :pipeline         nil}))
 
 (defonce *messages (atom []))
 
@@ -43,11 +43,11 @@
   (reset! *state state)
   (reset-frontend!))
 
-(defn started? []
-  (:started? @*state))
+(defn pipeline []
+  (:pipeline @*state))
 
-(defn start! []
-  (swap! *state assoc :started? true)
+(defn reset-pipeline! [pipeline]
+  (swap! *state assoc :pipeline pipeline)
   (reset-frontend!))
 
 (defn stop! []

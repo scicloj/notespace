@@ -1,13 +1,13 @@
 (ns scicloj.notespace.v4.watch
   (:require [clojure.pprint :as pp]
             [nextjournal.beholder :as beholder]
-            [scicloj.notespace.v4.events.loop :as v4.loop])
+            [scicloj.notespace.v4.events.pipeline :as v4.pipeline])
   (:import sun.nio.fs.UnixPath))
 
 (defn handle [{:keys [^UnixPath path]}]
   (let [path-str (.toString path)]
     (when (re-matches #".*\.clj$" path-str)
-      (v4.loop/push-event
+      (v4.pipeline/process-event
        {:path       path-str
         :event/type :scicloj.notespace.v4.events.handle/buffer-update}))))
 

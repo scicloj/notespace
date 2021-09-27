@@ -65,20 +65,20 @@
       (run! handler events))
     (recur)))
 
-(defonce events-channel (async/chan 100))
-
 (defn start! [handler]
-  (thread
-    (let [batched-events-channel (async/chan 20)
-          clean-events-channel   (async/chan 20)]
-      (batch-events events-channel batched-events-channel
-                    {:max-time  200
-                     :max-count 100})
-      (cleanup-events batched-events-channel clean-events-channel)
-      (handle-events clean-events-channel handler))))
+  (let [events-channel         (async/chan 100)
+        batched-events-channel (async/chan 20)
+        clean-events-channel   (async/chan 20)]
+    (batch-events events-channel batched-events-channel
+                  {:max-time  200
+                   :max-count 100})
+    (cleanup-events batched-events-channel clean-events-channel)
+    (handle-events clean-events-channel handler)
+    {:stop (fn []
+             (async/close! events-channel)
+             (async/close! batched-events-channel)
+             (async/close! clean-events-channel))
+     :process (fn [event]
+                (async/>!! events-channel
+                           (assoc event :event-counter (v4.state/next-event-counter))))}))
 
-
-(defn push-event [event]
-  (when (v4.state/started?)
-    (async/>!! events-channel
-               (assoc event :event-counter (v4.state/next-event-counter)))))

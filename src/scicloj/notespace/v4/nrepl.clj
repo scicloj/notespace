@@ -5,13 +5,13 @@
             [nrepl.middleware.dynamic-loader :as dynamic-loader]
             [nrepl.transport :as transport]
             [clojure.core.async :as async]
-            [scicloj.notespace.v4.events.loop :as v4.loop]
+            [scicloj.notespace.v4.events.pipeline :as v4.pipeline]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.path :as v4.path]
             [scicloj.notespace.v4.state :as v4.state]))
 
 
-(defn get-path-when-eval-buffer 
+(defn get-path-when-eval-buffer
   [{:keys [op file-path code] :as request}]
   (cond ;;
     (= op "load-file")
@@ -50,7 +50,7 @@
 (defn handle-request [request]
   (some-> request
           request->event
-          v4.loop/push-event))
+          v4.pipeline/process-event))
 
 (defn handle-message [{:keys [id op] :as request}
                       {:keys [value err] :as message}]
@@ -60,7 +60,7 @@
       (contains? message :value)
       (let [request-event (request->event request)]
         (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-          (v4.loop/push-event
+          (v4.pipeline/process-event
            {:request-id id
             :value      value
             :event/type :scicloj.notespace.v4.events.handle/value})))
@@ -69,7 +69,7 @@
       (let [request-event (request->event request)]
         (v4.state/add-formatted-message! :debug)
         (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-          (v4.loop/push-event
+          (v4.pipeline/process-event
            {:request-id id
             :err err
             :event/type :scicloj.notespace.v4.events.handle/error})))
@@ -77,7 +77,7 @@
       (-> message :status :done)
       (let [request-event (request->event request)]
         (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-          (v4.loop/push-event
+          (v4.pipeline/process-event
            {:request-id id
             :event/type :scicloj.notespace.v4.events.handle/done}))))))
 
