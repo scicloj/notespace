@@ -13,7 +13,7 @@
      (pr-str o)])
   nil
   (render [this]
-    [:div])
+    [:p/code "nil"])
   java.awt.image.BufferedImage
   (render [this]
     (v4.image/buffered-image->hiccup this)))
