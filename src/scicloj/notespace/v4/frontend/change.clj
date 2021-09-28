@@ -2,11 +2,9 @@
   (:require [scicloj.notespace.v4.frontend.engine :as v4.frontend.engine]
             [scicloj.notespace.v4.view :as v4.view]))
 
-(defn reset-frontend-header! [{:keys [messages last-value]}]
+(defn reset-frontend-header! [details]
   (v4.frontend.engine/reset-header!
-   (v4.view/->header
-    messages
-    last-value)))
+   (v4.view/->header details)))
 
 (defn reset-frontend! [{:keys [current-notes]
                         :as details}]

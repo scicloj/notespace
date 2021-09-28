@@ -23,13 +23,22 @@
   [:div
    (v4.render/render last-value)])
 
+(defn summary->hiccup [{:keys [current-path
+                               current-notes
+                               counts]
+                        :as details}]
+  [:div
+   [:p [:b "path: "] current-path]
+   [:p [:b "notes: "] (count current-notes)
+    (when (seq counts)
+      (str " " (pr-str counts)))]])
+
 (defn comment-source->hiccup [source]
   [:p/markdown
    (-> source
        (string/split #"\n")
        (->> (map #(string/replace % #"^\s*;*" ""))
             (string/join "\n")))])
-
 
 (defn note->hiccup [{:keys [source gen status comment?] :as note}]
   (if comment?
@@ -53,12 +62,16 @@
        (map note->hiccup)
        (into [:div])))
 
-(defn ->header [messages last-value]
+(defn ->header [{:keys [messages last-value]
+                 :as details}]
   [:div
    (title "events log")
    (messages->hiccup messages)
    [:hr]
    (title "last value")
    (last-value->hiccup last-value)
+   [:hr]
+   (title "summary")
+   (summary->hiccup details)
    [:hr]
    (title "notes")])

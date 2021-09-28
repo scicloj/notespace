@@ -48,9 +48,16 @@
       (get request-id)))
 
 (defn reset-frontend! []
-  (v4.frontend.change/reset-frontend! {:messages      @*messages
-                                       :last-value    (:last-value @*state)
-                                       :current-notes (current-notes @*state)}))
+  (v4.frontend.change/reset-frontend!
+   {:messages      @*messages
+    :last-value    (:last-value @*state)
+    :current-notes (current-notes @*state)
+    :current-path  (some-> @*state
+                           :current-path
+                           v4.path/path-relative-to-current-directory)
+    :counts        (some-> @*state
+                           current-notes
+                           v4.note/notes->counts)}))
 
 
 (defn reset-state! [state]

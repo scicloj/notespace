@@ -12,3 +12,14 @@
   (-> note
       (assoc :status status)
       ->new-note))
+
+(defn notes->counts [notes]
+  (->> notes
+       (mapcat (fn [note]
+                 [(-> note
+                      :status
+                      :state)
+                  (if (:comment? note)
+                    :comment)]))
+       (filter some?)
+       frequencies))
