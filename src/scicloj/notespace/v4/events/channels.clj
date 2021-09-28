@@ -1,7 +1,8 @@
 (ns scicloj.notespace.v4.events.channels
   (:require [clojure.core.async :as async :refer [<! go go-loop timeout chan thread]]
             [scicloj.notespace.v4.log :as v4.log]
-            [scicloj.notespace.v4.state :as v4.state]))
+            [scicloj.notespace.v4.state :as v4.state]
+            [scicloj.notespace.v4.events.handle]))
 
 (defn pass-valid-events [in out]
   (async/go-loop []
@@ -37,22 +38,27 @@
           :else
           (recur (conj buf v) t))))))
 
+(def event-priorities
+  #:scicloj.notespace.v4.events.handle{:buffer-update 1
+                                       :eval          2
+                                       :value         2
+                                       :error         2
+                                       :done          2})
+
 (defn cleanup-events [in out]
   (async/go-loop []
     (->> in
          async/<!
-         (group-by :type)
-         (sort-by (fn [[_ {:keys [event-type]}]]
-                    ({:buffer-update 1
-                      :eval          2
-                      :value         3} event-type)))
-         (map (fn [[_ events]]
-                (->> events
-                     (sort-by :event-counter))))
-         (mapcat (fn [events]
-                   (if (-> events first :event-type (= :buffer-update))
-                     [(last events)]
-                     events)))
+         ;; (group-by :type)
+         ;; (sort-by (fn [[_ {:keys [event-type]}]]
+         ;;            (event-priorities event-type)))
+         ;; (map (fn [[_ events]]
+         ;;        (->> events
+         ;;             (sort-by :event-counter))))
+         ;; (mapcat (fn [events]
+         ;;           (if (-> events first :event-type (= :buffer-update))
+         ;;             [(last events)]
+         ;;             events)))
          (async/>! out))
     (recur)))
 
