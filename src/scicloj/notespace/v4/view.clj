@@ -2,7 +2,9 @@
   (:require [clojure.string :as string]
             [gorilla-notes.core :as gn]
             [scicloj.notespace.v4.render :as v4.render]
-            [scicloj.notespace.v4.log :as v4.log]))
+            [scicloj.notespace.v4.log :as v4.log]
+            [scicloj.notespace.v4.note :as v4.note]
+            [scicloj.notespace.v4.kinds :as v4.kinds]))
 
 (def lightgreyback {:style {:background "#efefef"}})
 
@@ -21,7 +23,8 @@
 
 (defn last-value->hiccup [last-value]
   [:div
-   (v4.render/render last-value)])
+   (let [{:keys [value->hiccup]} (v4.note/value->behavior last-value)]
+     (value->hiccup last-value))])
 
 (defn summary->hiccup [{:keys [current-path
                                current-notes
@@ -41,21 +44,21 @@
             (string/join "\n")))])
 
 (defn note->hiccup [{:keys [source gen status comment?] :as note}]
-  (if comment?
-    (comment-source->hiccup source)
-    ;; else
-    [:div
-     #_[:small lightgreyback "gen" gen]
-     [:div lightgreyback [:p/code source]]
-     [:p
-      ;; (v4.render/render note)
-      (when-let [{:keys [state]} status]
-        (case state
-          :evaluating "evaluating ..."
-          :failed "failed"
-          :evaluated  (-> status
-                          :value
-                          v4.render/render)))]]))
+  (let [{:keys [render-src? value->hiccup]} (v4.note/behavior note)]
+    (if comment?
+      (comment-source->hiccup source)
+      ;; else
+      [:div
+       ;; (pr-str (v4.note/kind note))
+       ;; (pr-str (v4.note/behavior note))
+       (when render-src?
+         [:div lightgreyback [:p/code source]])
+       [:p
+        (when-let [{:keys [state value]} status]
+          (case state
+            :evaluating "evaluating ..."
+            :failed "failed"
+            :evaluated (value->hiccup value)))]])))
 
 (defn notes->hiccup [notes]
   (->> notes

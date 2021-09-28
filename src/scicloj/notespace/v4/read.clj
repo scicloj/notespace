@@ -28,7 +28,8 @@
                   {:method :tools-reader
                    :region [line column
                             end-line end-column]
-                   :source source}))))
+                   :source source
+                   :meta (meta form)}))))
        (filter some?)))
 
 (defn read-by-parcera [code]

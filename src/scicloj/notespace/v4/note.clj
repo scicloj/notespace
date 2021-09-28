@@ -1,4 +1,5 @@
-(ns scicloj.notespace.v4.note)
+(ns scicloj.notespace.v4.note
+  (:require [scicloj.notespace.v4.kinds :as v4.kinds]))
 
 (defonce current-id (atom 0))
 
@@ -23,3 +24,35 @@
                     :comment)]))
        (filter some?)
        frequencies))
+
+(defn metadata->kind [m]
+  (some->> m
+           :tag
+           resolve
+           deref
+           ((v4.kinds/kinds-set))))
+
+(defn value->kind [value]
+  (-> value
+      meta
+      :notespace.kind
+      (or :notespace.kinds/naive)))
+
+(defn value->behavior [value]
+  (-> value
+      value->kind
+      v4.kinds/kind->behavior))
+
+(defn kind [note]
+  (or (-> note
+          :value
+          value->kind)
+      (-> note
+          :meta
+          metadata->kind)
+      :notespace.kinds/naive))
+
+(defn behavior [note]
+  (-> note
+      kind
+      v4.kinds/kind->behavior))
