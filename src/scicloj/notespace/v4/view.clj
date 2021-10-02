@@ -18,7 +18,7 @@
                [:small
                 [:li message]]))
         (into [:ul {:style {:overflow-y "scroll"
-                            :max-height "120px"}}]))])
+                            :max-height "20px"}}]))])
 
 (defn last-value->hiccup [last-value]
   [:div
