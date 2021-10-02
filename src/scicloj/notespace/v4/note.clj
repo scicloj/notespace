@@ -39,9 +39,11 @@
       (or :notespace.kinds/naive)))
 
 (defn value->behavior [value]
-  (-> value
-      value->kind
-      v4.kinds/kind->behavior))
+  (or (-> value
+          v4.kinds/->behavior)
+      (-> value
+          value->kind
+          v4.kinds/kind->behavior)))
 
 (defn kind [note]
   (or (-> note
