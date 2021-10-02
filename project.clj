@@ -17,6 +17,7 @@
                  [com.nextjournal/beholder "1.0.0"]
                  [techascent/tech.resource "5.04"]
                  [integrant "0.8.0"]
+                 [org.scicloj/tempfiles "0.1.0-SNAPSHOT"]
 
                  ;; avoid conflict with jsonista
                  [scicloj/gorilla-notes "0.5.15-SNAPSHOT"
