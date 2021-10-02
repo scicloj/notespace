@@ -1,7 +1,6 @@
 (ns scicloj.notespace.v4.view
   (:require [clojure.string :as string]
             [gorilla-notes.core :as gn]
-            [scicloj.notespace.v4.render :as v4.render]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.note :as v4.note]
             [scicloj.notespace.v4.kinds :as v4.kinds]))
