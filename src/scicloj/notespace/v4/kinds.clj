@@ -1,5 +1,6 @@
 (ns scicloj.notespace.v4.kinds
-  (:require [notespace.view :as view]))
+  (:require [notespace.view :as view]
+            [scicloj.notespace.v4.image :as v4.image]))
 
 (declare kind->behavior)
 (ns-unmap *ns* 'kind->behavior)
@@ -48,8 +49,6 @@
 (defn wrap [wrapper v]
   (if (vector? v)
     (->> v
-         (map (fn [x]
-                [wrapper x]))
          (into [:div]))
     [wrapper v]))
 
@@ -113,7 +112,13 @@
 (extend-protocol Kindness
   Object
   (->behavior [this]
-    nil))
+    nil)
+  java.awt.image.BufferedImage
+  (->behavior [this]
+    {:render-src?   true
+     :value->hiccup v4.image/buffered-image->hiccup}))
 
 (defn kinds-set []
   (into #{} (map first) (-> kind->behavior methods seq)))
+
+
