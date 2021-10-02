@@ -45,6 +45,7 @@
 
 (defn kind [note]
   (or (-> note
+          :status
           :value
           value->kind)
       (-> note
