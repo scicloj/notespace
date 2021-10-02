@@ -29,7 +29,8 @@
                  [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor "2.10.0"]
                  [com.fasterxml.jackson.dataformat/jackson-dataformat-smile "2.10.0"]]
   :profiles {:dev {:cloverage    {:runner :midje}
-                   :dependencies [[midje "1.9.9"]]
+                   :dependencies [[midje "1.9.9"]
+                                  [aerial.hanami "0.12.7"]]
                    :plugins      [[lein-midje "3.2.1"]
                                   [lein-cloverage "1.1.2"]]
                    :repl-options {:nrepl-middleware [scicloj.notespace.v4.nrepl/middleware]}}})
