@@ -33,7 +33,7 @@
                         :as details}]
   [:small
    [:div
-    [:p [:b "path: "] current-path]
+    [:p [:b "current path: "] current-path]
     [:p [:b "notes: "] (count current-notes)
      (when (seq counts)
        (str " " (pr-str counts)))]]])
@@ -54,7 +54,8 @@
        ;; (pr-str (v4.note/kind note))
        ;; (pr-str (v4.note/behavior note))
        (when render-src?
-         [:div lightgreyback [:p/code source]])
+         [:div [:p/code {:code     source
+                         :bg-class "bg-light"}]])
        [:p
         (when-let [{:keys [state value]} status]
           (case state
@@ -72,5 +73,5 @@
   [:div
    (messages->hiccup messages)
    (last-value->hiccup last-value)
-   [:hr]
-   (summary->hiccup details)])
+   (summary->hiccup details)
+   [:hr]])
