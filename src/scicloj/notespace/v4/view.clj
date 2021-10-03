@@ -12,6 +12,7 @@
 
 (defn messages->hiccup [messages]
   [:div
+   (title "events log")
    (->> messages
         reverse
         (map (fn [message]
@@ -22,6 +23,7 @@
 
 (defn last-value->hiccup [last-value]
   [:div
+   (title "last-value: ")
    (let [{:keys [value->hiccup]} (v4.note/value->behavior last-value)]
      (value->hiccup last-value))])
 
@@ -29,11 +31,12 @@
                                current-notes
                                counts]
                         :as details}]
-  [:div
-   [:p [:b "path: "] current-path]
-   [:p [:b "notes: "] (count current-notes)
-    (when (seq counts)
-      (str " " (pr-str counts)))]])
+  [:small
+   [:div
+    [:p [:b "path: "] current-path]
+    [:p [:b "notes: "] (count current-notes)
+     (when (seq counts)
+       (str " " (pr-str counts)))]]])
 
 (defn comment-source->hiccup [source]
   [:p/markdown
@@ -67,13 +70,7 @@
 (defn ->header [{:keys [messages last-value]
                  :as details}]
   [:div
-   (title "events log")
    (messages->hiccup messages)
-   [:hr]
-   (title "last value")
    (last-value->hiccup last-value)
    [:hr]
-   (title "summary")
-   (summary->hiccup details)
-   [:hr]
-   (title "notes")])
+   (summary->hiccup details)])
