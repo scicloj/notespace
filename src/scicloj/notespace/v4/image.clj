@@ -12,7 +12,7 @@
    (buffered-image->hiccup buffered-image
                            {}))
   ([^BufferedImage buffered-image options]
-   (let [{:keys [url path]} (tempfiles/get-tempfile! ".png")]
+   (let [{:keys [url path]} (tempfiles/tempfile! ".png")]
      (ImageIO/write buffered-image
                     "png"
                     ^java.io.File (io/file path))
