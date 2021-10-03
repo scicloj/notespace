@@ -110,6 +110,9 @@
   (->behavior [this]))
 
 (extend-protocol Kindness
+  nil
+  (->behavior [this]
+    nil)
   Object
   (->behavior [this]
     nil)
