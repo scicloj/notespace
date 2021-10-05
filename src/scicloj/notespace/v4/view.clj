@@ -45,31 +45,26 @@
        (->> (map #(string/replace % #"^\s*;*" ""))
             (string/join "\n")))])
 
-(defn note->hiccup [{:keys [source gen status comment?] :as note}]
+(defn note->hiccup [[part {:keys [source gen status comment?] :as note}]]
   (let [{:keys [render-src? value->hiccup]} (v4.note/behavior note)]
-    (if comment?
-      (comment-source->hiccup source)
-      ;; else
-      [:div
-       ;; (pr-str (v4.note/kind note))
-       ;; (pr-str (v4.note/behavior note))
-       (when render-src?
-         [:div [:p/code {:code     source
-                         :bg-class "bg-light"}]])
-       [:p
-        (when-let [{:keys [state value]} status]
-          (case state
-            :evaluating "evaluating ..."
-            :failed "failed"
-            :evaluated (value->hiccup value)))]])))
-
-(defn notes->hiccup [notes]
-  (->> notes
-       (map note->hiccup)
-       (into [:div])))
+    [:div
+     (case part
+       :view/source (when (and (not comment?)
+                               render-src?)
+                      [:p/code {:code     source
+                                :bg-class "bg-light"}])
+       :view/value  (if comment?
+                      (comment-source->hiccup source)
+                      ;; else
+                      [:p
+                       (when-let [{:keys [state value]} status]
+                         (case state
+                           :evaluating "evaluating ..."
+                           :failed     "failed"
+                           :evaluated  (value->hiccup value)))]))]))
 
 (defn ->header [{:keys [messages last-value]
-                 :as details}]
+                 :as   details}]
   [:div
    (messages->hiccup messages)
    (last-value->hiccup last-value)
