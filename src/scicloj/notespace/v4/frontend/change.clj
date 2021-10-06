@@ -14,10 +14,12 @@
   (->> current-notes
        (mapcat (fn [note]
                  [[:view/source note]
-                  [:view/value note]]))
+                  [:view/state note]]))
        (v4.frontend.engine/sync-widgets! (fn [[part note]]
-                                           (+ (:scicloj.notespace.v4.note/id note)
-                                              (case part
-                                                :view/source 0
-                                                :view/value 0.1)))
+                                           (case part
+                                             :view/source (:scicloj.notespace.v4.note/id note)
+                                             :view/state (+ (:scicloj.notespace.v4.note/id note)
+                                                            0.1)))
                                          v4.view/note->hiccup)))
+
+
