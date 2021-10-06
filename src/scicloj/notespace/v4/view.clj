@@ -5,7 +5,7 @@
             [scicloj.notespace.v4.note :as v4.note]
             [scicloj.notespace.v4.kinds :as v4.kinds]))
 
-(def lightgreyback {:style {:background "#efefef"}})
+(def lightgreyback )
 
 (defn title [title]
   [:p [:small [:b title]]])
@@ -66,6 +66,7 @@
 (defn ->header [{:keys [messages last-value]
                  :as   details}]
   [:div
+   {:style {:background "#efefef"}}
    (messages->hiccup messages)
    (last-value->hiccup last-value)
    (summary->hiccup details)
