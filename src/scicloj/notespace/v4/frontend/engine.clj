@@ -36,3 +36,7 @@
 
 (defn browse! []
   (gorilla-notes/browse-http-url))
+
+(defn render-as-html! [html-path]
+  (gorilla-notes/render-current-state! html-path))
+
