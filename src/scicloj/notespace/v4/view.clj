@@ -53,15 +53,15 @@
                                render-src?)
                       [:p/code {:code     source
                                 :bg-class "bg-light"}])
-       :view/value  (if comment?
+       :view/state  (if comment?
                       (comment-source->hiccup source)
                       ;; else
-                      [:p
-                       (when-let [{:keys [state value]} status]
+                      (when-let [{:keys [state value]} status]
+                        [:div
                          (case state
                            :evaluating "evaluating ..."
                            :failed     "failed"
-                           :evaluated  (value->hiccup value)))]))]))
+                           :evaluated  (value->hiccup value))])))]))
 
 (defn ->header [{:keys [messages last-value]
                  :as   details}]
