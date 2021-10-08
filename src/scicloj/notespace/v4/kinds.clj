@@ -104,7 +104,7 @@
 (intern-kinds!)
 
 (defn override [value kind]
-  (vary-meta value assoc :notespace.kind kind))
+  (vary-meta value assoc :notespace/kind kind))
 
 (defprotocol Kindness
   (->behavior [this]))
