@@ -35,7 +35,7 @@
 (defn value->kind [value]
   (-> value
       meta
-      :notespace.kind
+      :notespace/kind
       (or :notespace.kinds/naive)))
 
 (defn value->behavior [value]
