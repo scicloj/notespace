@@ -8,6 +8,8 @@ Notebook experience in your Clojure namespace
 
 This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
 
+See this recorded [Overview](https://www.youtube.com/watch?v=Ufyqwzn1RDs).
+
 ## Status
 
 Everything here is considered experimental, but is arguably becoming very useful.

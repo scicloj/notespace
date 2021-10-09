@@ -18,17 +18,21 @@
 
 (defn eval-and-render-a-notespace [options]
 
-  (let  [ns-symbol (:ns options)]
+  (let  [ns-symbol (:ns options)
+         config-updates (:config-updates options)]
 
     (eval (find-ns-declr ns-symbol))
     (in-ns ns-symbol)
     (api/init)
+    (notespace.api/update-config
+     #(merge % config-updates))
+
     (api/update-config #(assoc % :evaluation-callback-fn
                                (fn [idx note-count note]
                                  (let [expected-duration (or  (get-in note [:duration]) 0)]
                                    (println "evaluate note: " idx "/" (dec note-count))))))
 
     (api/eval-and-realize-this-notespace)
-    (api/render-static-html)
-    )
-  )
+    (if-let [output-file (:output-file options)]
+      (api/render-static-html output-file)
+      (api/render-static-html))))

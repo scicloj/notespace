@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [3-beta9] - 2021-08-16
+- allow to specify options for cli render [#61](https://github.com/scicloj/notespace/pull/61)
+
+## [3-beta8] - 2021-08-16
+- excluding com.fzakaria/slf4j-timbre in project definition
+- removing the delay in listen mode
+
+## [3-beta7] - 2021-06-14
+- updated gorilla-notes version, where static rendering works differently: the client side bundle is a file living alongside the html document, rather than downloaded from a cdn
+
 ## [3-beta6] - 2021-05-08
 - updated gorilla-notes version, solving some concurrency and performance problems on the frontend
 
