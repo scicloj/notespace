@@ -24,15 +24,16 @@
                   :exclusions [com.fasterxml.jackson.core/jackson-core
                                com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
                                com.fasterxml.jackson.dataformat/jackson-dataformat-smile
-                               com.fzakaria/slf4j-timbre]
-                  [com.fasterxml.jackson.core/jackson-core "2.10.0"]
-                  [com.fasterxml.jackson.core/jackson-annotations "2.10.0"]
-                  [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor "2.10.0"]
-                  [com.fasterxml.jackson.dataformat/jackson-dataformat-smile "2.10.0"]]]
+                               com.fzakaria/slf4j-timbre]]
+                 [com.fasterxml.jackson.core/jackson-core "2.10.0"]
+                 [com.fasterxml.jackson.core/jackson-annotations "2.10.0"]
+                 [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor "2.10.0"]
+                 [com.fasterxml.jackson.dataformat/jackson-dataformat-smile "2.10.0"]]
   :profiles {:dev {:cloverage    {:runner :midje}
                    :dependencies [[midje "1.9.9"]
                                   [aerial.hanami "0.12.7"]]
                    :plugins      [[lein-midje "3.2.1"]
                                   [lein-cloverage "1.1.2"]]
-                   :repl-options {:nrepl-middleware [scicloj.notespace.v4.nrepl/middleware]}}})
+                   ;; :repl-options {:nrepl-middleware [scicloj.notespace.v4.nrepl/middleware]}
+                   }})
 
