@@ -1,5 +1,6 @@
 (ns scicloj.notespace.v4.note
-  (:require [scicloj.notespace.v4.kinds :as v4.kinds]))
+  (:require [scicloj.kindly.resolve :as resolve]
+            [scicloj.kindly.kind :as kind]))
 
 (defonce current-id (atom 0))
 
@@ -25,37 +26,17 @@
        (filter some?)
        frequencies))
 
-(defn metadata->kind [m]
-  (some->> m
-           :tag
-           resolve
-           deref
-           ((v4.kinds/kinds-set))))
-
-(defn value->kind [value]
-  (-> value
-      meta
-      :notespace/kind))
-
-(defn value->behavior [value]
-  (or (-> value
-          v4.kinds/->behavior)
-      (-> value
-          value->kind
-          (or v4.kinds/naive)
-          v4.kinds/kind->behavior)))
-
 (defn kind [note]
   (or (-> note
           :status
           :value
-          value->kind)
+          resolve/value->kind)
       (-> note
           :meta
-          metadata->kind)
-      :notespace.kinds/naive))
+          resolve/metadata->kind)
+      kind/naive))
 
-(defn behavior [note]
+(defn behaviour [note]
   (-> note
       kind
-      v4.kinds/kind->behavior))
+      kind/kind->behaviour))

@@ -8,7 +8,8 @@
             [scicloj.notespace.v4.state :as v4.state]
             [scicloj.notespace.v4.change :as v4.change]
             [scicloj.notespace.v4.view :as v4.view]
-            [scicloj.notespace.v4.kinds :as v4.kind]
+            [scicloj.kindly.api :as kindly]
+            [scicloj.kindly.kind :as kind]
             [clojure.string :as string]))
 
 (defmulti handle :event/type)
@@ -90,7 +91,7 @@
                             [:p/markdown
                              (-> err
                                  (string/replace #"\n" "\n\n"))]]
-                           (v4.kind/override v4.kind/hiccup))))]
+                           (kindly/consider kind/hiccup))))]
     (v4.state/add-formatted-message! :handled-error
                                      {:request-id request-id
                                       :err err})
