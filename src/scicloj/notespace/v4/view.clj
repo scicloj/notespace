@@ -3,7 +3,7 @@
             [gorilla-notes.core :as gn]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.note :as v4.note]
-            [scicloj.kindly.resolve :as resolve]))
+            [scicloj.kindly.api :as kindly]))
 
 (def lightgreyback )
 
@@ -24,7 +24,7 @@
 (defn last-value->hiccup [last-value]
   [:div
    (title "last-value: ")
-   (let [{:keys [value->hiccup]} (resolve/value->behaviour last-value)]
+   (let [{:keys [value->hiccup]} (kindly/value->behaviour last-value)]
      (value->hiccup last-value))])
 
 (defn summary->hiccup [{:keys [current-path

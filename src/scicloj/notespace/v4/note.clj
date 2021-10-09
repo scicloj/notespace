@@ -1,5 +1,5 @@
 (ns scicloj.notespace.v4.note
-  (:require [scicloj.kindly.resolve :as resolve]
+  (:require [scicloj.kindly.api :as kindly]
             [scicloj.kindly.kind :as kind]))
 
 (defonce current-id (atom 0))
@@ -30,13 +30,13 @@
   (or (-> note
           :status
           :value
-          resolve/value->kind)
+          kindly/value->kind)
       (-> note
           :meta
-          resolve/metadata->kind)
+          kindly/metadata->kind)
       kind/naive))
 
 (defn behaviour [note]
   (-> note
       kind
-      kind/kind->behaviour))
+      kindly/kind->behaviour))
