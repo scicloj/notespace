@@ -1,4 +1,4 @@
-(defproject scicloj/notespace "4-alpha-1-SNAPSHOT"
+(defproject scicloj/notespace "4-alpha-1"
   :description "Notebook experience in your Clojure namespace."
   :url "http://github.com/scicloj/notespace"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -17,7 +17,7 @@
                  [com.nextjournal/beholder "1.0.0"]
                  [techascent/tech.resource "5.04"]
                  [integrant "0.8.0"]
-                 [org.scicloj/tempfiles "1-alpha2-SNAPSHOT"]
+                 [org.scicloj/tempfiles "1-alpha2"]
                  [org.scicloj/kindly "1-alpha1"] 
 
                  ;; avoid conflict with jsonista
