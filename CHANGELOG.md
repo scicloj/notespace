@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [4-alpha-2-SNAPSHOT]
 - API change, separating into two systems: frontend & events
+- cleaning up v3 code
 
 ## [4-alpha-1] - 2021-10-09
 - An initiaul release of Notespace v4, a rewrite of Notespace for more seamless setup and integration with user workflows.
