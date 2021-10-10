@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-2-SNAPSHOT]
+- API change, separating into two systems: frontend & events
+
+## [4-alpha-1] - 2021-10-09
+- An initiaul release of Notespace v4, a rewrite of Notespace for more seamless setup and integration with user workflows.
+
 ## [3-beta9] - 2021-08-16
 - allow to specify options for cli render [#61](https://github.com/scicloj/notespace/pull/61)
 
