@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-3] - 2021-10-10
+- cleanup of old namespaces from the generated jar
+
 ## [4-alpha-2] - 2021-10-10
 - API change, separating into two systems: frontend & events
 - cleaning up v3 code
