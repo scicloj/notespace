@@ -6,13 +6,13 @@ Notebook experience in your Clojure namespace
 
 ## What is it?
 
-This library is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
+This tool is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
 
 See this recorded [Overview](https://www.youtube.com/watch?v=Ufyqwzn1RDs) (demonstrating Version 3).
 
 ## Status
 
-Version 4 is actively developed. If you are new to Notespace, this is the version we recommend trying out.
+Version 4 is actively developed and in alpha stage. If you are new to Notespace, this is the version we recommend trying out.
 
 Version 3 and Version 2 has been used in some projects. We are not planning to develop them further, but please reach out if you need any support.
 
