@@ -9,10 +9,13 @@
   (v4.events-sys/restart!)
   :ok)
 
-(defn restart! [frontend-config]
-  (restart-events!)
-  (v4.frontend-sys/restart! frontend-config)
-  :ok)
+(defn restart!
+  ([]
+   (restart! {}))
+  ([frontend-config]
+   (restart-events!)
+   (v4.frontend-sys/restart! frontend-config)
+   :ok))
 
 (defn render-as-html! [target-path]
   (v4.frontend.engine/reset-header! nil)
