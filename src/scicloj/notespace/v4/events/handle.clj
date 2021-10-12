@@ -57,7 +57,8 @@
                           region-notes)
                          [])
           new-state (-> state
-                        (v4.change/set-request-path request-id path)
+                        (v4.change/set-request-details request-id {:path path
+                                                                   :region-notes region-notes})
                         (v4.change/edit-notes path merged-notes))]
       (v4.state/add-formatted-message! :started-eval
                                        {:path       path

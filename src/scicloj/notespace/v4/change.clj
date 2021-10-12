@@ -11,10 +11,10 @@
           :current-path
           path))
 
-(defn set-request-path [state request-id path]
+(defn set-request-details [state request-id details]
   (assoc-in state
-            [:request-id->path request-id]
-            path))
+            [:request-id->details request-id]
+            details))
 
 (defn set-last-value [state value]
   (assoc state

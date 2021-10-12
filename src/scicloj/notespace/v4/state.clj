@@ -8,25 +8,18 @@
             [editscript.core :as editscript])
   (:import java.util.Date))
 
-(def initial-state {:event-counter    0
-                    :last-value       nil
-                    :path->notes      {}
-                    :request-id->path {}
-                    :current-path     nil
-                    :pipeline         nil})
+(def initial-state {:event-counter       0
+                    :last-value          nil
+                    :path->notes         {}
+                    :request-id->details {}
+                    :current-path        nil
+                    :pipeline            nil})
 
 (defonce *state (atom initial-state))
 
 
 (defn init! []
-  (reset! *state initial-state)
-  ;; (swap! *state
-  ;;        assoc
-  ;;        :last-value nil
-  ;;        :path->notes {}
-  ;;        :request-id->path {}
-  ;;        :current-path nil)
-  )
+  (reset! *state initial-state))
 
 (defonce *messages (atom []))
 
@@ -42,10 +35,15 @@
 (defn current-notes [state]
   (path-notes state (:current-path state)))
 
+(defn request-details [state request-id]
+  (-> state
+      :request-id->details
+      (get request-id)))
+
 (defn request-path [state request-id]
   (-> state
-      :request-id->path
-      (get request-id)))
+      (request-details request-id)
+      :path))
 
 (defn reset-frontend! []
   (v4.frontend.change/reset-frontend!
