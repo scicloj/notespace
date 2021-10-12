@@ -30,7 +30,7 @@
   (or (-> note
           :status
           :value
-          kindly/value->kind)
+          kindly/value->explicit-kind)
       (-> note
           :meta
           kindly/metadata->kind)
