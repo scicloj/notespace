@@ -18,7 +18,7 @@
                  [techascent/tech.resource "5.04"]
                  [integrant "0.8.0"]
                  [org.scicloj/tempfiles "1-alpha2"]
-                 [org.scicloj/kindly "1-alpha1"]
+                 [org.scicloj/kindly "1-alpha2-SNAPSHOT"]
                  ;; avoid conflict with jsonista
                  [scicloj/gorilla-notes "0.5.15"
                   :exclusions [com.fasterxml.jackson.core/jackson-core
