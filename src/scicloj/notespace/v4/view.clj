@@ -47,14 +47,12 @@
        :view/state  (if comment?
                       (comment-source->hiccup source)
                       ;; else
-                      (if status
+                      (when status
                         [:div
                          (case status
                            :evaluating "evaluating ..."
                            :failed     "failed"
-                           :evaluated  (value->hiccup value))]
-                        ;; else
-                        (value->hiccup value))))]))
+                           :evaluated  (value->hiccup value))])))]))
 
 (defn ->header [{:keys [messages last-evaluated-note]
                  :as   details}]
