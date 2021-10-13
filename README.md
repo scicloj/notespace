@@ -20,13 +20,13 @@ Version 3 and Version 2 has been used in some projects. We are not planning to d
 
 Notespace has been evolving gradually, slowly realizing some lessons of usage in the Scicloj study groups, in individual research projects, and in documenting some of the Scicloj libraries.
 
-* [Version 4](doc/v4.md)
+* [Version 4](doc/v4.md) -- please go here if you are new to Notespace
 
 * [Version 3](doc/v3.md)
 
 * [Version 2](doc/v2.md)
 
-## Usage
+## Setup and Usage
 
 See details in the dedicated version pages linked above.
 
