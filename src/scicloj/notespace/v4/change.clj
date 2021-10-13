@@ -16,10 +16,15 @@
             [:request-id->details request-id]
             details))
 
-(defn set-last-value [state value]
+(defn update-request-details [state request-id f & args]
+  (update-in state
+             [:request-id->details request-id]
+             #(f % args)))
+
+(defn set-last-evaluated-note [state note]
   (assoc state
-         :last-value
-         value))
+         :last-evaluated-note
+         note))
 
 (defn edit-notes [state path edits]
   (update-in state

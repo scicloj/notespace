@@ -81,11 +81,11 @@
                     :as   event}]
   (-> (if-let [idx (->> current-notes
                         (map-indexed vector)
-                        (filter (fn [[_ {:keys [status]}]]
-                                  (and (-> status
-                                           :state
+                        (filter (fn [[_ note]]
+                                  (and (-> note
+                                           :status
                                            (= :evaluating))
-                                       (-> status
+                                       (-> note
                                            :request-id
                                            (= request-id)))))
                         first
@@ -93,10 +93,8 @@
         ;; found where this value belongs:
         (let [note-with-value (-> idx
                                   current-notes
-                                  (update :status
-                                          assoc
-                                          :state :evaluated
-                                          :value value)
+                                  (assoc :status :evaluated
+                                         :value value)
                                   (v4.note/->new-note))]
           [[[idx] :r note-with-value]])
         ;; else -- not found:
@@ -108,11 +106,11 @@
                    :as   event}]
   (-> (if-let [indexes (->> current-notes
                             (map-indexed vector)
-                            (filter (fn [[_ {:keys [status]}]]
-                                      (and (-> status
-                                               :state
+                            (filter (fn [[_ note]]
+                                      (and (-> note
+                                               :status
                                                (= :evaluating))
-                                           (-> status
+                                           (-> note
                                                :request-id
                                                (= request-id)))))
                             (map first)
@@ -123,11 +121,10 @@
              (mapv (fn [idx]
                      (let [note-with-value (-> idx
                                                current-notes
-                                               (update :status
-                                                       assoc
-                                                       :state :failed)
+                                               (assoc :status :failed)
                                                (v4.note/->new-note))]
                        [[[idx] :r note-with-value]]))))
-        
         ;; else -- nothing to do
         [])))
+
+

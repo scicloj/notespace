@@ -9,7 +9,7 @@
   (:import java.util.Date))
 
 (def initial-state {:event-counter       0
-                    :last-value          nil
+                    :last-evaluated-note nil
                     :path->notes         {}
                     :request-id->details {}
                     :current-path        nil
@@ -47,13 +47,13 @@
 
 (defn reset-frontend! []
   (v4.frontend.change/reset-frontend!
-   {:messages      @*messages
-    :last-value    (:last-value @*state)
-    :current-notes (current-notes @*state)
-    :current-path  (some-> @*state
+   {:messages            @*messages
+    :last-evaluated-note (:last-evaluated-note @*state)
+    :current-notes       (current-notes @*state)
+    :current-path        (some-> @*state
                            :current-path
                            v4.path/path-relative-to-current-directory)
-    :counts        (some-> @*state
+    :counts              (some-> @*state
                            current-notes
                            v4.note/notes->counts)}))
 

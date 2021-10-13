@@ -5,8 +5,6 @@
             [scicloj.notespace.v4.note :as v4.note]
             [scicloj.kindly.api :as kindly]))
 
-(def lightgreyback )
-
 (defn title [title]
   [:p [:small [:b title]]])
 
@@ -19,13 +17,7 @@
                [:small
                 [:li message]]))
         (into [:ul {:style {:overflow-y "scroll"
-                            :max-height "20px"}}]))])
-
-(defn last-value->hiccup [last-value]
-  [:div
-   (title "last-value: ")
-   (let [{:keys [value->hiccup]} (kindly/value->behaviour last-value)]
-     (value->hiccup last-value))])
+                            :max-height "200px"}}]))])
 
 (defn summary->hiccup [{:keys [current-path
                                current-notes
@@ -45,7 +37,7 @@
        (->> (map #(string/replace % #"^\s*;*" ""))
             (string/join "\n")))])
 
-(defn note->hiccup [[part {:keys [source gen status comment?] :as note}]]
+(defn note->hiccup [[part {:keys [source gen status value comment?] :as note}]]
   (let [{:keys [render-src? value->hiccup]} (v4.note/behaviour note)]
     [:div
      (case part
@@ -56,18 +48,20 @@
        :view/state  (if comment?
                       (comment-source->hiccup source)
                       ;; else
-                      (when-let [{:keys [state value]} status]
+                      (if status
                         [:div
-                         (case state
+                         (case status
                            :evaluating "evaluating ..."
                            :failed     "failed"
-                           :evaluated  (value->hiccup value))])))]))
+                           :evaluated  (value->hiccup value))]
+                        ;; else
+                        (value->hiccup value))))]))
 
-(defn ->header [{:keys [messages last-value]
+(defn ->header [{:keys [messages last-evaluated-note]
                  :as   details}]
   [:div
    {:style {:background "#efefef"}}
    (messages->hiccup messages)
-   (last-value->hiccup last-value)
+   (note->hiccup [:view/state last-evaluated-note])
    (summary->hiccup details)
    [:hr]])

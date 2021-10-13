@@ -10,31 +10,31 @@
 (defn ->new-note [note-data]
   (assoc note-data ::id (next-id)))
 
-(defn mark-status [note status]
+(defn merge-as-new-note [note details]
   (-> note
-      (assoc :status status)
+      (merge details)
       ->new-note))
 
 (defn notes->counts [notes]
   (->> notes
        (mapcat (fn [note]
-                 [(-> note
-                      :status
-                      :state)
+                 [(:status note)
                   (if (:comment? note)
                     :comment)]))
        (filter some?)
        frequencies))
 
-(defn kind [note]
-  (or (-> note
-          :status
-          :value
-          kindly/value->explicit-kind)
-      (-> note
-          :meta
-          kindly/metadata->kind)
-      kind/naive))
+(defn kind
+  ([note]
+   (kind note (-> note
+                  :value)))
+  ([note value]
+   (or (-> value
+           kindly/value->explicit-kind)
+       (-> note
+           :meta
+           kindly/metadata->kind)
+       kind/naive)))
 
 (defn behaviour [note]
   (-> note

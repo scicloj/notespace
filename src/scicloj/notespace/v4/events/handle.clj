@@ -47,9 +47,9 @@
                                        (if (:comment? note)
                                          note
                                          ;; else
-                                         (v4.note/mark-status
+                                         (v4.note/merge-as-new-note
                                           note
-                                          {:state      :evaluating
+                                          {:status     :evaluating
                                            :request-id request-id})))))
           merged-notes (if region-notes
                          (v4.merge/merge-eval-region-notes
@@ -58,7 +58,8 @@
                          [])
           new-state (-> state
                         (v4.change/set-request-details request-id {:path path
-                                                                   :region-notes region-notes})
+                                                                   :region-notes region-notes
+                                                                   :notes-evaluated 0})
                         (v4.change/edit-notes path merged-notes))]
       (v4.state/add-formatted-message! :started-eval
                                        {:path       path
@@ -67,19 +68,31 @@
 
 (defmethod handle ::value
   [{:keys [request-id value state] :as event}]
-  (let [new-state (-> (if-let [path (v4.state/request-path state request-id)]
+  (let [{:keys [path region-notes notes-evaluated]} (v4.state/request-details state request-id)
+        relevant-note (some->> region-notes
+                               (filter (complement :comment?))
+                               (drop notes-evaluated)
+                               first)
+        new-state (-> (if path
                         ;; found the relevant eval request
                         ;; -- try to edit the notes with the value
-                        (do (v4.state/add-formatted-message! :updating-notes-with-value)
-                            (v4.change/edit-notes
-                             state
-                             path
-                             (v4.merge/merge-value (v4.state/current-notes state)
-                                                   event)))
+                        (do (v4.state/add-formatted-message! :updating-notes-with-value
+                                                             {:request-id request-id})
+                            (-> state
+                                (v4.change/update-request-details
+                                 update
+                                 :notes-evaluated inc)
+                                (v4.change/edit-notes
+                                 path
+                                 (v4.merge/merge-value (v4.state/current-notes state)
+                                                                            event))))
                         ;; else -- cannot edit the notes
                         state)
-                      (v4.change/set-last-value value))]
-    (v4.state/add-formatted-message! :updated-last-value
+                      (v4.change/set-last-evaluated-note
+                       (v4.note/merge-as-new-note relevant-note
+                                                  {:status :evaluated
+                                                   :value  value})))]
+    (v4.state/add-formatted-message! :updated-last-evaluated-note
                                      {:request-id request-id})
     new-state))
 
@@ -87,12 +100,12 @@
 (defmethod handle ::error
   [{:keys [request-id err state] :as event}]
   (let [new-state (-> state
-                      (v4.change/set-last-value
-                       (-> [:div
-                            [:p/markdown
-                             (-> err
-                                 (string/replace #"\n" "\n\n"))]]
-                           (kindly/consider kind/hiccup))))]
+                      (v4.change/set-last-evaluated-note
+                       {:value (-> [:div
+                                    [:p/markdown
+                                     (-> err
+                                         (string/replace #"\n" "\n\n"))]]
+                                   (kindly/consider kind/hiccup))}))]
     (v4.state/add-formatted-message! :handled-error
                                      {:request-id request-id
                                       :err err})

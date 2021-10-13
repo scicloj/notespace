@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 - minor api extension
 - more careful kind resolution
 - more detailed information tracking from nREPL
+- made the information flow a little more informative
 
 ## [4-alpha-3] - 2021-10-10
 - cleanup of old namespaces from the generated jar
