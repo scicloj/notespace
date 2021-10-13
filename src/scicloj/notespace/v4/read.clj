@@ -29,7 +29,8 @@
                    :region [line column
                             end-line end-column]
                    :source source
-                   :meta (meta form)}))))
+                   :meta (meta form)
+                   :form form}))))
        (filter some?)))
 
 (defn read-by-parcera [code]

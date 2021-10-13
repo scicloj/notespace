@@ -24,12 +24,36 @@
        (filter some?)
        frequencies))
 
+(defn form->kind [form]
+  (cond ;;
+    (sequential? form)
+    (let [f (first form)]
+      (cond ;;
+        ('#{ns
+            def defonce defn defmacro
+            deftype defrecord defprotocol
+            extend-protocol extend-type
+            require import comment}
+         f)
+        kind/void
+        ;;
+        (string? f)
+        kind/md-nocode))
+    ;;
+    (string? form)
+    kind/md-nocode))
+
+(defn kind [note]
+  (-> note
+      :meta
+      kindly/metadata->kind
+      (or (-> note :form form->kind))
+      (or kind/naive)))
+
 (defn behaviour [note]
   (or (-> note
           :value
           kindly/value->behaviour)
       (-> note
-          :meta
-          kindly/metadata->kind
-          (or kind/naive)
+          kind
           kindly/kind->behaviour)))

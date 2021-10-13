@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This change
 - more detailed information tracking from nREPL
 - made the information flow a little more informative
 - image support
+- deriving some default note kinds by the notes' form
 
 ## [4-alpha-3] - 2021-10-10
 - cleanup of old namespaces from the generated jar
