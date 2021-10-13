@@ -24,19 +24,12 @@
        (filter some?)
        frequencies))
 
-(defn kind
-  ([note]
-   (kind note (-> note
-                  :value)))
-  ([note value]
-   (or (-> value
-           kindly/value->explicit-kind)
-       (-> note
-           :meta
-           kindly/metadata->kind)
-       kind/naive)))
-
 (defn behaviour [note]
-  (-> note
-      kind
-      kindly/kind->behaviour))
+  (or (-> note
+          :value
+          kindly/value->behaviour)
+      (-> note
+          :meta
+          kindly/metadata->kind
+          (or kind/naive)
+          kindly/kind->behaviour)))

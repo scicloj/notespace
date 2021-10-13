@@ -2,8 +2,7 @@
   (:require [clojure.string :as string]
             [gorilla-notes.core :as gn]
             [scicloj.notespace.v4.log :as v4.log]
-            [scicloj.notespace.v4.note :as v4.note]
-            [scicloj.kindly.api :as kindly]))
+            [scicloj.notespace.v4.note :as v4.note]))
 
 (defn title [title]
   [:p [:small [:b title]]])
