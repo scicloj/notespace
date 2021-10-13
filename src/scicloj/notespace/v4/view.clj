@@ -16,7 +16,7 @@
                [:small
                 [:li message]]))
         (into [:ul {:style {:overflow-y "scroll"
-                            :max-height "200px"}}]))])
+                            :max-height "20px"}}]))])
 
 (defn summary->hiccup [{:keys [current-path
                                current-notes

@@ -40,7 +40,7 @@
         (string? f)
         kind/md-nocode))
     ;;
-    (string? form)
+    (string? form) ; TODO: make this work
     kind/md-nocode))
 
 (defn kind [note]
