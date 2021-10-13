@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-4-SNAPSHOT] - 2021-10-12
+## [4-alpha-4] - 2021-10-15
 - minor api extension
 - more careful kind resolution
 - more detailed information tracking from nREPL
