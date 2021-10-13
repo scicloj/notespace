@@ -4,7 +4,7 @@
             [scicloj.kindly.kind :as kind] ; a collection of known kinds of notes
             ))
 
-;; ## How to (re)start?
+;; ## (re)starting Notespace
 
 ;; To start or restart the Notespace system, use `restart!`:
 
@@ -31,15 +31,15 @@
 (comment
   (notespace/restart! {:open-browser? true}))
 
-;; ## What do we see?
+;; ## The browser view
 
-;; The Notespace view contains two parts:
+;; The Notespace browser view contains two parts:
 ;; * The header contains an events log, some metadata, and the last evaluation value.
 ;; * The body contains your code, intertwined with evaluation values.
 
 ;; Top-level text comments are rendered as markdown. Top-level forms (so-called "notes") are rendered by their specified "kind". More on that -- below.
 
-;; ## How to interact?
+;; ## Interaction
 
 ;; Notespace listens to file-save events and to code evaluations in your editor/REPL environment.
 
