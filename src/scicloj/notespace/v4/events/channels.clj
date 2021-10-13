@@ -49,16 +49,16 @@
   (async/go-loop []
     (->> in
          async/<!
-         ;; (group-by :type)
-         ;; (sort-by (fn [[_ {:keys [event-type]}]]
-         ;;            (event-priorities event-type)))
-         ;; (map (fn [[_ events]]
-         ;;        (->> events
-         ;;             (sort-by :event-counter))))
-         ;; (mapcat (fn [events]
-         ;;           (if (-> events first :event-type (= :buffer-update))
-         ;;             [(last events)]
-         ;;             events)))
+         (group-by :type)
+         (sort-by (fn [[_ {:keys [event-type]}]]
+                    (event-priorities event-type)))
+         (map (fn [[_ events]]
+                (->> events
+                     (sort-by :event-counter))))
+         (mapcat (fn [events]
+                   (if (-> events first :event-type (= :buffer-update))
+                     [(last events)]
+                     events)))
          (async/>! out))
     (recur)))
 
