@@ -65,10 +65,7 @@
 (defn handle-events [in handler]
   (async/go-loop []
     (let [events (async/<! in)]
-      ;; (when (> (count events) 0)
-      ;;   (v4.status/add :handle-events
-      ;;                  {:n (count events)}))
-      (run! handler events))
+     (run! handler events))
     (recur)))
 
 (defn start! [handler]
