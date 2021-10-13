@@ -12,9 +12,12 @@
    (buffered-image->hiccup buffered-image
                            {}))
   ([^BufferedImage buffered-image options]
-   (let [{:keys [url path]} (tempfiles/tempfile! ".png")]
+   (let [{:keys [route path]} (tempfiles/tempfile! ".png")]
      (ImageIO/write buffered-image
                     "png"
                     ^java.io.File (io/file path))
-     [:img (merge {:src url}
+     [:img (merge {:src route}
                   options)])))
+
+
+
