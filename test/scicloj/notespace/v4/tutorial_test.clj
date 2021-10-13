@@ -2,7 +2,7 @@
   (:require [scicloj.notespace.v4.api :as notespace] ; the Notespace API
             [scicloj.kindly.api :as kindly] ; specifying kinds of notes
             [scicloj.kindly.kind :as kind] ; a collection of known kinds of notes
-            ))
+            [scicloj.kindly.kindness :as kindness]))
 
 ;; ## (re)starting Notespace
 
@@ -56,6 +56,8 @@
 (comment
   (notespace/render-as-html! "/tmp/notespace/index.html"))
 
+;; This functionality needs some more care to become more convenient when working with multiple file.
+
 ;; ## Basic examples
 
 (+ 1 2)
@@ -66,7 +68,39 @@
 
 ;; ## Specifying note kinds
 
-;; Coming soon
+;; The notion of note kinds is very similar to the one we had at v3. This needs to be documented more carefully, but for now, here are a few examples.
+
+;; ### by a metadata tag at the source code
+
+^kind/hiccup
+[:p/sparklinespot
+ {:data      (->> #(- (rand) 0.5)
+                  (repeatedly 99)
+                  (reductions +))
+  :svgHeight 50}]
+
+;; ### by varying the metadata of the returned value
+
+(-> {:description "A simple bar chart with embedded data."
+     :height 50
+     :data        {:values [{:a "A" :b 28} {:a "B" :b 55} {:a "C" :b 43}
+                            {:a "D" :b (+ 91 (rand-int 9))} {:a "E" :b 81} {:a "F" :b 53}
+                            {:a "G" :b 19} {:a "H" :b 87} {:a "I" :b 52}]}
+     :mark        :bar
+     :encoding    {:x {:field :a :type :nominal :axis {:labelAngle 0}}
+                   :y {:field :b :type :quantitative}}}
+    (kindly/consider kind/vega))
+
+;; ### by implementing the Kindness protocol
+
+(deftype BigBigBigText [text]
+  kindness/Kindness
+  (->behaviour [this]
+    {:render-src?   true
+     :value->hiccup (fn [value]
+                      [:big [:big [:big (.text value)]]])}))
+
+(BigBigBigText. "hi!")
 
 ;; ## Troubleshooting
 
