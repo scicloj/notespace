@@ -2,7 +2,8 @@
   (:require [clojure.core.async :as async :refer [<! go go-loop timeout chan thread]]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.state :as v4.state]
-            [scicloj.notespace.v4.events.handle]))
+            [scicloj.notespace.v4.events.handle]
+            [scicloj.notespace.v4.state :as v4.state]))
 
 (defn pass-valid-events [in out]
   (async/go-loop []
@@ -12,6 +13,9 @@
         ;; else -- valid
         (async/>! out event)))
     (recur)))
+
+
+
 
 ;; https://stackoverflow.com/a/33621605
 (defn batch-events [in out {:keys [max-time max-count]}]
@@ -38,6 +42,8 @@
           :else
           (recur (conj buf v) t))))))
 
+
+
 (def event-priorities
   #:scicloj.notespace.v4.events.handle{:buffer-update 1
                                        :eval          2
@@ -49,16 +55,32 @@
   (async/go-loop []
     (->> in
          async/<!
-         (group-by :type)
-         (sort-by (fn [[_ {:keys [event-type]}]]
-                    (event-priorities event-type)))
+         (group-by (comp event-priorities :event/type))
+         (sort-by (fn [[priority _]]
+                    priority))
+         ;; ((fn [grouped-events]
+         ;;    (when (-> grouped-events seq)
+         ;;      (v4.state/add-formatted-message!
+         ;;       :debug1
+         ;;       {:grouped-events (->> grouped-events
+         ;;                             (map (fn [[k events]]
+         ;;                                    [k (->> events
+         ;;                                            (map #(dissoc % :value)))])))}))
+         ;;    grouped-events))
          (map (fn [[_ events]]
                 (->> events
                      (sort-by :event-counter))))
          (mapcat (fn [events]
-                   (if (-> events first :event-type (= :buffer-update))
+                   (if (-> events first :event/type (= :scicloj.notespace.v4.events.handle/buffer-update))
                      [(last events)]
                      events)))
+         ;; ((fn [events]
+         ;;    (when (-> events seq)
+         ;;      (v4.state/add-formatted-message!
+         ;;       :debug2
+         ;;       {:events (->> events
+         ;;                     (map #(dissoc % :value)))}))
+         ;;    events))
          (async/>! out))
     (recur)))
 
@@ -74,7 +96,7 @@
         clean-events-channel   (async/chan 20)]
     (batch-events events-channel batched-events-channel
                   {:max-time  200
-                   :max-count 100})
+                   :max-count 1000})
     (cleanup-events batched-events-channel clean-events-channel)
     (handle-events clean-events-channel handler)
     {:stop (fn []
