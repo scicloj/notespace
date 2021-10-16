@@ -67,7 +67,6 @@
       ;;
       err
       (let [request-event (request->event request)]
-        (v4.state/add-formatted-message! :debug)
         (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
           (v4.pipeline/process-event
            {:request-id id
