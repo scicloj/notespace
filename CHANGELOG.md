@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-5-SNAPSHOT]
+- event debounce
+
 ## [4-alpha-4] - 2021-10-15
 - minor api extension
 - more careful kind resolution
