@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [4-alpha-5-SNAPSHOT]
 - event debounce
+- bugfix in note editing on eval failure
 
 ## [4-alpha-4] - 2021-10-15
 - minor api extension

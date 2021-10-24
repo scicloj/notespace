@@ -123,7 +123,7 @@
                                                current-notes
                                                (assoc :status :failed)
                                                (v4.note/->new-note))]
-                       [[[idx] :r note-with-value]]))))
+                       [[idx] :r note-with-value]))))
         ;; else -- nothing to do
         [])))
 
