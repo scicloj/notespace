@@ -57,10 +57,11 @@
          async/<!
          (group-by (comp event-priorities :event/type))
          (sort-by (fn [[priority _]]
+                    (-> priority nil? not assert)
                     priority))
          ;; ((fn [grouped-events]
          ;;    (when (-> grouped-events seq)
-         ;;      (v4.state/add-formatted-message!
+         ;;      (v4.log/log-data
          ;;       :debug1
          ;;       {:grouped-events (->> grouped-events
          ;;                             (map (fn [[k events]]
@@ -76,7 +77,7 @@
                      events)))
          ;; ((fn [events]
          ;;    (when (-> events seq)
-         ;;      (v4.state/add-formatted-message!
+         ;;      (v4.log/log-data
          ;;       :debug2
          ;;       {:events (->> events
          ;;                     (map #(dissoc % :value)))}))
@@ -86,8 +87,7 @@
 
 (defn handle-events [in handler]
   (async/go-loop []
-    (let [events (async/<! in)]
-     (run! handler events))
+    (handler (async/<! in))
     (recur)))
 
 (defn start! [handler]

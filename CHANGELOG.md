@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-6] - 2021-10-25
+- more sensible frontend updates
+
 ## [4-alpha-5] - 2021-10-24
 - event debounce
 - bugfix in note editing on eval failure

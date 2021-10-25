@@ -58,9 +58,10 @@
                            v4.note/notes->counts)}))
 
 
-(defn reset-state! [state]
+(defn reset-state! [state frontend-too?]
   (reset! *state state)
-  (reset-frontend!))
+  (when frontend-too?
+    (reset-frontend!)))
 
 (defn pipeline []
   (:pipeline @*state))

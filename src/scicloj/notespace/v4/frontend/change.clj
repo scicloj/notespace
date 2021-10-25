@@ -10,7 +10,6 @@
 (defn reset-frontend! [{:keys [current-notes]
                         :as details}]
   (reset-frontend-header! details)
-  (v4.frontend.engine/reset-widgets!)
   (->> current-notes
        (mapcat (fn [note]
                  [[:view/source note]

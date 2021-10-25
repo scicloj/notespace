@@ -3,13 +3,15 @@
             [scicloj.notespace.v4.events.channels :as v4.channels]
             [scicloj.notespace.v4.state :as v4.state]))
 
-(defn handle-and-transact [event]
+(defn handle-and-transact [events]
   (try
-    (-> event
-        (assoc :state @v4.state/*state)
-        v4.handle/handle
-        v4.state/reset-state!)
-    (catch Exception e (println e))))
+    (doseq [event events]
+      (-> event
+          (assoc :state @v4.state/*state)
+          v4.handle/handle
+          (v4.state/reset-state! false)))
+    (catch Exception e (println e)))
+  (v4.state/reset-frontend!))
 
 (defn start! []
   (let [pipeline (v4.channels/start! #'handle-and-transact)]
