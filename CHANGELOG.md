@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-7] - 2021-10-26
+- support for delays
+
 ## [4-alpha-6] - 2021-10-25
 - more sensible frontend updates
 

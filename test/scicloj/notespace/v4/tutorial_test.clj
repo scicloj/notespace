@@ -1,3 +1,5 @@
+;; # Notespace tutorial
+
 (ns scicloj.notespace.v4.tutorial-test
   (:require [scicloj.notespace.v4.api :as notespace] ; the Notespace API
             [scicloj.kindly.api :as kindly] ; specifying kinds of notes
@@ -37,7 +39,9 @@
 ;; * The header contains an events log, some metadata, and the last evaluation value.
 ;; * The body contains your code, intertwined with evaluation values.
 
-;; Top-level text comments are rendered as markdown. Top-level forms (so-called "notes") are rendered by their specified "kind". More on that -- below.
+;; Top-level text comments are rendered as markdown (including LaTeX formulae: $e^{\pi i}+1=0$).
+;;
+;; Top-level forms (so-called "notes") are rendered by their specified "kind". More on that -- below.
 
 ;; ## Interaction
 
@@ -102,11 +106,28 @@
 
 (BigBigBigText. "hi!")
 
+;; ## Delays
+
+;; When the evaluation value is a Clojure [delay](https://clojuredocs.org/clojure.core/delay), will render by dereferencing the delay.
+
+(delay
+  (Thread/sleep 500)
+  (+ 1 2))
+
+;; We encourage the user to put slow computations in `delay` blocks. This way, evaluating the whole namespace is fast, and slowness is experienced only in the context of evaluating specific parts of it for rendering.
+
 ;; ## Troubleshooting
 
-;; Notespace my run into bugs.
+;; Notespace my run into bugs and unreliable states.
 
 ;; One useful practice in such a situation is restarting its event system:
 
 (comment
   (notespace/restart-events!))
+
+;; A more complete restart would be restarting the whole Notespace, including the webserver.
+
+(comment
+  (notespace/restart!))
+
+;; After this kind of complete restart, a browser refresh will also be needed.
