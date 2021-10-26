@@ -11,7 +11,8 @@
           v4.handle/handle
           (v4.state/reset-state! false)))
     (catch Exception e (println e)))
-  (v4.state/reset-frontend!))
+  (when (seq events)
+    (v4.state/reset-frontend!)))
 
 (defn start! []
   (let [pipeline (v4.channels/start! #'handle-and-transact)]
