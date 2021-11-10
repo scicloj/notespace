@@ -4,7 +4,7 @@
   org.clojure/tools.reader {:mvn/version "1.3.4"}
   org.clojure/core.async {:mvn/version "1.1.587"}
   org.clojure/core.cache {:mvn/version "1.0.207"}
-  babashka/fs {:mvn/version "0.0.1"}
+  babashka/fs {:mvn/version "0.1.0"}
   org.clojure/tools.namespace {:mvn/version "1.1.0"}
   carocad/parcera {:mvn/version "0.11.6"}
   org.antlr/antlr4-runtime {:mvn/version "4.7.1"}
@@ -25,4 +25,4 @@
   com.fasterxml.jackson.core/jackson-annotations {:mvn/version "2.13.0"}
   com.fasterxml.jackson.dataformat/jackson-dataformat-cbor {:mvn/version "2.13.0"}
   com.fasterxml.jackson.dataformat/jackson-dataformat-smile {:mvn/version "2.13.0"}
-  org.pinkgorilla/goldly-docs {:mvn/version "0.3.68"}}}
+  io.github.nextjournal/clerk {:mvn/version "0.3.220"}}}
