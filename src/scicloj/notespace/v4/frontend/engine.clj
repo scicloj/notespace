@@ -1,42 +1,38 @@
 (ns scicloj.notespace.v4.frontend.engine
-  (:require [gorilla-notes.core :as gorilla-notes]))
+  (:require [scicloj.notespace.v4.frontend.protocol :as prot]
+            [scicloj.notespace.v4.frontend.gorilla-notes :as v4.frontend.gorilla-notes]
+            [scicloj.notespace.v4.frontend.clerk :as v4.frontend.clerk]))
+
+(def frontend
+  #_(v4.frontend.gorilla-notes/->GNFrontend)
+  (v4.frontend.clerk/->ClerkFrontend))
 
 (defn start! [options]
-  (let [server (gorilla-notes/start-server! options)]
-    (gorilla-notes/reset-notes!)
-    (gorilla-notes/merge-new-options!
-     (merge
-      {:notes-in-cards? false
-       :reverse-notes?  false}))
-    server))
+  (prot/start! frontend options))
 
 (defn stop! [server]
-  (server))
+  (prot/stop! frontend server))
 
 (defn reset-header! [header]
-  (gorilla-notes/merge-new-options!
-   {:custom-header header}))
+  (prot/reset-header! frontend header))
 
-(defn reset-widgets! []
-  (gorilla-notes/reset-notes!))
+;; (defn reset-widgets! [this]
+;;   (prot/reset-widgets! frontend))
 
-(defn add-widget! [hiccup]
-  (gorilla-notes/add-note! hiccup))
+;; (defn add-widget! [hiccup]
+;;   (prot/add-widget! frontend hiccup))
 
-(defn assoc-widget! [idx hiccup]
-  (gorilla-notes/assoc-note! idx hiccup))
+;; (defn assoc-widget! [idx hiccup]
+;;   (prot/assoc-widget! frontend idx hiccup))
 
-(defn remove-widget! [idx]
-  (gorilla-notes/remove-note! idx))
+;; (defn remove-widget! [idx]
+;;   (prot/remove-widget! frontend idx))
 
 (defn sync-widgets! [id-fn widget-fn widgets-data]
-  (gorilla-notes/reset-notes-with-content!
-   {:ids-and-content (->> widgets-data
-                          (map (juxt id-fn widget-fn)))}))
+  (prot/sync-widgets! frontend id-fn widget-fn widgets-data))
 
-(defn browse! []
-  (gorilla-notes/browse-http-url))
+(defn browse! [this]
+  (prot/browse! frontend))
 
 (defn render-as-html! [html-path]
-  (gorilla-notes/render-current-state! html-path))
-
+  (prot/render-as-html! frontend html-path))
