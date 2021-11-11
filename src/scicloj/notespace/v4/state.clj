@@ -8,8 +8,7 @@
             [editscript.core :as editscript])
   (:import java.util.Date))
 
-(def initial-state {:event-counter       0
-                    :last-evaluated-note nil
+(def initial-state {:last-evaluated-note nil
                     :path->notes         {}
                     :request-id->details {}
                     :current-path        nil
@@ -23,9 +22,10 @@
 
 (defonce *messages (atom []))
 
+(defonce *event-counter (atom 0))
+
 (defn next-event-counter []
-  (swap! *state update :event-counter inc)
-  (:event-counter @*state))
+  (swap! *event-counter inc))
 
 (defn path-notes [state path]
   (-> state
