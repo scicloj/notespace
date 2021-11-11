@@ -1,11 +1,11 @@
 (ns scicloj.notespace.v4.frontend.engine
   (:require [scicloj.notespace.v4.frontend.protocol :as prot]
             [scicloj.notespace.v4.frontend.gorilla-notes :as v4.frontend.gorilla-notes]
-            [scicloj.notespace.v4.frontend.clerk :as v4.frontend.clerk]))
+            #_[scicloj.notespace.v4.frontend.clerk :as v4.frontend.clerk]))
 
 (def frontend
-  #_(v4.frontend.gorilla-notes/->GNFrontend)
-  (v4.frontend.clerk/->ClerkFrontend))
+  (v4.frontend.gorilla-notes/->GNFrontend)
+  #_(v4.frontend.clerk/->ClerkFrontend))
 
 (defn start! [options]
   (prot/start! frontend options))
