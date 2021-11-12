@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [gorilla-notes.core :as gn]
             [scicloj.notespace.v4.log :as v4.log]
-            [scicloj.notespace.v4.note :as v4.note]))
+            [scicloj.notespace.v4.note :as v4.note]
+            [scicloj.notespace.v4.config :as v4.config]))
 
 (defn title [title]
   [:p [:small [:b title]]])
@@ -56,9 +57,14 @@
 
 (defn ->header [{:keys [messages last-evaluated-note]
                  :as   details}]
-  [:div
-   {:style {:background "#efefef"}}
-   (messages->hiccup messages)
-   (note->hiccup [:view/state last-evaluated-note])
-   (summary->hiccup details)
-   [:hr]])
+  (let [{:keys [messages? last-eval? summary?]} @v4.config/*config]
+    [:div
+     {:style {:background "#efefef"}}
+     [:p ""]
+     (when messages?
+       (messages->hiccup messages))
+     (when last-eval?
+       (note->hiccup [:view/state last-evaluated-note]))
+     (when summary?
+       (summary->hiccup details))
+     [:hr]]))

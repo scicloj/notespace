@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-10] - 2021-11-12
+- basic config support
+
 ## [4-alpha-9] - 2021-11-12
 - frontend refactoring (still keeping gorilla-notes for now)
 - updated deps
