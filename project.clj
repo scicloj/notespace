@@ -1,4 +1,4 @@
-(defproject scicloj/notespace "4-alpha-10"
+(defproject scicloj/notespace "4-alpha-11-SNAPSHOT"
   :description "Notebook experience in your Clojure namespace."
   :url "http://github.com/scicloj/notespace"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -8,7 +8,8 @@
   :lein-tools-deps/config {:config-files [:install :user :project]}
   :profiles {:dev {:cloverage    {:runner :midje}
                    :dependencies [[midje "1.9.9"]
-                                  [aerial.hanami "0.12.7"]]
+                                  [aerial.hanami "0.12.7"]
+                                  [scicloj/tablecloth "6.025"]]
                    :plugins      [[lein-midje "3.2.1"]
                                   [lein-cloverage "1.1.2"]]
                    :repl-options {:nrepl-middleware [scicloj.notespace.v4.nrepl/middleware]}}}
