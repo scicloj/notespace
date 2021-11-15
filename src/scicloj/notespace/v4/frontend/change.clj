@@ -18,11 +18,11 @@
            (mapcat (fn [note]
                      [[:view/source note]
                       [:view/state note]]))
-           (v4.frontend.engine/sync-widgets! (fn [[part note]]
-                                               (case part
-                                                 :view/source (:scicloj.notespace.v4.note/id note)
-                                                 :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                                                 0.1)))
-                                             v4.view/note->hiccup)))))
-
+           (v4.frontend.engine/sync-widgets!
+            (fn [[part note]]
+              (case part
+                :view/source (:scicloj.notespace.v4.note/id note)
+                :view/state  (+ (:scicloj.notespace.v4.note/id note)
+                                0.1)))
+            v4.view/note->hiccup)))))
 
