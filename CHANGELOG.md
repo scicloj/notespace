@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-11-SNAPSHOT]
+- added set-config! to api
+
 ## [4-alpha-10] - 2021-11-12
 - basic config support
 
