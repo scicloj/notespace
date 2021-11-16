@@ -31,6 +31,7 @@
       (cond ;;
         ('#{ns
             def defonce defn defmacro
+            defmethod defmulti
             deftype defrecord defprotocol
             extend-protocol extend-type
             require import comment}

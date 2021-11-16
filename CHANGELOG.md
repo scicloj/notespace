@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 - added set-config! to api
 - changed channels params
 - shifting to tab-based frontend
+- handling defmulti, defmethod
 
 ## [4-alpha-10] - 2021-11-12
 - basic config support
