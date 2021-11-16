@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. This change
 - changed channels params
 - shifting to tab-based frontend
 - handling defmulti, defmethod
+- more careful handling of eval events (WIP)
+
 
 ## [4-alpha-10] - 2021-11-12
 - basic config support

@@ -36,12 +36,14 @@
     new-state))
 
 (defmethod handle ::eval
-  [{:keys [path code buffer-snapshot request-id state]}]
+  [{:keys [path code buffer-snapshot request-id state]
+    :as event}]
+  (println [:eval-event event])
   (when path
-    (when buffer-snapshot
-      (handle {:event/type ::buffer-snapshot
-               :path            path}))
-    (let [region-notes (some->> code
+    (let [state1 (handle {:event/type      ::buffer-update
+                          :path            path
+                          :buffer-snapshot buffer-snapshot})
+          region-notes (some->> code
                                 v4.read/->safe-notes
                                 (map (fn [note]
                                        (if (:comment? note)
@@ -53,14 +55,15 @@
                                            :request-id request-id})))))
           merged-notes (if region-notes
                          (v4.merge/merge-eval-region-notes
-                          (v4.state/current-notes state)
+                          (v4.state/current-notes state1)
                           region-notes)
                          [])
-          new-state (-> state
-                        (v4.change/set-request-details request-id {:path path
-                                                                   :region-notes region-notes
-                                                                   :notes-evaluated 0})
-                        (v4.change/edit-notes path merged-notes))]
+          new-state    (-> state1
+                           (v4.change/set-request-details request-id {:path            path
+                                                                      :region-notes    region-notes
+                                                                      :notes-evaluated 0})
+                           (v4.change/edit-notes path merged-notes)
+                           (v4.change/set-current-path path))]
       (v4.state/add-formatted-message! :started-eval
                                        {:path       path
                                         :request-id request-id})
@@ -127,3 +130,8 @@
     (v4.state/add-formatted-message! :finished-handling-eval
                                      {:request-id request-id})
     new-state))
+
+
+(comment
+  (handle {:event/type      ::buffer-update
+           :path            "src/scicloj/notespace/v4/image.clj"}) )
