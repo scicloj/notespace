@@ -10,7 +10,7 @@
 
 (defn reset-frontend! [{:keys [current-notes last-evaluated-note messages]
                         :as details}]
-  (let [{:keys [header? notes? last-eval? messages?]} @v4.config/*config]
+  (let [{:keys [header? notebook? last-eval? debug?]} @v4.config/*config]
     (when header?
       (reset-frontend-header! details))
     (when (and last-eval?
@@ -21,21 +21,21 @@
             false
             (fn [_] (java.util.UUID/randomUUID))
             v4.view/note->hiccup)))
-    (when messages?
+    (when debug?
       (->> messages
            reverse
            (v4.frontend.engine/sync-widgets!
-            :messages
+            :debug
             false
             (fn [_] (java.util.UUID/randomUUID))
             identity)))
-    (when notes?
+    (when notebook?
       (->> current-notes
            (mapcat (fn [note]
                      [[:view/source note]
                       [:view/state note]]))
            (v4.frontend.engine/sync-widgets!
-            :notes
+            :notebook
             false
             (fn [[part note]]
               (case part

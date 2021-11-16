@@ -2,11 +2,11 @@
 
 
 (def *config
-  (atom {:messages? true
+  (atom {:debug? false
          :last-eval? true
          :summary? true
          :header? true
-         :notes?  true}))
+         :notebook?  true}))
 
 (defn set! [new-config]
   (reset! *config new-config))
