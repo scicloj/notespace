@@ -40,9 +40,10 @@
     :as event}]
   (println [:eval-event event])
   (when path
-    (let [state1 (handle {:event/type      ::buffer-update
-                          :path            path
-                          :buffer-snapshot buffer-snapshot})
+    (let [state1 state
+          ;; (handle {:event/type      ::buffer-update
+          ;;                 :path            path
+          ;;                 :buffer-snapshot buffer-snapshot})
           region-notes (some->> code
                                 v4.read/->safe-notes
                                 (map (fn [note]
@@ -63,7 +64,8 @@
                                                                       :region-notes    region-notes
                                                                       :notes-evaluated 0})
                            (v4.change/edit-notes path merged-notes)
-                           (v4.change/set-current-path path))]
+                           ;; (v4.change/set-current-path path)
+                           )]
       (v4.state/add-formatted-message! :started-eval
                                        {:path       path
                                         :request-id request-id})

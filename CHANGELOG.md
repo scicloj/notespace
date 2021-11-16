@@ -1,13 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-11-SNAPSHOT]
+## [4-alpha-12]
+- disabled some problematic event handling
+
+## [4-alpha-11] - 2021-11-16
 - added set-config! to api
 - changed channels params
 - shifting to tab-based frontend
 - handling defmulti, defmethod
 - more careful handling of eval events (WIP)
-
 
 ## [4-alpha-10] - 2021-11-12
 - basic config support
