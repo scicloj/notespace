@@ -95,7 +95,7 @@
         batched-events-channel (async/chan 20)
         clean-events-channel   (async/chan 20)]
     (batch-events events-channel batched-events-channel
-                  {:max-time  20
+                  {:max-time 20
                    :max-count 1000})
     (cleanup-events batched-events-channel clean-events-channel)
     (handle-events clean-events-channel handler)

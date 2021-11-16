@@ -16,20 +16,11 @@
 (defn reset-header! [header]
   (prot/reset-header! frontend header))
 
-;; (defn reset-widgets! [this]
-;;   (prot/reset-widgets! frontend))
+(defn sync-widgets! [mode broadcast? id-fn widget-fn widgets-data]
+  (prot/sync-widgets! frontend mode broadcast? id-fn widget-fn widgets-data))
 
-;; (defn add-widget! [hiccup]
-;;   (prot/add-widget! frontend hiccup))
-
-;; (defn assoc-widget! [idx hiccup]
-;;   (prot/assoc-widget! frontend idx hiccup))
-
-;; (defn remove-widget! [idx]
-;;   (prot/remove-widget! frontend idx))
-
-(defn sync-widgets! [id-fn widget-fn widgets-data]
-  (prot/sync-widgets! frontend id-fn widget-fn widgets-data))
+(defn broadcast-widgets! []
+  (prot/broadcast-widgets! frontend))
 
 (defn browse! [this]
   (prot/browse! frontend))

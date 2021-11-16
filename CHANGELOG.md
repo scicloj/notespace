@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This change
 ## [4-alpha-11-SNAPSHOT]
 - added set-config! to api
 - changed channels params
+- shifting to tab-based frontend
 
 ## [4-alpha-10] - 2021-11-12
 - basic config support

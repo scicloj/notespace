@@ -5,30 +5,16 @@
             [scicloj.notespace.v4.note :as v4.note]
             [scicloj.notespace.v4.config :as v4.config]))
 
-(defn title [title]
-  [:p [:small [:b title]]])
-
-(defn messages->hiccup [messages]
-  [:div
-   (title "events log")
-   (->> messages
-        reverse
-        (map (fn [message]
-               [:small
-                [:li message]]))
-        (into [:ul {:style {:overflow-y "scroll"
-                            :max-height "20px"}}]))])
-
 (defn summary->hiccup [{:keys [current-path
                                current-notes
                                counts]
                         :as details}]
-  [:small
-   [:div
-    [:p [:b "current path: "] current-path]
-    [:p [:b "notes: "] (count current-notes)
-     (when (seq counts)
-       (str " " (pr-str counts)))]]])
+  [:div
+   [:p [:big [:big [:p/code (pr-str {:notespace current-path})]]]]
+    [:p/code
+     (->> counts
+          (merge {:notes (count current-notes)})
+          pr-str)]])
 
 (defn comment-source->hiccup [source]
   [:p/markdown
@@ -43,8 +29,9 @@
      (case part
        :view/source (when (and (not comment?)
                                render-src?)
-                      [:p/code {:code     source
-                                :bg-class "bg-light"}])
+                      [:div
+                       {:style {:background "#fdf6e3"}}
+                       [:p/code {:code     source}]])
        :view/state  (if comment?
                       (comment-source->hiccup source)
                       ;; else
@@ -55,16 +42,11 @@
                            :failed     "failed"
                            :evaluated  (value->hiccup value))])))]))
 
-(defn ->header [{:keys [messages last-evaluated-note]
+(defn ->header [{:keys [messages]
                  :as   details}]
-  (let [{:keys [messages? last-eval? summary?]} @v4.config/*config]
-    [:div
-     {:style {:background "#efefef"}}
+  (let [{:keys [messages? summary?]} @v4.config/*config]
+    [:div.bg-light
      [:p ""]
-     (when messages?
-       (messages->hiccup messages))
-     (when last-eval?
-       (note->hiccup [:view/state last-evaluated-note]))
      (when summary?
-       (summary->hiccup details))
-     [:hr]]))
+       (summary->hiccup details))]))
+
