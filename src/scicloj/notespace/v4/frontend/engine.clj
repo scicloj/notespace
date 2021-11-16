@@ -22,7 +22,7 @@
 (defn broadcast-widgets! []
   (prot/broadcast-widgets! frontend))
 
-(defn browse! [this]
+(defn browse! []
   (prot/browse! frontend))
 
 (defn render-as-html! [html-path]
