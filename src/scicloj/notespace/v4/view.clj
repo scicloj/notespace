@@ -42,11 +42,19 @@
                            :failed     "failed"
                            :evaluated  (value->hiccup value))])))]))
 
-(defn ->header [{:keys [messages]
+(defn ->header [{:keys [current-path]
                  :as   details}]
-  (let [{:keys [messages? summary?]} @v4.config/*config]
-    [:div.bg-light
-     [:p ""]
-     (when summary?
-       (summary->hiccup details))]))
+  [:div
+   [:br]
+   [:p
+    {:style {:margin      "0 10px"
+             ;; :font-family "'Fira Code'"
+             }}
+    current-path]]
+  ;; (let [{:keys [messages? summary?]} @v4.config/*config]
+  ;;   [:div.bg-light
+  ;;    [:p ""]
+  ;;    (when summary?
+  ;;      (summary->hiccup details))])
+  )
 
