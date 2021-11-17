@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This change
 ## [4-alpha-12]
 - disabled some problematic event handling
 - changes in tabs
+- broken channel bugfix
 
 ## [4-alpha-11] - 2021-11-16
 - added set-config! to api

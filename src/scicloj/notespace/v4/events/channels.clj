@@ -32,7 +32,8 @@
 
           (nil? v)
           (when (seq buf)
-            (async/>! out buf))
+            (async/>! out buf)
+            (recur [] (async/timeout max-time)))
 
           (== (count buf) lim-1)
           (do
