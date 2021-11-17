@@ -37,7 +37,7 @@
   (broadcast-widgets! [this]
     (gorilla-notes/broadcast-content-ids!))
 
-  (browse! [this ]
+  (browse! [this]
     (gorilla-notes/browse-http-url))
 
   (render-as-html! [this html-path]
