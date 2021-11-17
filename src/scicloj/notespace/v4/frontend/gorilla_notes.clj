@@ -9,7 +9,8 @@
 
   (start! [this options]
     (let [server (gorilla-notes/start-server! options)]
-      (gorilla-notes/reset-notes! :notes)
+      (gorilla-notes/reset-notes! :notebook)
+      (gorilla-notes/reset-notes! :last-eval)
       (gorilla-notes/merge-new-options!
        (merge
         {:notes-in-cards? false
@@ -43,4 +44,3 @@
     (gorilla-notes/render-current-state! html-path)))
 
 
-(gorilla-notes/add-note! :last-eval [:h1 "..."])
