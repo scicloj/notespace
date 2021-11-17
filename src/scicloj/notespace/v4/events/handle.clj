@@ -38,9 +38,9 @@
 (defmethod handle ::eval
   [{:keys [path code buffer-snapshot request-id state]
     :as event}]
-  (println [:eval-event event])
   (when path
-    (let [state1 state
+    (let [state1 (-> state
+                     (v4.change/set-current-path path))
           ;; (handle {:event/type      ::buffer-update
           ;;                 :path            path
           ;;                 :buffer-snapshot buffer-snapshot})
@@ -63,9 +63,7 @@
                            (v4.change/set-request-details request-id {:path            path
                                                                       :region-notes    region-notes
                                                                       :notes-evaluated 0})
-                           (v4.change/edit-notes path merged-notes)
-                           ;; (v4.change/set-current-path path)
-                           )]
+                           (v4.change/edit-notes path merged-notes))]
       (v4.state/add-formatted-message! :started-eval
                                        {:path       path
                                         :request-id request-id})
