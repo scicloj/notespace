@@ -1,7 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-12]
+## [4-alpha-14]
+- tab rename
+- tab-aware static rendering
+- 
+
+## [4-alpha-12] [4-alpha-13] - 2021-11-17
 - disabled some problematic event handling
 - changes in tabs
 - broken channel bugfix

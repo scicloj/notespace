@@ -9,7 +9,7 @@
 
   (start! [this options]
     (let [server (gorilla-notes/start-server! options)]
-      (gorilla-notes/reset-notes! :notebook)
+      (gorilla-notes/reset-notes! :notespace)
       (gorilla-notes/reset-notes! :last-eval)
       (gorilla-notes/merge-new-options!
        (merge
@@ -41,6 +41,6 @@
     (gorilla-notes/browse-http-url))
 
   (render-as-html! [this html-path]
-    (gorilla-notes/render-current-state! html-path)))
+    (gorilla-notes/render-current-state! [:notespace] html-path)))
 
 

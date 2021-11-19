@@ -35,7 +35,7 @@
                      [[:view/source note]
                       [:view/state note]]))
            (v4.frontend.engine/sync-widgets!
-            :notebook
+            :notespace
             false
             (fn [[part note]]
               (case part
