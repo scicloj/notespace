@@ -15,7 +15,7 @@
   integrant {:mvn/version "0.8.0"}
   org.scicloj/tempfiles {:mvn/version "1-alpha2"}
   org.scicloj/kindly {:mvn/version "1-alpha3"}
-  scicloj/gorilla-notes {:mvn/version "0.6.1"
+  scicloj/gorilla-notes {:mvn/version "0.6.2"
                          ;; avoid conflict with jsonista
                          :exclusions [com.fasterxml.jackson.core/jackson-core
                                       com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
@@ -24,6 +24,5 @@
   com.fasterxml.jackson.core/jackson-core {:mvn/version "2.13.0"}
   com.fasterxml.jackson.core/jackson-annotations {:mvn/version "2.13.0"}
   com.fasterxml.jackson.dataformat/jackson-dataformat-cbor {:mvn/version "2.13.0"}
-  com.fasterxml.jackson.dataformat/jackson-dataformat-smile {:mvn/version "2.13.0"}
-  io.github.nextjournal/clerk {:mvn/version "0.3.233"}}}
+  com.fasterxml.jackson.dataformat/jackson-dataformat-smile {:mvn/version "2.13.0"}}}
 
