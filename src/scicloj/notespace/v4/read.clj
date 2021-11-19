@@ -103,6 +103,11 @@
   (try
     (->notes source)
     (catch Exception e
-      (v4.state/add-formatted-message! :invalid-notes {})
+      (v4.state/add-formatted-message! :invalid-notes (-> e
+                                                          Throwable->map
+                                                          (select-keys [:cause :data])))
       nil)))
+
+
+
 
