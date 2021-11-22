@@ -2,7 +2,9 @@
   (:require [scicloj.notespace.v4.frontend.engine :as v4.frontend.engine]
             [scicloj.notespace.v4.view :as v4.view]
             [scicloj.notespace.v4.log :as v4.log]
-            [scicloj.notespace.v4.config :as v4.config]))
+            [scicloj.notespace.v4.config :as v4.config]
+            [scicloj.notespace.v4.note :as v4.note]
+            [clojure.string :as string]))
 
 (defn reset-frontend-header! [details]
   (v4.frontend.engine/reset-header!
@@ -31,17 +33,35 @@
             identity)))
     (when notebook?
       (->> current-notes
-           (mapcat (fn [note]
-                     [[:view/source note]
-                      [:view/state note]]))
-           (v4.frontend.engine/sync-widgets!
-            :notespace
-            false
-            (fn [[part note]]
-              (case part
-                :view/source (:scicloj.notespace.v4.note/id note)
-                :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                0.1)))
-            v4.view/note->hiccup)))
+           ((fn [notes]
+              (if (-> notes first v4.note/separator?)
+                notes
+                (cons {:comment? true
+                       :source ";;;; intro"}
+                      notes))))
+           (partition-by v4.note/separator?)
+           (partition 2)
+           (map-indexed (fn [i [title-notes notes]]
+                          (->> notes
+                               (mapcat (fn [note]
+                                         [[:view/source note]
+                                          [:view/state note]]))
+                               (v4.frontend.engine/sync-widgets!
+                                (-> title-notes
+                                    first
+                                    :source
+                                    (string/replace #";" "")
+                                    (string/replace #" " "")
+                                    keyword)
+                                false
+                                (fn [[part note]]
+                                  (case part
+                                    :view/source (:scicloj.notespace.v4.note/id note)
+                                    :view/state  (+ (:scicloj.notespace.v4.note/id note)
+                                                    0.1)))
+                                v4.view/note->hiccup))))
+           doall))
     (v4.frontend.engine/broadcast-widgets!)))
+
+
 
