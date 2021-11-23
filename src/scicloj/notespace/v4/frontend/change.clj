@@ -31,37 +31,46 @@
             false
             (fn [_] (java.util.UUID/randomUUID))
             identity)))
-    (when notebook?
-      (->> current-notes
-           ((fn [notes]
-              (if (-> notes first v4.note/separator?)
-                notes
-                (cons {:comment? true
-                       :source ";;;; intro"}
-                      notes))))
-           (partition-by v4.note/separator?)
-           (partition 2)
-           (map-indexed (fn [i [title-notes notes]]
-                          (->> notes
-                               (mapcat (fn [note]
-                                         [[:view/source note]
-                                          [:view/state note]]))
-                               (v4.frontend.engine/sync-widgets!
-                                (-> title-notes
-                                    first
-                                    :source
-                                    (string/replace #";" "")
-                                    (string/replace #" " "")
-                                    keyword)
-                                false
-                                (fn [[part note]]
-                                  (case part
-                                    :view/source (:scicloj.notespace.v4.note/id note)
-                                    :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                                    0.1)))
-                                v4.view/note->hiccup))))
-           doall))
+    (let [note-modes
+          (if (not notebook?)
+            []
+            (->> current-notes
+                 ((fn [notes]
+                    (if (-> notes first v4.note/separator?)
+                      notes
+                      (cons {:comment?                     true
+                             :source                       ";; # notespace"
+                             :scicloj.notespace.v4.note/id -1}
+                            notes))))
+                 (partition-by v4.note/separator?)
+                 (partition 2)
+                 (map-indexed (fn [i [title-notes notes]]
+                                (let [mode (-> title-notes
+                                               first
+                                               :source
+                                               (string/replace #"^;*\s *# " "")
+                                               keyword)]
+                                  (->> notes
+                                       (mapcat (fn [note]
+                                                 [[:view/source note]
+                                                  [:view/state note]]))
+                                       (v4.frontend.engine/sync-widgets!
+                                        mode
+                                        false
+                                        (fn [[part note]]
+                                          (case part
+                                            :view/source (:scicloj.notespace.v4.note/id note)
+                                            :view/state  (+ (:scicloj.notespace.v4.note/id note)
+                                                            0.1)))
+                                        v4.view/note->hiccup))
+                                  mode)))
+                 doall))]
+      (v4.frontend.engine/restrict-modes!
+         (concat (when last-eval? [:last-eval])
+                 (when debug? [:debug])
+                 note-modes)))
     (v4.frontend.engine/broadcast-widgets!)))
 
 
-
+(v4.note/separator? {:comment? true
+                     :source   ";; # notespace"})

@@ -19,6 +19,9 @@
 (defn sync-widgets! [mode broadcast? id-fn widget-fn widgets-data]
   (prot/sync-widgets! frontend mode broadcast? id-fn widget-fn widgets-data))
 
+(defn restrict-modes! [modes]
+  (prot/restrict-modes! frontend modes))
+
 (defn broadcast-widgets! []
   (prot/broadcast-widgets! frontend))
 

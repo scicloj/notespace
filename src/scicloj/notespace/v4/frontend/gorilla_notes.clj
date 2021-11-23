@@ -25,14 +25,16 @@
      {:custom-header header}))
 
   (sync-widgets! [this mode broadcast? id-fn widget-fn widgets-data]
-    ;; (when (= mode :last-eval)
-    ;;   (println {:ids-and-content (->> widgets-data
-    ;;                                   (map (juxt id-fn widget-fn)))}))
     (gorilla-notes/reset-notes-with-content!
      mode
      {:ids-and-content (->> widgets-data
                             (map (juxt id-fn widget-fn)))
-      :broadcast? broadcast?}))
+      :broadcast?      broadcast?}))
+
+  (restrict-modes! [this modes]
+    (gorilla-notes/restrict-modes!
+     modes
+     :broadcast? false))
 
   (broadcast-widgets! [this]
     (gorilla-notes/broadcast-content-ids!))

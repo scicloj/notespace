@@ -5,6 +5,7 @@
   (stop! [this server])
   (reset-header! [this header])
   (sync-widgets! [this mode broadcast? id-fn widget-fn widgets-data])
+  (restrict-modes! [this modes])
   (broadcast-widgets! [this])
   (browse! [this])
   (render-as-html! [this html-path]))
