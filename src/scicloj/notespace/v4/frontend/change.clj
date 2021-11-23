@@ -34,41 +34,50 @@
     (let [note-modes
           (if (not notebook?)
             []
-            (->> current-notes
-                 ((fn [notes]
-                    (if (-> notes first v4.note/separator?)
-                      notes
-                      (cons {:comment?                     true
-                             :source                       ";; # notespace"
-                             :scicloj.notespace.v4.note/id -1}
-                            notes))))
-                 (partition-by v4.note/separator?)
-                 (partition 2)
-                 (map-indexed (fn [i [title-notes notes]]
-                                (let [mode (-> title-notes
-                                               first
-                                               :source
-                                               (string/replace #"^;*\s *# " "")
-                                               keyword)]
-                                  (->> notes
-                                       (mapcat (fn [note]
-                                                 [[:view/source note]
-                                                  [:view/state note]]))
-                                       (v4.frontend.engine/sync-widgets!
-                                        mode
-                                        false
-                                        (fn [[part note]]
-                                          (case part
-                                            :view/source (:scicloj.notespace.v4.note/id note)
-                                            :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                                            0.1)))
-                                        v4.view/note->hiccup))
-                                  mode)))
-                 doall))]
+            (let [notes-separated (->> current-notes
+                                       (partition-by v4.note/separator?))]
+              (if (= 1 (count notes-separated))
+                (do (->> current-notes
+                         (mapcat (fn [note]
+                                   [[:view/source note]
+                                    [:view/state note]]))
+                         (v4.frontend.engine/sync-widgets!
+                          :notespace
+                          false
+                          (fn [[part note]]
+                            (case part
+                              :view/source (:scicloj.notespace.v4.note/id note)
+                              :view/state  (+ (:scicloj.notespace.v4.note/id note)
+                                              0.1)))
+                          v4.view/note->hiccup))
+                    [:notespace])
+                (->> notes-separated
+                     (partition 2)
+                     (map (fn [[title-notes notes]]
+                            (let [mode (-> title-notes
+                                           first
+                                           :source
+                                           (string/replace #"^;*\s *# " "")
+                                           keyword)]
+                              (->> (concat title-notes notes)
+                                   (mapcat (fn [note]
+                                             [[:view/source note]
+                                              [:view/state note]]))
+                                   (v4.frontend.engine/sync-widgets!
+                                    mode
+                                    false
+                                    (fn [[part note]]
+                                      (case part
+                                        :view/source (:scicloj.notespace.v4.note/id note)
+                                        :view/state  (+ (:scicloj.notespace.v4.note/id note)
+                                                        0.1)))
+                                    v4.view/note->hiccup))
+                              mode)))
+                     doall))))]
       (v4.frontend.engine/restrict-modes!
-         (concat (when last-eval? [:last-eval])
-                 (when debug? [:debug])
-                 note-modes)))
+       (concat note-modes
+               (when last-eval? [:last-eval])
+               (when debug? [:debug]))))
     (v4.frontend.engine/broadcast-widgets!)))
 
 
