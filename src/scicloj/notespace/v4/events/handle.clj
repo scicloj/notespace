@@ -38,8 +38,9 @@
 (defmethod handle ::eval
   [{:keys [path code buffer-snapshot request-id state]
     :as event}]
-  (when path
-    (let [state1 (-> state
+  (if (not path)
+    state
+    (let [state1       (-> state
                      (v4.change/set-current-path path))
           ;; (handle {:event/type      ::buffer-update
           ;;                 :path            path

@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-17-SNAPSHOT]
+- handling event edge cases
+
 ## [4-alpha-16] - 2021-11-24
 - minor reordering of tabs
 - tabs logic bugfixes
