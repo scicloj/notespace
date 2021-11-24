@@ -29,18 +29,18 @@
      (case part
        :view/source (when (and (not comment?)
                                render-src?)
-                      [:div
-                       {:style {:background "#fdf6e3"}}
-                       [:p/code {:code     source}]])
+                      [:div.bg-light
+                       [:div.container-fluid [:p/code {:code     source}]]])
        :view/state  (if comment?
                       (comment-source->hiccup source)
                       ;; else
                       (when status
-                        [:div
-                         (case status
-                           :evaluating "evaluating ..."
-                           :failed     "failed"
-                           :evaluated  (value->hiccup value))])))]))
+                        [:div #_{:style {:background "floralwhite"}}
+                         [:div.container-fluid
+                          (case status
+                            :evaluating "evaluating ..."
+                            :failed     "failed"
+                            :evaluated  (value->hiccup value))]])))]))
 
 (defn ->header [{:keys [current-path]
                  :as   details}]

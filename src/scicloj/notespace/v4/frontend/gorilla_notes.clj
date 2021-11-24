@@ -1,6 +1,8 @@
 (ns scicloj.notespace.v4.frontend.gorilla-notes
   (:require [scicloj.notespace.v4.frontend.protocol :as prot]
-            [gorilla-notes.core :as gorilla-notes]))
+            [gorilla-notes.core :as gorilla-notes]
+            [gorilla-notes.styles.bootswatch :as bootswatch]
+            [gorilla-notes.styles.highlight-js :as highlight-js]))
 
 
 (deftype GNFrontend []
@@ -12,9 +14,11 @@
       (gorilla-notes/reset-notes! :notespace)
       (gorilla-notes/reset-notes! :last-eval)
       (gorilla-notes/merge-new-options!
-       (merge
-        {:notes-in-cards? false
-         :reverse-notes?  false}))
+       {:notes-in-cards? false
+        :reverse-notes?  false
+        :main-div-class  nil
+        :page            {:bootswatch-style   bootswatch/sandstone
+                          :highlight-js-theme highlight-js/foundation}})
       server))
 
   (stop! [this server]
