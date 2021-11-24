@@ -34,46 +34,51 @@
     (let [note-modes
           (if (not notebook?)
             []
-            (let [notes-separated (->> current-notes
+            (let [first-note-sep? (->> current-notes
+                                          first
+                                          v4.note/separator?)
+                  notes-beginning-with-sep (if first-note-sep?
+                                             current-notes
+                                             (cons {:source ";; # notespace"
+                                                    :comment? true
+                                                    :omit? true}
+                                                   current-notes))
+                  notes-separated (->> notes-beginning-with-sep
                                        (partition-by v4.note/separator?))]
-              (if (= 1 (count notes-separated))
-                (do (->> current-notes
-                         (mapcat (fn [note]
-                                   [[:view/source note]
-                                    [:view/state note]]))
-                         (v4.frontend.engine/sync-widgets!
-                          :notespace
-                          false
-                          (fn [[part note]]
-                            (case part
-                              :view/source (:scicloj.notespace.v4.note/id note)
-                              :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                              0.1)))
-                          v4.view/note->hiccup))
-                    [:notespace])
-                (->> notes-separated
-                     (partition 2)
-                     (map (fn [[title-notes notes]]
-                            (let [mode (-> title-notes
-                                           first
-                                           :source
-                                           (string/replace #"^;*\s *# " "")
-                                           keyword)]
-                              (->> (concat title-notes notes)
-                                   (mapcat (fn [note]
-                                             [[:view/source note]
-                                              [:view/state note]]))
-                                   (v4.frontend.engine/sync-widgets!
-                                    mode
-                                    false
-                                    (fn [[part note]]
-                                      (case part
-                                        :view/source (:scicloj.notespace.v4.note/id note)
-                                        :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                                        0.1)))
-                                    v4.view/note->hiccup))
-                              mode)))
-                     doall))))]
+              ;; (->> notes-separated
+              ;;      (map (fn [notes]
+              ;;             (->> notes
+              ;;                  (map (fn [note]
+              ;;                         [:note (-> note
+              ;;                                    :source
+              ;;                                    (subs 0 6))])))))
+              ;;      (partition 2)
+              ;;      (mapv println))
+              (->> notes-separated
+                   (partition 2)
+                   (map (fn [[title-notes notes]]
+                          (let [mode (-> title-notes
+                                         first
+                                         :source
+                                         (string/replace #"^;*\s*#\s*" "")
+                                         string/trim
+                                         keyword)]
+                            (->> (concat title-notes notes)
+                                 (filter (complement :omit?))
+                                 (mapcat (fn [note]
+                                           [[:view/source note]
+                                            [:view/state note]]))
+                                 (v4.frontend.engine/sync-widgets!
+                                  mode
+                                  false
+                                  (fn [[part note]]
+                                    (case part
+                                      :view/source (:scicloj.notespace.v4.note/id note)
+                                      :view/state  (+ (:scicloj.notespace.v4.note/id note)
+                                                      0.1)))
+                                  v4.view/note->hiccup))
+                            mode)))
+                   doall)))]
       (v4.frontend.engine/restrict-modes!
        (concat note-modes
                (when last-eval? [:last-eval])

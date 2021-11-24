@@ -62,6 +62,6 @@
 (defn separator? [note]
   (some?
    (and (:comment? note)
-        (re-matches #"^;*\s *# .*" (:source note)))))
+        (re-matches #"^;*\s*#\s*.*" (:source note)))))
 
 
