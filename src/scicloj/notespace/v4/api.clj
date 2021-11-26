@@ -27,4 +27,5 @@
 (defn set-config! [new-config]
   (v4.config/set! new-config))
 
-
+(defn merge-config! [new-config]
+  (v4.config/merge! new-config))
