@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-18-SNAPSHOT]
+- more robust handling of tab titles
+
 ## [4-alpha-17]
 - handling event edge cases
 - added merge-config! api fn

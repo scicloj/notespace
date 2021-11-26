@@ -10,8 +10,25 @@
   (v4.frontend.engine/reset-header!
    (v4.view/->header details)))
 
+(defn title-note? [note]
+  (some?
+   (and (:comment? note)
+        (-> note
+            :source
+            (string/split #"\n")
+            first
+            (->> (re-matches #"^;*\s*#\s*.*"))))))
+
+(defn title-note->title [note]
+  (-> note
+      :source
+      (string/split #"\n")
+      first
+      (string/replace #"^;*\s*#" "")
+      string/trim))
+
 (defn reset-frontend! [{:keys [current-notes last-evaluated-note messages]
-                        :as details}]
+                        :as   details}]
   (let [{:keys [header? notebook? last-eval? debug?]} @v4.config/*config]
     (when header?
       (reset-frontend-header! details))
@@ -34,35 +51,23 @@
     (let [note-modes
           (if (not notebook?)
             []
-            (let [first-note-sep? (->> current-notes
-                                          first
-                                          v4.note/separator?)
-                  notes-beginning-with-sep (if first-note-sep?
+            (let [first-note-title?        (->> current-notes
+                                                first
+                                                title-note?)
+                  notes-beginning-with-sep (if first-note-title?
                                              current-notes
-                                             (cons {:source ";; # notespace"
+                                             (cons {:source   ";; # notespace"
                                                     :comment? true
-                                                    :omit? true}
+                                                    :omit?    true}
                                                    current-notes))
-                  notes-separated (->> notes-beginning-with-sep
-                                       (partition-by v4.note/separator?))]
-              ;; (->> notes-separated
-              ;;      (map (fn [notes]
-              ;;             (->> notes
-              ;;                  (map (fn [note]
-              ;;                         [:note (-> note
-              ;;                                    :source
-              ;;                                    (subs 0 6))])))))
-              ;;      (partition 2)
-              ;;      (mapv println))
+                  notes-separated          (->> notes-beginning-with-sep
+                                                (partition-by title-note?))]
               (->> notes-separated
                    (partition 2)
                    (map (fn [[title-notes notes]]
                           (let [mode (-> title-notes
                                          first
-                                         :source
-                                         (string/replace #"^;*\s*#\s*" "")
-                                         string/trim
-                                         keyword)]
+                                         title-note->title)]
                             (->> (concat title-notes notes)
                                  (filter (complement :omit?))
                                  (mapcat (fn [note]

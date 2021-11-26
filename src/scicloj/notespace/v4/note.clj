@@ -59,9 +59,6 @@
           kind
           kindly/kind->behaviour)))
 
-(defn separator? [note]
-  (some?
-   (and (:comment? note)
-        (re-matches #"^;*\s*#\s*.*" (:source note)))))
+
 
 
