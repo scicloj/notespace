@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. This change
 ## [4-alpha-17-SNAPSHOT]
 - handling event edge cases
 - added merge-config! api fn
+- aesthetics change
+- bugfix: making sure paths are real paths
 
 ## [4-alpha-16] - 2021-11-24
 - minor reordering of tabs
