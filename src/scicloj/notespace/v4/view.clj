@@ -17,11 +17,12 @@
           pr-str)]])
 
 (defn comment-source->hiccup [source]
-  [:p/markdown
+  [:div.container-fluid
+   [:p/markdown
    (-> source
        (string/split #"\n")
        (->> (map #(string/replace % #"^\s*;*" ""))
-            (string/join "\n")))])
+            (string/join "\n")))]])
 
 (defn note->hiccup [[part {:keys [source gen status value comment?] :as note}]]
   (let [{:keys [render-src? value->hiccup]} (v4.note/behaviour note)]
