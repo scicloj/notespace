@@ -15,7 +15,6 @@
        editscript/get-edits
        (mapv (fn [[path op & args]]
                (let [arg (first args)]
-                 [path op arg]
                  (cond (nil? arg)    [path op]
                        (vector? arg) [path op (mapv
                                                #(-> %

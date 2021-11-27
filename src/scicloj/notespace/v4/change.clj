@@ -27,8 +27,6 @@
          note))
 
 (defn edit-notes [state path edits]
-  ;; (v4.log/log-data {:path path
-  ;;                   :edits edits})
   (update-in state
              [:path->notes path]
              editscript/patch (editscript/edits->script edits)))
