@@ -8,13 +8,13 @@
             [scicloj.notespace.v4.diff :as v4.diff]
             [scicloj.notespace.v4.note :as v4.note]))
 
+(defn ->read-context [note]
+  (select-keys note [:region :source]))
+
 (defn merge-notes [old-notes new-notes]
  (v4.diff/diff-by-function (or old-notes [])
                             new-notes
-                            (juxt :source :region)))
-
-(defn ->read-context [note]
-  (select-keys note [:region :source]))
+                            ->read-context))
 
 (defn start-line [read-context]
   (-> read-context :region first))
