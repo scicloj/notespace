@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-18]
+## [4-alpha-18] - 2021-11-27
 - more robust handling of tab titles
 - bugfix: handling nrepl events with no path
 
