@@ -1,3 +1,5 @@
+;; Emacs config for Notespace v3
+
 (defun cider-interactive-notify-and-eval (code)
   (interactive)
   (message code)
