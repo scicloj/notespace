@@ -39,9 +39,9 @@
         (let [event-type (if path-when-eval-buffer
                            :scicloj.notespace.v4.events.handle/buffer-update
                            :scicloj.notespace.v4.events.handle/eval)
-              path  (-> path-when-eval-buffer
-                        (or file)
-                        v4.path/real-path)]
+              path  (some-> (-> path-when-eval-buffer
+                                (or file))
+                            v4.path/real-path)]
           (merge {:request-id id
                   :event/type event-type
                   :path       path}

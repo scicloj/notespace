@@ -1,8 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-18-SNAPSHOT]
+## [4-alpha-18]
 - more robust handling of tab titles
+- bugfix: handling nrepl events with no path
 
 ## [4-alpha-17]
 - handling event edge cases
