@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This change
 ## [4-alpha-18] - 2021-11-27
 - more robust handling of tab titles
 - bugfix: handling nrepl events with no path
+- css improvements (Ethan)
 
 ## [4-alpha-17]
 - handling event edge cases
