@@ -8,7 +8,8 @@
             [scicloj.notespace.v4.events.pipeline :as v4.pipeline]
             [scicloj.notespace.v4.log :as v4.log]
             [scicloj.notespace.v4.path :as v4.path]
-            [scicloj.notespace.v4.state :as v4.state]))
+            [scicloj.notespace.v4.state :as v4.state]
+            [scicloj.notespace.v4.config :as v4.config]))
 
 
 (defn get-path-when-eval-buffer
@@ -49,37 +50,39 @@
                    {:code code})))))))
 
 (defn handle-request [request]
-  (some-> request
+  (when-not (:ignore-nrepl? @v4.config/*config)
+    (some-> request
           request->event
-          v4.pipeline/process-event))
+          v4.pipeline/process-event)))
 
 (defn handle-message [{:keys [id op] :as request}
                       {:keys [value err] :as message}]
-  (when (= "eval" op)
-    (cond
-      ;;
-      (contains? message :value)
-      (let [request-event (request->event request)]
-        (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-          (v4.pipeline/process-event
-           {:request-id id
-            :value      value
-            :event/type :scicloj.notespace.v4.events.handle/value})))
-      ;;
-      err
-      (let [request-event (request->event request)]
-        (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-          (v4.pipeline/process-event
-           {:request-id id
-            :err err
-            :event/type :scicloj.notespace.v4.events.handle/error})))
-      ;;
-      (-> message :status :done)
-      (let [request-event (request->event request)]
-        (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
-          (v4.pipeline/process-event
-           {:request-id id
-            :event/type :scicloj.notespace.v4.events.handle/done}))))))
+  (when-not (:ignore-nrepl? @v4.config/*config)
+    (when (= "eval" op)
+      (cond
+        ;;
+        (contains? message :value)
+        (let [request-event (request->event request)]
+          (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
+            (v4.pipeline/process-event
+             {:request-id id
+              :value      value
+              :event/type :scicloj.notespace.v4.events.handle/value})))
+        ;;
+        err
+        (let [request-event (request->event request)]
+          (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
+            (v4.pipeline/process-event
+             {:request-id id
+              :err        err
+              :event/type :scicloj.notespace.v4.events.handle/error})))
+        ;;
+        (-> message :status :done)
+        (let [request-event (request->event request)]
+          (when (-> request-event :event/type (= :scicloj.notespace.v4.events.handle/eval))
+            (v4.pipeline/process-event
+             {:request-id id
+              :event/type :scicloj.notespace.v4.events.handle/done})))))))
 
 (defn middleware [f]
   (fn [request]
