@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [4-alpha-21-SNAPSHOT] - 2021-12-02
 - layout fixes
+- experimental static run (WIP)
 
 ## [4-alpha-20] - 2021-12-02
 - support for dropdown control
