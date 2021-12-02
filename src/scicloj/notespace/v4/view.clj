@@ -25,24 +25,39 @@
             (string/join "\n")))]])
 
 (defn note->hiccup [[part {:keys [source gen status value comment?] :as note}]]
-  (let [{:keys [render-src? value->hiccup]} (v4.note/behaviour note)]
+  (let [{:keys [render-src? value->hiccup]} (v4.note/behaviour note)
+        source-view (fn []
+                      (if comment?
+                        (comment-source->hiccup source)
+                        ;; else
+                        (when (and (not comment?)
+                                   render-src?)
+                          [:div.bg-light.pt-4.pb-2
+                           [:div.container-fluid [:p/code {:code source}]]])))
+        state-view (fn []
+                     (if status
+                       [:div #_{:style {:background "floralwhite"}}
+                        [:div.container-fluid
+                         (case status
+                           :evaluating "evaluating ..."
+                           :failed     "failed"
+                           :evaluated  (value->hiccup value))]]
+                       [:div.mb-3]))
+        both-view (fn []
+                    [:div
+                     [:div {:style {:display :inline-block
+                                    :width "50%"}}
+                      (source-view)]
+                     [:div {:style {:display :inline-block
+                                    :width "50%"}}
+                      (state-view)]
+                     [:br]
+                     [:br]])]
     [:div
      (case part
-       :view/source (when (and (not comment?)
-                               render-src?)
-                      [:div.bg-light.pt-4.pb-2
-                       [:div.container-fluid [:p/code {:code source}]]])
-       :view/state  (if comment?
-                      (comment-source->hiccup source)
-                      ;; else
-                      (if status
-                        [:div #_{:style {:background "floralwhite"}}
-                         [:div.container-fluid
-                          (case status
-                            :evaluating "evaluating ..."
-                            :failed     "failed"
-                            :evaluated  (value->hiccup value))]]
-                        [:div.mb-3])))]))
+       :view/source (source-view)
+       :view/state (state-view)
+       :view/both (both-view))]))
 
 (defn ->header [{:keys [current-path]
                  :as   details}]

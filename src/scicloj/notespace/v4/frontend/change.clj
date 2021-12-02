@@ -29,7 +29,7 @@
 
 (defn reset-frontend! [{:keys [current-notes last-evaluated-note messages]
                         :as   details}]
-  (let [{:keys [header? notebook? last-eval? debug?]} @v4.config/*config]
+  (let [{:keys [header? notebook? last-eval? debug? note-layout]} @v4.config/*config]
     (when header?
       (reset-frontend-header! details))
     (when (and last-eval?
@@ -71,8 +71,10 @@
                             (->> (concat title-notes notes)
                                  (filter (complement :omit?))
                                  (mapcat (fn [note]
-                                           [[:view/source note]
-                                            [:view/state note]]))
+                                           (case note-layout
+                                             :vertical [[:view/source note]
+                                                        [:view/state note]]
+                                             :horizontal [[:view/both note]])))
                                  (v4.frontend.engine/sync-widgets!
                                   mode
                                   false
@@ -80,7 +82,9 @@
                                     (case part
                                       :view/source (:scicloj.notespace.v4.note/id note)
                                       :view/state  (+ (:scicloj.notespace.v4.note/id note)
-                                                      0.1)))
+                                                      0.1)
+                                      :view/both (+ (:scicloj.notespace.v4.note/id note)
+                                                    0.2)))
                                   v4.view/note->hiccup))
                             mode)))
                    doall)))]

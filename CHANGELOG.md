@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-18] - 2021-11-27
+## [4-alpha-20] - 2021-12-2
+- support for dropdown control
+- support different note layouts
+
+## [4-alpha-19] - 2021-11-27
 - more robust handling of tab titles
 - bugfix: handling nrepl events with no path
 - css improvements (Ethan)

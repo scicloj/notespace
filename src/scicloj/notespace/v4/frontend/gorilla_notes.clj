@@ -18,7 +18,9 @@
         :reverse-notes?  false
         :main-div-class  nil
         :page            {:bootswatch-style   bootswatch/sandstone
-                          :highlight-js-theme highlight-js/gradient-light}})
+                          :highlight-js-theme highlight-js/gradient-light}
+        :buttons? true
+        :dropdown? false})
       server))
 
   (stop! [this server]

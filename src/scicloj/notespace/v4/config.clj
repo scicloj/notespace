@@ -5,7 +5,8 @@
          :last-eval? true
          :summary? true
          :header? true
-         :notebook?  true}))
+         :notebook?  true
+         :note-layout :vertical}))
 
 (defn set! [new-config]
   (reset! *config new-config))
