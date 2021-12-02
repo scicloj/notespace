@@ -35,20 +35,24 @@
                           [:div.bg-light.pt-4.pb-2
                            [:div.container-fluid [:p/code {:code source}]]])))
         state-view (fn []
-                     (if status
-                       [:div #_{:style {:background "floralwhite"}}
-                        [:div.container-fluid
-                         (case status
-                           :evaluating "evaluating ..."
-                           :failed     "failed"
-                           :evaluated  (value->hiccup value))]]
-                       [:div.mb-3]))
+                     (if comment?
+                       ""
+                       (if status
+                         [:div #_{:style {:background "floralwhite"}}
+                          [:div.container-fluid
+                           (case status
+                             :evaluating "evaluating ..."
+                             :failed     "failed"
+                             :evaluated  (value->hiccup value))]]
+                         [:div.mb-3])))
         both-view (fn []
                     [:div
                      [:div {:style {:display :inline-block
+                                    :vertical-align :top
                                     :width "50%"}}
                       (source-view)]
                      [:div {:style {:display :inline-block
+                                    :vertical-align :top
                                     :width "50%"}}
                       (state-view)]
                      [:br]

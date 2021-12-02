@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-20] - 2021-12-2
+## [4-alpha-21-SNAPSHOT] - 2021-12-02
+- layout fixes
+
+## [4-alpha-20] - 2021-12-02
 - support for dropdown control
 - support different note layouts
 
