@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 - layout fixes
 - experimental static run (WIP)
 - added an option to ignore nREPL
+- added an option to ignore file changes
 
 ## [4-alpha-20] - 2021-12-02
 - support for dropdown control
