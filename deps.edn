@@ -15,7 +15,7 @@
   integrant {:mvn/version "0.8.0"}
   org.scicloj/tempfiles {:mvn/version "1-alpha2"}
   org.scicloj/kindly {:mvn/version "1-alpha3"}
-  scicloj/gorilla-notes {:mvn/version "0.6.7-SNAPSHOT"
+  scicloj/gorilla-notes {:mvn/version "0.6.7"
                          ;; avoid conflict with jsonista
                          :exclusions [com.fasterxml.jackson.core/jackson-core
                                       com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
