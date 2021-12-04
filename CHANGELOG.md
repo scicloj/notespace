@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [4-alpha-21-SNAPSHOT] - 2021-12-02
+## [4-alpha-21] - 2021-12-04
 - layout fixes
 - experimental static run (WIP)
 - added an option to ignore nREPL
