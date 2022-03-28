@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [4-alpha-22] - 2022-03-28
+- adapting to change in kindly API namespaces (but still using Kindly v1)
+
 ## [4-alpha-21] - 2021-12-04
 - layout fixes
 - experimental static run (WIP)

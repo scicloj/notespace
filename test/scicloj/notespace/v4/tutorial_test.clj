@@ -2,9 +2,9 @@
 
 (ns scicloj.notespace.v4.tutorial-test
   (:require [scicloj.notespace.v4.api :as notespace] ; the Notespace API
-            [scicloj.kindly.api :as kindly] ; specifying kinds of notes
-            [scicloj.kindly.kind :as kind] ; a collection of known kinds of notes
-            [scicloj.kindly.kindness :as kindness]))
+            [scicloj.kindly.v1.api :as kindly] ; specifying kinds of notes
+            [scicloj.kindly.v1.kind :as kind] ; a collection of known kinds of notes
+            [scicloj.kindly.v1.kindness :as kindness]))
 
 ;; ## (re)starting Notespace
 
@@ -24,6 +24,7 @@
 ;; ### restart options
 
 ;; To use an alternative port:
+
 
 (comment
   (notespace/restart! {:port 1904}))
@@ -110,11 +111,11 @@
 
 ;; When the evaluation value is a Clojure [delay](https://clojuredocs.org/clojure.core/delay), will render by dereferencing the delay.
 
+;; We encourage the user to put slow computations in `delay` blocks. This way, evaluating the whole namespace is fast, and slowness is experienced only in the context of evaluating specific parts of it for rendering.
+
 (delay
   (Thread/sleep 500)
   (+ 1 2))
-
-;; We encourage the user to put slow computations in `delay` blocks. This way, evaluating the whole namespace is fast, and slowness is experienced only in the context of evaluating specific parts of it for rendering.
 
 ;; ## Troubleshooting
 

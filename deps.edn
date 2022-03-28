@@ -9,12 +9,12 @@
   carocad/parcera {:mvn/version "0.11.6"}
   org.antlr/antlr4-runtime {:mvn/version "4.7.1"}
   juji/editscript {:mvn/version "0.5.7"}
-  hawk {:mvn/version "0.2.11"}
+  hawk/hawk {:mvn/version "0.2.11"}
   com.nextjournal/beholder {:mvn/version "1.0.0"}
   techascent/tech.resource {:mvn/version "5.04"}
-  integrant {:mvn/version "0.8.0"}
+  integrant/integrant {:mvn/version "0.8.0"}
   org.scicloj/tempfiles {:mvn/version "1-alpha2"}
-  org.scicloj/kindly {:mvn/version "1-alpha3"}
+  org.scicloj/kindly {:mvn/version "2-alpha1"}
   scicloj/gorilla-notes {:mvn/version "0.6.7"
                          ;; avoid conflict with jsonista
                          :exclusions [com.fasterxml.jackson.core/jackson-core
@@ -25,4 +25,3 @@
   com.fasterxml.jackson.core/jackson-annotations {:mvn/version "2.13.0"}
   com.fasterxml.jackson.dataformat/jackson-dataformat-cbor {:mvn/version "2.13.0"}
   com.fasterxml.jackson.dataformat/jackson-dataformat-smile {:mvn/version "2.13.0"}}}
-

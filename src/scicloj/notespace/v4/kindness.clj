@@ -1,7 +1,7 @@
 (ns scicloj.notespace.v4.kindness
-  (:require [scicloj.kindly.kindness :as kindness]
-            [scicloj.kindly.kind :as kind]
-            [scicloj.kindly.api :as kindly]
+  (:require [scicloj.kindly.v1.kindness :as kindness]
+            [scicloj.kindly.v1.kind :as kind]
+            [scicloj.kindly.v1.api :as kindly]
             [scicloj.notespace.v4.image :as image]))
 
 (extend-protocol kindness/Kindness
@@ -24,5 +24,3 @@
        :value->hiccup (-> realized-behaviour
                           :value->hiccup
                           (comp deref))})))
-
-

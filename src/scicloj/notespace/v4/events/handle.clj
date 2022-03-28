@@ -8,8 +8,8 @@
             [scicloj.notespace.v4.state :as v4.state]
             [scicloj.notespace.v4.change :as v4.change]
             [scicloj.notespace.v4.view :as v4.view]
-            [scicloj.kindly.api :as kindly]
-            [scicloj.kindly.kind :as kind]
+            [scicloj.kindly.v1.api :as kindly]
+            [scicloj.kindly.v1.kind :as kind]
             [clojure.string :as string]))
 
 (defmulti handle :event/type)

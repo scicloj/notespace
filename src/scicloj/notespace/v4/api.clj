@@ -5,7 +5,7 @@
             [scicloj.notespace.v4.systems.frontend :as v4.frontend-sys]
             [scicloj.notespace.v4.frontend.engine :as v4.frontend.engine]
             [scicloj.notespace.v4.config :as v4.config]
-            [scicloj.kindly.api :as kindly]))
+            [scicloj.kindly.v1.api :as kindly]))
 
 (defn restart-events! []
   (v4.state/init!)

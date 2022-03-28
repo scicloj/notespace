@@ -2,7 +2,6 @@
   (:require [nrepl.core :as nrepl]
             [nrepl.middleware :as middleware]
             [nrepl.middleware.print :as print]
-            [nrepl.middleware.dynamic-loader :as dynamic-loader]
             [nrepl.transport :as transport]
             [clojure.core.async :as async]
             [scicloj.notespace.v4.events.pipeline :as v4.pipeline]
@@ -104,4 +103,3 @@
                             {:requires #{#'print/wrap-print}
                              :expects #{"eval"}
                              :handles {}})
-

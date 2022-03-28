@@ -1,6 +1,6 @@
 (ns scicloj.notespace.v4.note
-  (:require [scicloj.kindly.api :as kindly]
-            [scicloj.kindly.kind :as kind]))
+  (:require [scicloj.kindly.v1.api :as kindly]
+            [scicloj.kindly.v1.kind :as kind]))
 
 (defonce current-id (atom 0))
 
@@ -58,7 +58,3 @@
       (-> note
           kind
           kindly/kind->behaviour)))
-
-
-
-
