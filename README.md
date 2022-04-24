@@ -4,17 +4,37 @@ Notebook experience in your Clojure namespace
 
 [![Clojars Project](https://img.shields.io/clojars/v/scicloj/notespace.svg)](https://clojars.org/scicloj/notespace)
 
+## Status
+
+Update, 2022-04-24: The Notespace project is currently on hold.
+
+### The broader picture
+
+The field of Clojure visual tools is growing rapidly, and it seems that there are very basic questions to be figured out about the future directions: compatibility and conventions across tools, and a lightweight workflow to answer basic needs of sharing and reusing code examples. 
+
+Some of these questions are addressed by a separate project -- [Clay](https://github.com/scicloj/clay), which is the current focus of daslu, the Notespace maintainer.
+
+A few of us meet regularly at the [visual-tools group](https://scicloj.github.io/docs/community/groups/visual-tools/) to collaborate on those issues and more exciting ones.
+
+### Clay
+
+Clay is similar to Notespace in several aspects, such as relying on [Kindly](https://github.com/scicloj/kindly) for specifying the kinds of visualizations. It is rather easy to convert Notespace projects to Clay projects.
+
+Clay offers a more basic, and hopefully simple and robust, approach. Notespace addresses more delicate questions of user interaction, that seem less pressing to solve. They could still be useful, and hopefully we will come back to them.
+
+If you are writing a new project, it is recommended to try Clay. If you are maintaining existing projects with Notespace, please reach out, and we could discuss how to support your needs.
+
+### Notespace versions
+
+Version 4 is the most recent version and is in alpha stage.
+
+Version 3 and Version 2 has been used in some projects. We are not planning to develop them further, but please reach out if you need any support.
+
 ## What is it?
 
 This tool is an attempt to answer the following question: can we have a notebook-like experience in Clojure without leaving one's favourite editor?
 
 See this recorded [Overview](https://www.youtube.com/watch?v=uICA2SDa-ws).
-
-## Status
-
-Version 4 is actively developed and in alpha stage. If you are new to Notespace, this is the version we recommend trying out.
-
-Version 3 and Version 2 has been used in some projects. We are not planning to develop them further, but please reach out if you need any support.
 
 ## Versions
 
