@@ -20,7 +20,7 @@ A few of us meet regularly at the [visual-tools group](https://scicloj.github.io
 
 Clay is similar to Notespace in several aspects, such as relying on [Kindly](https://github.com/scicloj/kindly) for specifying the kinds of visualizations. It is rather easy to convert Notespace projects to Clay projects.
 
-Clay offers a more basic, and hopefully simple and robust, approach. Notespace addresses more delicate questions of user interaction, that seem less pressing to solve. They could still be useful, and hopefully we will come back to them.
+Clay offers a more basic, and hopefully simple and robust, approach. Notespace addresses more delicate questions of user interaction, that seem less pressing to solve. They could still be useful, and hopefully, we will come back to them.
 
 If you are writing a new project, it is recommended to try Clay. If you are maintaining existing projects with Notespace, please reach out, and we could discuss how to support your needs.
 
@@ -28,7 +28,7 @@ If you are writing a new project, it is recommended to try Clay. If you are main
 
 Version 4 is the most recent version and is in alpha stage.
 
-Version 3 and Version 2 has been used in some projects. We are not planning to develop them further, but please reach out if you need any support.
+Version 3 and Version 2 have been used in some projects. We are not planning to develop them further, but please reach out if you need any support.
 
 ## What is it?
 
