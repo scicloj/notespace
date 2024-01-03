@@ -18,7 +18,7 @@ A few of us meet regularly at the [visual-tools group](https://scicloj.github.io
 
 ### Clay
 
-Clay is similar to Notespace in several aspects, such as relying on [Kindly](https://github.com/scicloj/kindly) for specifying the kinds of visualizations. It is rather easy to convert Notespace projects to Clay projects.
+[Clay](https://scicloj.github.io/clay/) is similar to Notespace in several aspects, such as relying on [Kindly](https://github.com/scicloj/kindly) for specifying the kinds of visualizations. It is rather easy to convert Notespace projects to Clay projects.
 
 Clay offers a more basic, and hopefully simple and robust, approach. Notespace addresses more delicate questions of user interaction, that seem less pressing to solve. They could still be useful, and hopefully, we will come back to them.
 
